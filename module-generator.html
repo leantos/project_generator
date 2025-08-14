@@ -16,7 +16,12 @@
 
         body {
             font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', sans-serif;
-            background: #0f0f0f;
+            background: 
+                linear-gradient(45deg, #0a0a0a 0%, #0f0f0f 25%, #0a0a0a 50%, #0f0f0f 75%, #0a0a0a 100%),
+                radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.08) 0%, transparent 50%);
+            background-size: 400px 400px, 800px 800px, 800px 800px;
+            animation: cyberpunk-bg 20s ease infinite;
             color: #e8eaed;
             min-height: 100vh;
             display: flex;
@@ -27,17 +32,44 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        
+        @keyframes cyberpunk-bg {
+            0%, 100% { background-position: 0% 0%, 25% 25%, 75% 75%; }
+            50% { background-position: 100% 100%, 75% 75%, 25% 25%; }
+        }
 
         .wizard-container {
             background: #1f1f1f;
             border-radius: 28px;
-            box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            box-shadow: 
+                0 1px 3px 1px rgba(0, 0, 0, 0.15), 
+                0 1px 2px 0 rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(0, 255, 255, 0.15),
+                0 0 60px rgba(255, 0, 255, 0.1);
             width: 100%;
             max-width: 1200px;
             min-height: 700px;
             display: flex;
             overflow: hidden;
             border: 1px solid #313131;
+            position: relative;
+        }
+        
+        .wizard-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(0, 255, 255, 0.02) 0%, 
+                transparent 25%, 
+                rgba(255, 0, 255, 0.02) 50%, 
+                transparent 75%, 
+                rgba(0, 255, 255, 0.02) 100%);
+            border-radius: 28px;
+            pointer-events: none;
         }
 
         .sidebar {
@@ -93,7 +125,9 @@
         .logo-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #8ab4f8, #81c995);
+            background: linear-gradient(135deg, #00ffff, #ff00ff, #8ab4f8, #81c995);
+            background-size: 300% 300%;
+            animation: cyberpunk-gradient 3s ease infinite;
             border-radius: 12px;
             margin-right: 12px;
             display: flex;
@@ -102,7 +136,17 @@
             font-size: 18px;
             font-weight: bold;
             color: #202124;
-            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+            box-shadow: 
+                0 2px 8px rgba(66, 133, 244, 0.3),
+                0 0 20px rgba(0, 255, 255, 0.4),
+                0 0 40px rgba(255, 0, 255, 0.2);
+            position: relative;
+        }
+        
+        @keyframes cyberpunk-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .logo-text {
@@ -110,6 +154,7 @@
             font-weight: 500;
             color: #e8eaed;
             letter-spacing: 0;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
         }
 
         .step-list {
@@ -134,9 +179,24 @@
         }
 
         .step-item.active {
-            background: linear-gradient(135deg, rgba(138, 180, 248, 0.16), rgba(129, 201, 149, 0.12));
-            color: #8ab4f8;
-            border-left: 3px solid #8ab4f8;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(255, 0, 255, 0.10), rgba(138, 180, 248, 0.16));
+            color: #00ffff;
+            border-left: 3px solid #00ffff;
+            box-shadow: 
+                inset 0 0 30px rgba(0, 255, 255, 0.1),
+                0 0 20px rgba(0, 255, 255, 0.2);
+            position: relative;
+        }
+        
+        .step-item.active::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #00ffff, #ff00ff);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
 
         .step-item.completed {
@@ -201,6 +261,7 @@
             color: #e8eaed;
             font-weight: 400;
             letter-spacing: 0;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
         }
 
         .step-description {
@@ -233,9 +294,20 @@
             content: '';
             width: 4px;
             height: 20px;
-            background: linear-gradient(180deg, #8ab4f8, #81c995);
+            background: linear-gradient(180deg, #00ffff, #ff00ff, #00ffff);
+            background-size: 100% 200%;
+            animation: cyberpunk-gradient-vertical 2s ease infinite;
             margin-right: 12px;
             border-radius: 2px;
+            box-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.6),
+                0 0 20px rgba(255, 0, 255, 0.4);
+        }
+        
+        @keyframes cyberpunk-gradient-vertical {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 0% 100%; }
+            100% { background-position: 0% 0%; }
         }
 
         .form-group {
@@ -273,9 +345,12 @@
         select:focus,
         textarea:focus {
             outline: none;
-            border-color: #8ab4f8;
+            border-color: #00ffff;
             background: #303134;
-            box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2), 0 0 12px rgba(138, 180, 248, 0.1);
+            box-shadow: 
+                0 0 0 2px rgba(0, 255, 255, 0.3), 
+                0 0 15px rgba(0, 255, 255, 0.2),
+                0 0 30px rgba(255, 0, 255, 0.1);
         }
 
         textarea {
@@ -381,14 +456,30 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #8ab4f8, #81c995);
-            color: #202124;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #00ffff, #ff00ff, #8ab4f8, #81c995);
+            background-size: 300% 300%;
+            animation: cyberpunk-gradient 2s ease infinite;
+            color: #000;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 1px 2px 0 rgba(0, 0, 0, 0.3), 
+                0 1px 3px 1px rgba(0, 0, 0, 0.15),
+                0 0 15px rgba(0, 255, 255, 0.4),
+                0 0 30px rgba(255, 0, 255, 0.2);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #aecbfa, #a8dab5);
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #00ffff, #ff00ff, #aecbfa, #a8dab5);
+            background-size: 300% 300%;
+            box-shadow: 
+                0 1px 2px 0 rgba(0, 0, 0, 0.3), 
+                0 2px 6px 2px rgba(0, 0, 0, 0.15),
+                0 0 20px rgba(0, 255, 255, 0.6),
+                0 0 40px rgba(255, 0, 255, 0.4);
+            transform: translateY(-1px);
         }
 
         .btn-secondary {
@@ -436,10 +527,39 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #4285f4, #8ab4f8, #81c995, #fbbf24);
+            background: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff, #ff00ff);
             border-radius: 2px;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background-size: 200% 100%;
+            background-size: 400% 100%;
+            animation: cyberpunk-progress 2s linear infinite;
+            box-shadow: 
+                0 0 15px rgba(0, 255, 255, 0.6),
+                0 0 30px rgba(255, 0, 255, 0.4);
+            position: relative;
+        }
+        
+        @keyframes cyberpunk-progress {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 100%);
+            animation: cyberpunk-shine 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes cyberpunk-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .field-list {
