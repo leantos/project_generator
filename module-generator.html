@@ -1919,8 +1919,18 @@
 
 ## CLAUDE CODE - BUILD THIS MODULE
 
+**IMPORTANT: You MUST check @claude_docs for XOS framework patterns before implementing!**
+
 This file contains instructions to create a ${config.moduleType} module for ${config.moduleName}.
-Use @claude_docs for XOS framework patterns and best practices.
+
+### 🔴 MANDATORY: Check @claude_docs First!
+**CLAUDE: Before writing ANY code, you MUST:**
+1. Check @claude_docs/xos-framework/patterns for the correct implementation patterns
+2. Review @claude_docs/xos-framework/components for component usage
+3. Follow @claude_docs/best-practices for code standards
+4. Use @claude_docs/frontend/ui-templates for UI template references
+
+**DO NOT PROCEED without checking @claude_docs for the proper XOS patterns!**
 
 ### Module Configuration
 - **Name**: ${config.moduleName}
@@ -1974,7 +1984,11 @@ namespace ${config.namespacePrefix}.Transaction.Interfaces
 ## STEP 3: Create Service Implementation ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
 
 ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
-**CLAUDE: Create the service implementation:**
+**CLAUDE: Create the service implementation following @claude_docs patterns:**
+
+⚠️ **IMPORTANT**: Check @claude_docs/xos-framework/services/service-base for XOSServiceBase patterns
+⚠️ **IMPORTANT**: Review @claude_docs/xos-framework/data-access for repository patterns
+⚠️ **IMPORTANT**: Follow @claude_docs/error-handling for proper error handling
 
 ### CREATE FILE: ${config.namespacePrefix}.Transaction/Services/${config.entityName}Service.cs
 \`\`\`csharp
@@ -2049,6 +2063,13 @@ namespace ${config.namespacePrefix}.WebApi.Controllers
 ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `
 **CLAUDE: Create the React components${config.uiApproach === 'template' ? ` using ${config.uiTemplate}` : ' based on the wireframe'}:**
 
+### 📌 CRITICAL: You MUST check @claude_docs before proceeding!
+1. **@claude_docs/xos-framework/components** - For XOSComponent base class patterns
+2. **@claude_docs/xos-framework/mvvm** - For ViewModel (VM) implementation patterns  
+3. **@claude_docs/xos-framework/observable** - For observable state management
+4. **@claude_docs/frontend/ui-templates** - For UI template implementations
+5. **@claude_docs/frontend/xos-components** - For XOS UI component usage (XOSTextbox, XOSGrid, etc.)
+
 ${config.uiApproach === 'wireframe' && config.hasWireframe ? `
 ### 🎨 WIREFRAME ANALYSIS REQUIRED
 
@@ -2094,7 +2115,16 @@ export class ${config.entityName}VM extends VMBase {
 
 ### CREATE FILE: ${config.namespacePrefix}.WebApi/UIPages/src/components/${config.moduleName}/index.jsx
 
-${config.uiApproach === 'template' ? `**IMPORTANT**: Use the ${config.uiTemplate} from @claude_docs/frontend/ui-templates/ as your base template.` : `**IMPORTANT**: Create components based on the uploaded wireframe design.`}
+${config.uiApproach === 'template' ? `
+### ⚠️ TEMPLATE IMPLEMENTATION REQUIRED
+**CLAUDE: You MUST do the following IN THIS EXACT ORDER:**
+1. **FIRST**: Open and read @claude_docs/frontend/ui-templates/${config.uiTemplate}/index.jsx
+2. **COPY**: Copy the ENTIRE template structure from @claude_docs
+3. **CUSTOMIZE**: Replace placeholder values with ${config.entityName} entity fields
+4. **VERIFY**: Check that you're using XOS components correctly per @claude_docs/frontend/xos-components
+
+**DO NOT write generic React code! You MUST use the exact template from @claude_docs!**
+` : `**IMPORTANT**: Create components based on the uploaded wireframe design following @claude_docs patterns.`}
 
 \`\`\`javascript
 import React from 'react';
@@ -2220,6 +2250,18 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
 \`\`\`
 
 ---
+
+## 📚 FINAL REMINDER: Use @claude_docs!
+
+**CLAUDE: Before you finish, verify you have:**
+✅ Checked @claude_docs for ALL XOS framework patterns
+✅ Used the EXACT template structure from @claude_docs (not generic code)
+✅ Followed @claude_docs naming conventions and patterns
+✅ Implemented proper error handling per @claude_docs
+✅ Used XOS components correctly per @claude_docs documentation
+
+**If you haven't checked @claude_docs, GO BACK and check it NOW!**
+
 **Generated**: ${timestamp}
 **Module Type**: ${config.moduleType}
 **Generator Version**: 1.0.0
@@ -2575,45 +2617,77 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
         function getTemplateInstructions(template, config) {
             const instructions = {
                 'MasterDetailCRUDTemplate': `
-**Master-Detail CRUD Template Usage:**
-- Use two-column form layout (col-md-6)
-- Include Save/Close buttons with standard classes (.btn-save1, .btn-close1)
-- Add mandatory field indicators for required fields
-- Implement validation with focus management
-- Add loading states during save operations
-- Use toast notifications for success/error feedback
-- Reference: @claude_docs/frontend/ui-templates/MasterDetailCRUDTemplate/`,
+### 🔴 CRITICAL: Master-Detail CRUD Template Implementation
+
+**CLAUDE: You are REQUIRED to use @claude_docs for this template!**
+
+**STEP-BY-STEP INSTRUCTIONS:**
+1. **OPEN**: @claude_docs/frontend/ui-templates/MasterDetailCRUDTemplate/index.jsx
+2. **READ**: The complete template implementation from @claude_docs
+3. **COPY**: The exact structure including:
+   - Two-column form layout (col-md-6) 
+   - Save/Close buttons with classes (.btn-save1, .btn-close1)
+   - Mandatory field indicators
+   - Validation with focus management
+   - Loading states during save operations
+   - Toast notifications for success/error
+4. **CUSTOMIZE**: Only replace entity-specific values
+5. **VERIFY**: Compare your implementation with @claude_docs template
+
+**Path in @claude_docs**: frontend/ui-templates/MasterDetailCRUDTemplate/`,
 
                 'SearchListGridTemplate': `
-**Search/List Grid Template Usage:**
-- Include search bar with filters at top
-- Use XOSGrid with pagination and row selection
-- Add export functionality if needed
-- Include audit trail integration
-- Use advanced filters with collapsible sections
-- Implement row actions (edit/delete/view)
-- Reference: @claude_docs/frontend/ui-templates/SearchListGridTemplate/`,
+### 🔴 CRITICAL: Search/List Grid Template Implementation
+
+**CLAUDE: MANDATORY @claude_docs usage required!**
+
+**IMPLEMENTATION STEPS:**
+1. **CHECK**: @claude_docs/frontend/ui-templates/SearchListGridTemplate/index.jsx
+2. **IMPLEMENT** from @claude_docs:
+   - Search bar with filters (exact structure from template)
+   - XOSGrid with pagination (use @claude_docs/frontend/xos-components/XOSGrid)
+   - Export functionality pattern
+   - Audit trail integration
+   - Advanced filters with collapsible sections
+   - Row actions (edit/delete/view)
+3. **VERIFY**: Your code matches the @claude_docs template structure
+
+**Path in @claude_docs**: frontend/ui-templates/SearchListGridTemplate/`,
 
                 'WorkflowFormTemplate': `
-**Workflow Form Template Usage:**
-- Implement multi-section accordion layout
-- Add file attachment with drag-drop support
-- Include approval/rejection workflow buttons
-- Add history timeline component
-- Include comments section
-- Dynamic button visibility based on workflow state
-- Email notification triggers
-- Reference: @claude_docs/frontend/ui-templates/WorkflowFormTemplate/`,
+### 🔴 CRITICAL: Workflow Form Template Implementation
+
+**CLAUDE: You MUST reference @claude_docs for this workflow template!**
+
+**REQUIRED STEPS:**
+1. **LOCATE**: @claude_docs/frontend/ui-templates/WorkflowFormTemplate/index.jsx
+2. **COPY** the exact implementation including:
+   - Multi-section accordion layout from @claude_docs
+   - File attachment component (check @claude_docs/frontend/xos-components/FileUpload)
+   - Approval/rejection workflow buttons
+   - History timeline component
+   - Comments section pattern
+   - Workflow state management
+3. **FOLLOW**: @claude_docs patterns for workflow state handling
+
+**Path in @claude_docs**: frontend/ui-templates/WorkflowFormTemplate/`,
 
                 'ReportParameterTemplate': `
-**Report Parameter Template Usage:**
-- Include date range selection with presets
-- Add multi-select filters with "Select All" option
-- Provide download format options (PDF/Excel/CSV)
-- Include email scheduling functionality
-- Add parameter saving/loading
-- Include report preview functionality
-- Reference: @claude_docs/frontend/ui-templates/ReportParameterTemplate/`
+### 🔴 CRITICAL: Report Parameter Template Implementation  
+
+**CLAUDE: @claude_docs reference is MANDATORY!**
+
+**EXACT IMPLEMENTATION REQUIRED:**
+1. **READ**: @claude_docs/frontend/ui-templates/ReportParameterTemplate/index.jsx
+2. **USE** components from @claude_docs:
+   - Date range picker (from @claude_docs/frontend/xos-components/DateRangePicker)
+   - Multi-select filters (from @claude_docs/frontend/xos-components/MultiSelect)
+   - Download format options
+   - Email scheduling component
+   - Parameter persistence pattern
+3. **MATCH**: The exact structure from @claude_docs template
+
+**Path in @claude_docs**: frontend/ui-templates/ReportParameterTemplate/`
             };
             
             return instructions[template] || '';
