@@ -1052,9 +1052,15 @@
                 <div class="form-section">
                     <div class="form-section-title">Configuration</div>
                     <div class="form-group">
-                        <label>Namespace Prefix</label>
-                        <input type="text" id="namespace-prefix" value="CVS" placeholder="e.g., CVS, XOS">
-                        <div class="hint">Will be used as namespace prefix (e.g., CVS.Transaction.Services)</div>
+                        <div style="background: #303134; padding: 16px; border-radius: 8px; border-left: 4px solid #8ab4f8;">
+                            <div style="color: #8ab4f8; font-weight: 500; margin-bottom: 8px;">📦 Namespace Configuration</div>
+                            <div style="color: #e8eaed; font-size: 14px;">
+                                The namespace will be automatically inherited from your project's PROJECT_SEED.md file.
+                            </div>
+                            <div style="color: #9aa0a6; font-size: 12px; margin-top: 4px;">
+                                Example: If your project uses "CVS", this module will use "CVS.Transaction.Services"
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group" id="ui-template-group">
                         <label>UI Design Approach <span class="required">*</span></label>
