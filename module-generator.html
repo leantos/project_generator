@@ -483,6 +483,115 @@
             cursor: pointer;
         }
 
+        .method-list {
+            background: #292a2d;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            min-height: 100px;
+            padding: 16px;
+            margin-top: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .method-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #303134;
+            border-radius: 8px;
+            border: 1px solid #3c4043;
+        }
+
+        .method-item:hover {
+            border-color: #5f6368;
+        }
+
+        .method-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .method-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .method-tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .method-tag.create {
+            background: linear-gradient(135deg, #81c995, #a8dab5);
+            color: #202124;
+        }
+
+        .method-tag.read {
+            background: linear-gradient(135deg, #8ab4f8, #aecbfa);
+            color: #202124;
+        }
+
+        .method-tag.update {
+            background: linear-gradient(135deg, #fbbf24, #fcd34d);
+            color: #202124;
+        }
+
+        .method-tag.delete {
+            background: linear-gradient(135deg, #f28b82, #f8b4b4);
+            color: #202124;
+        }
+
+        .method-tag.search {
+            background: linear-gradient(135deg, #c58af9, #e0b3ff);
+            color: #202124;
+        }
+
+        .method-tag.get_one {
+            background: linear-gradient(135deg, #5eb3f6, #8cc8f7);
+            color: #202124;
+        }
+
+        .method-tag.get_many {
+            background: linear-gradient(135deg, #4ecdc4, #7dd8d2);
+            color: #202124;
+        }
+
+        .method-tag.export {
+            background: linear-gradient(135deg, #ff9a9e, #ffb5b8);
+            color: #202124;
+        }
+
+        .method-tag.import {
+            background: linear-gradient(135deg, #a8e6cf, #c4f0e2);
+            color: #202124;
+        }
+
+        .method-tag.custom {
+            background: linear-gradient(135deg, #b4a7d6, #d0c9e8);
+            color: #202124;
+        }
+
+        .method-name {
+            font-weight: 500;
+            color: #e8eaed;
+            font-size: 14px;
+        }
+
+        .method-description {
+            color: #9aa0a6;
+            font-size: 12px;
+        }
+
         /* UI Approach Selector */
         .ui-approach-selector {
             display: flex;
@@ -781,7 +890,7 @@
                 </li>
                 <li class="step-item" data-step="4">
                     <div class="step-number">4</div>
-                    <div class="step-text">Features</div>
+                    <div class="step-text">Methods</div>
                 </li>
                 <li class="step-item" data-step="5">
                     <div class="step-number">5</div>
@@ -1047,52 +1156,55 @@
                 </div>
             </div>
 
-            <!-- Step 4: Features -->
+            <!-- Step 4: Methods -->
             <div class="step-content" id="step-4">
-                <h1>Module Features</h1>
-                <p class="step-description">Select which features to include in your module.</p>
+                <h1>Module Methods</h1>
+                <p class="step-description">Define the methods and operations for your module. Each method represents an API endpoint and corresponding functionality.</p>
                 
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 80%"></div>
                 </div>
 
                 <div class="form-section">
-                    <div class="form-section-title">CRUD Operations</div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="feature-create" checked>
-                        <label for="feature-create" class="checkbox-label">Create (Add new records)</label>
+                    <div class="form-section-title">Methods Configuration</div>
+                    <div class="form-group">
+                        <label>Add Method</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                            <select id="method-operation" style="width: 150px;">
+                                <option value="CREATE">CREATE</option>
+                                <option value="READ">READ</option>
+                                <option value="UPDATE">UPDATE</option>
+                                <option value="DELETE">DELETE</option>
+                                <option value="SEARCH">SEARCH</option>
+                                <option value="GET_ONE">GET_ONE</option>
+                                <option value="GET_MANY">GET_MANY</option>
+                                <option value="EXPORT">EXPORT</option>
+                                <option value="IMPORT">IMPORT</option>
+                                <option value="CUSTOM">CUSTOM</option>
+                            </select>
+                            <input type="text" id="method-name" placeholder="Method name" style="flex: 1; min-width: 200px;">
+                            <input type="text" id="method-description" placeholder="Method description" style="flex: 2; min-width: 300px;">
+                            <button type="button" onclick="addMethod()" class="btn-primary">Add Method</button>
+                        </div>
+                        <div class="hint">Operation type determines the HTTP method and default implementation. Method name will be the actual function/endpoint name.</div>
                     </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="feature-read" checked>
-                        <label for="feature-read" class="checkbox-label">Read (List and search)</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="feature-update" checked>
-                        <label for="feature-update" class="checkbox-label">Update (Edit existing records)</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="feature-delete" checked>
-                        <label for="feature-delete" class="checkbox-label">Delete (Remove records)</label>
+                    
+                    <div class="method-list" id="method-list">
+                        <div style="color: #9aa0a6; text-align: center; padding: 20px;">No methods added yet. Default CRUD methods will be added based on selections above.</div>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <div class="form-section-title">Advanced Features</div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="feature-audit">
-                        <label for="feature-audit" class="checkbox-label">Audit Trail (Track changes)</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="feature-export">
-                        <label for="feature-export" class="checkbox-label">Export functionality</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="feature-search">
-                        <label for="feature-search" class="checkbox-label">Advanced search</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="feature-pagination">
-                        <label for="feature-pagination" class="checkbox-label">Pagination</label>
+                    <div class="form-section-title">Quick Add Common Methods</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                        <button type="button" class="btn-secondary" onclick="addQuickMethod('CREATE', 'Create', 'Create new record')">+ Create</button>
+                        <button type="button" class="btn-secondary" onclick="addQuickMethod('READ', 'GetAll', 'Get all records')">+ Get All</button>
+                        <button type="button" class="btn-secondary" onclick="addQuickMethod('GET_ONE', 'GetById', 'Get single record by ID')">+ Get By ID</button>
+                        <button type="button" class="btn-secondary" onclick="addQuickMethod('UPDATE', 'Update', 'Update existing record')">+ Update</button>
+                        <button type="button" class="btn-secondary" onclick="addQuickMethod('DELETE', 'Delete', 'Delete record')">+ Delete</button>
+                        <button type="button" class="btn-secondary" onclick="addQuickMethod('SEARCH', 'Search', 'Search records with filters')">+ Search</button>
+                        <button type="button" class="btn-secondary" onclick="addQuickMethod('GET_MANY', 'GetByFilter', 'Get multiple records by filter')">+ Get By Filter</button>
+                        <button type="button" class="btn-secondary" onclick="addQuickMethod('EXPORT', 'Export', 'Export records to file')">+ Export</button>
                     </div>
                 </div>
             </div>
@@ -1139,7 +1251,8 @@
         const totalSteps = 5;
         let configuration = {
             moduleType: 'fullstack',
-            fields: []
+            fields: [],
+            methods: []
         };
 
         // Initialize
@@ -1468,6 +1581,91 @@
             `).join('');
         }
 
+        function addMethod() {
+            const operation = document.getElementById('method-operation').value;
+            const methodName = document.getElementById('method-name').value.trim();
+            const description = document.getElementById('method-description').value.trim();
+            
+            // Set default method names based on operation if not provided
+            const defaultNames = {
+                'CREATE': 'Create',
+                'READ': 'GetAll',
+                'UPDATE': 'Update',
+                'DELETE': 'Delete',
+                'SEARCH': 'Search',
+                'GET_ONE': 'GetById',
+                'GET_MANY': 'GetByFilter',
+                'EXPORT': 'Export',
+                'IMPORT': 'Import',
+                'CUSTOM': 'CustomMethod'
+            };
+            
+            const name = methodName || defaultNames[operation];
+            const desc = description || `${operation} operation`;
+            
+            // Check if method already exists
+            if (configuration.methods.some(m => m.name.toLowerCase() === name.toLowerCase())) {
+                alert('Method with this name already exists');
+                return;
+            }
+            
+            configuration.methods.push({
+                operation: operation,
+                name: name,
+                description: desc
+            });
+            
+            updateMethodList();
+            
+            // Clear inputs
+            document.getElementById('method-name').value = '';
+            document.getElementById('method-description').value = '';
+            document.getElementById('method-operation').value = 'CREATE';
+        }
+
+        function addQuickMethod(operation, name, description) {
+            // Check if method already exists
+            if (configuration.methods.some(m => m.name.toLowerCase() === name.toLowerCase())) {
+                alert(`Method "${name}" already exists`);
+                return;
+            }
+            
+            configuration.methods.push({
+                operation: operation,
+                name: name,
+                description: description
+            });
+            
+            updateMethodList();
+        }
+
+        function removeMethod(index) {
+            configuration.methods.splice(index, 1);
+            updateMethodList();
+        }
+
+        function updateMethodList() {
+            const methodList = document.getElementById('method-list');
+            
+            if (configuration.methods.length === 0) {
+                methodList.innerHTML = '<div style="color: #9aa0a6; text-align: center; padding: 20px;">No methods added yet. Use the quick add buttons or add custom methods above.</div>';
+                return;
+            }
+            
+            methodList.innerHTML = configuration.methods.map((method, index) => `
+                <div class="method-item">
+                    <div class="method-info">
+                        <div class="method-header">
+                            <span class="method-tag ${method.operation.toLowerCase().replace('_', '')}">${method.operation}</span>
+                            <span class="method-name">${method.name}</span>
+                        </div>
+                        <div class="method-description">${method.description}</div>
+                    </div>
+                    <button class="btn-remove" onclick="removeMethod(${index})">Remove</button>
+                </div>
+            `).join('');
+        }
+
         function collectConfiguration() {
             const apiBaseRoute = document.getElementById('api-base-route').value.trim();
             const moduleName = document.getElementById('module-name').value.trim();
@@ -1483,16 +1681,7 @@
                 entityName: document.getElementById('entity-name').value.trim(),
                 tableName: document.getElementById('table-name').value.trim(),
                 fields: configuration.fields,
-                features: {
-                    create: document.getElementById('feature-create').checked,
-                    read: document.getElementById('feature-read').checked,
-                    update: document.getElementById('feature-update').checked,
-                    delete: document.getElementById('feature-delete').checked,
-                    audit: document.getElementById('feature-audit').checked,
-                    export: document.getElementById('feature-export').checked,
-                    search: document.getElementById('feature-search').checked,
-                    pagination: document.getElementById('feature-pagination').checked
-                }
+                methods: configuration.methods
             };
             
             // Add UI-specific configuration
@@ -1538,8 +1727,8 @@
                     <div>${config.entityName}</div>
                     <div><strong>Fields:</strong></div>
                     <div>${config.fields.map(f => `${f.name} (${f.type})`).join(', ') || 'None'}</div>
-                    <div><strong>Features:</strong></div>
-                    <div>${Object.keys(config.features).filter(k => config.features[k]).join(', ') || 'None'}</div>
+                    <div><strong>Methods:</strong></div>
+                    <div>${config.methods.map(m => `${m.name} (${m.operation})`).join(', ') || 'None'}</div>
                 </div>
             `;
         }
@@ -1810,11 +1999,7 @@ ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
 
 | Method | Route | Purpose | Request Body |
 |--------|-------|---------|--------------|
-${config.features.create ? `| POST | ${config.apiBaseRoute}/save | Create/Update ${config.entityName} | ${config.entityName} object |` : ''}
-${config.features.read ? `| POST | ${config.apiBaseRoute}/search | Search ${config.entityName}s | SearchInput object |` : ''}
-${config.features.read ? `| GET | ${config.apiBaseRoute}/{id} | Get ${config.entityName} by ID | id parameter |` : ''}
-${config.features.delete ? `| DELETE | ${config.apiBaseRoute}/{id} | Delete ${config.entityName} | id parameter |` : ''}
-${config.features.export ? `| POST | ${config.apiBaseRoute}/export | Export ${config.entityName}s | ExportInput object |` : ''}
+${generateEndpointDocumentation(config)}
 
 **Example API Calls:**
 \`\`\`javascript
@@ -1843,9 +2028,9 @@ const saveResult = await ApiManager.post('${config.apiBaseRoute}/save', {
 3. Test API endpoints at: https://localhost:5001/swagger
 ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `4. Test frontend component using ${config.uiTemplate} patterns` : ''}
 
-## Features Included:
+## Methods Included:
 
-${Object.keys(config.features).filter(k => config.features[k]).map(feature => `✅ ${feature.charAt(0).toUpperCase() + feature.slice(1)}`).join('\n')}
+${config.methods.length > 0 ? config.methods.map(method => `✅ ${method.name} (${method.operation}) - ${method.description}`).join('\n') : '✅ Default CRUD operations'}
 
 ## Module Structure Created:
 
@@ -1899,18 +2084,46 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             const methods = [];
             const entityName = config.entityName;
             
-            if (config.features.create) {
-                methods.push(`Task<string> Save${entityName}Async(${entityName} input);`);
-            }
-            if (config.features.read) {
-                methods.push(`Task<${entityName}.SearchOutput> Search${entityName}Async(${entityName}.SearchInput input);`);
-            }
-            if (config.features.update) {
-                methods.push(`Task<${entityName}> Get${entityName}ByIdAsync(short clientId, int id);`);
-            }
-            if (config.features.delete) {
-                methods.push(`Task<bool> Delete${entityName}Async(short clientId, int id);`);
-            }
+            // If no methods defined, add default CRUD methods
+            const methodsToGenerate = config.methods.length > 0 ? config.methods : [
+                { operation: 'CREATE', name: 'Create', description: 'Create new record' },
+                { operation: 'READ', name: 'GetAll', description: 'Get all records' },
+                { operation: 'UPDATE', name: 'Update', description: 'Update existing record' },
+                { operation: 'DELETE', name: 'Delete', description: 'Delete record' }
+            ];
+            
+            methodsToGenerate.forEach(method => {
+                switch(method.operation) {
+                    case 'CREATE':
+                        methods.push(`Task<string> ${method.name}${entityName}Async(${entityName} input);`);
+                        break;
+                    case 'READ':
+                    case 'GET_MANY':
+                        methods.push(`Task<List<${entityName}>> ${method.name}${entityName}Async();`);
+                        break;
+                    case 'UPDATE':
+                        methods.push(`Task<string> ${method.name}${entityName}Async(${entityName} input);`);
+                        break;
+                    case 'DELETE':
+                        methods.push(`Task<bool> ${method.name}${entityName}Async(int id);`);
+                        break;
+                    case 'SEARCH':
+                        methods.push(`Task<${entityName}.SearchOutput> ${method.name}${entityName}Async(${entityName}.SearchInput input);`);
+                        break;
+                    case 'GET_ONE':
+                        methods.push(`Task<${entityName}> ${method.name}Async(int id);`);
+                        break;
+                    case 'EXPORT':
+                        methods.push(`Task<byte[]> ${method.name}${entityName}Async(ExportInput input);`);
+                        break;
+                    case 'IMPORT':
+                        methods.push(`Task<ImportResult> ${method.name}${entityName}Async(ImportInput input);`);
+                        break;
+                    case 'CUSTOM':
+                        methods.push(`Task<object> ${method.name}Async(object input); // ${method.description}`);
+                        break;
+                }
+            });
             
             return methods.map(method => `        ${method}`).join('\n');
         }
@@ -1919,18 +2132,52 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             const methods = [];
             const entityName = config.entityName;
             
-            if (config.features.create) {
-                methods.push(`public async Task<string> Save${entityName}Async(${entityName} input)
+            // If no methods defined, add default CRUD methods
+            const methodsToGenerate = config.methods.length > 0 ? config.methods : [
+                { operation: 'CREATE', name: 'Create', description: 'Create new record' },
+                { operation: 'READ', name: 'GetAll', description: 'Get all records' }
+            ];
+            
+            methodsToGenerate.forEach(method => {
+                const methodImpl = generateMethodImplementation(method, entityName);
+                if (methodImpl) {
+                    methods.push(methodImpl);
+                }
+            });
+            
+            return methods.join('\n\n        ');
+        }
+        
+        function generateMethodImplementation(method, entityName) {
+            switch(method.operation) {
+                case 'CREATE':
+                case 'UPDATE':
+                    return `public async Task<string> ${method.name}${entityName}Async(${entityName} input)
         {
-            // Implementation here
+            // ${method.description}
             await Task.CompletedTask;
             return "S"; // Success
-        }`);
-            }
-            
-            if (config.features.read) {
-                methods.push(`public async Task<${entityName}.SearchOutput> Search${entityName}Async(${entityName}.SearchInput input)
+        }`;
+                case 'READ':
+                case 'GET_MANY':
+                    return `public async Task<List<${entityName}>> ${method.name}${entityName}Async()
         {
+            // ${method.description}
+            var result = new List<${entityName}>();
+            await Task.CompletedTask;
+            return result;
+        }`;
+                case 'DELETE':
+                    return `public async Task<bool> ${method.name}${entityName}Async(int id)
+        {
+            // ${method.description}
+            await Task.CompletedTask;
+            return true;
+        }`;
+                case 'SEARCH':
+                    return `public async Task<${entityName}.SearchOutput> ${method.name}${entityName}Async(${entityName}.SearchInput input)
+        {
+            // ${method.description}
             var output = new ${entityName}.SearchOutput();
             try
             {
@@ -1939,38 +2186,135 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             }
             catch (Exception ex)
             {
-                this.Logger.LogError(ex, $"Search ${entityName} failed");
+                this.Logger.LogError(ex, $"${method.name} ${entityName} failed");
             }
             return output;
-        }`);
+        }`;
+                case 'GET_ONE':
+                    return `public async Task<${entityName}> ${method.name}Async(int id)
+        {
+            // ${method.description}
+            await Task.CompletedTask;
+            return new ${entityName}();
+        }`;
+                case 'EXPORT':
+                    return `public async Task<byte[]> ${method.name}${entityName}Async(ExportInput input)
+        {
+            // ${method.description}
+            await Task.CompletedTask;
+            return new byte[0];
+        }`;
+                case 'IMPORT':
+                    return `public async Task<ImportResult> ${method.name}${entityName}Async(ImportInput input)
+        {
+            // ${method.description}
+            await Task.CompletedTask;
+            return new ImportResult();
+        }`;
+                case 'CUSTOM':
+                    return `public async Task<object> ${method.name}Async(object input)
+        {
+            // ${method.description}
+            await Task.CompletedTask;
+            return new { Success = true };
+        }`;
+                default:
+                    return null;
             }
-            
-            return methods.join('\n\n        ');
         }
 
         function generateControllerMethods(config) {
             const methods = [];
             const entityName = config.entityName;
             
-            if (config.features.create) {
-                methods.push(`[HttpPost("save")]
-        public async Task<IActionResult> Save([FromBody] ${entityName} input)
-        {
-            var result = await _${entityName.toLowerCase()}Service.Save${entityName}Async(input);
-            return Ok(new { Status = result });
-        }`);
-            }
+            // If no methods defined, add default CRUD methods
+            const methodsToGenerate = config.methods.length > 0 ? config.methods : [
+                { operation: 'CREATE', name: 'Create', description: 'Create new record' },
+                { operation: 'READ', name: 'GetAll', description: 'Get all records' }
+            ];
             
-            if (config.features.read) {
-                methods.push(`[HttpPost("search")]
-        public async Task<IActionResult> Search([FromBody] ${entityName}.SearchInput input)
-        {
-            var result = await _${entityName.toLowerCase()}Service.Search${entityName}Async(input);
-            return Ok(result);
-        }`);
-            }
+            methodsToGenerate.forEach(method => {
+                const controllerMethod = generateControllerMethod(method, entityName);
+                if (controllerMethod) {
+                    methods.push(controllerMethod);
+                }
+            });
             
             return methods.map(method => `        ${method}`).join('\n\n');
+        }
+        
+        function generateControllerMethod(method, entityName) {
+            const serviceName = `_${entityName.toLowerCase()}Service`;
+            
+            switch(method.operation) {
+                case 'CREATE':
+                    return `[HttpPost("${method.name.toLowerCase()}")]
+        public async Task<IActionResult> ${method.name}([FromBody] ${entityName} input)
+        {
+            var result = await ${serviceName}.${method.name}${entityName}Async(input);
+            return Ok(new { Status = result });
+        }`;
+                case 'UPDATE':
+                    return `[HttpPut("${method.name.toLowerCase()}")]
+        public async Task<IActionResult> ${method.name}([FromBody] ${entityName} input)
+        {
+            var result = await ${serviceName}.${method.name}${entityName}Async(input);
+            return Ok(new { Status = result });
+        }`;
+                case 'READ':
+                case 'GET_MANY':
+                    return `[HttpGet("${method.name.toLowerCase()}")]
+        public async Task<IActionResult> ${method.name}()
+        {
+            var result = await ${serviceName}.${method.name}${entityName}Async();
+            return Ok(result);
+        }`;
+                case 'DELETE':
+                    return `[HttpDelete("${method.name.toLowerCase()}/{id}")]
+        public async Task<IActionResult> ${method.name}(int id)
+        {
+            var result = await ${serviceName}.${method.name}${entityName}Async(id);
+            return Ok(new { Success = result });
+        }`;
+                case 'SEARCH':
+                    return `[HttpPost("${method.name.toLowerCase()}")]
+        public async Task<IActionResult> ${method.name}([FromBody] ${entityName}.SearchInput input)
+        {
+            var result = await ${serviceName}.${method.name}${entityName}Async(input);
+            return Ok(result);
+        }`;
+                case 'GET_ONE':
+                    return `[HttpGet("${method.name.toLowerCase()}/{id}")]
+        public async Task<IActionResult> ${method.name}(int id)
+        {
+            var result = await ${serviceName}.${method.name}Async(id);
+            return Ok(result);
+        }`;
+                case 'EXPORT':
+                    return `[HttpPost("${method.name.toLowerCase()}")]
+        public async Task<IActionResult> ${method.name}([FromBody] ExportInput input)
+        {
+            var result = await ${serviceName}.${method.name}${entityName}Async(input);
+            return File(result, "application/octet-stream", "${entityName}_export.xlsx");
+        }`;
+                case 'IMPORT':
+                    return `[HttpPost("${method.name.toLowerCase()}")]
+        public async Task<IActionResult> ${method.name}([FromBody] ImportInput input)
+        {
+            var result = await ${serviceName}.${method.name}${entityName}Async(input);
+            return Ok(result);
+        }`;
+                case 'CUSTOM':
+                    return `[HttpPost("${method.name.toLowerCase()}")]
+        public async Task<IActionResult> ${method.name}([FromBody] object input)
+        {
+            // ${method.description}
+            var result = await ${serviceName}.${method.name}Async(input);
+            return Ok(result);
+        }`;
+                default:
+                    return null;
+            }
         }
 
         function generateViewModelProperties(fields) {
@@ -1985,16 +2329,24 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
         function generateViewModelMethods(config) {
             const methods = [];
             const entityName = config.entityName;
-            const apiRoute = config.apiBaseRoute.replace('/api/', '');
             
+            // Always add loadData method
             methods.push(`async loadData() {
         try {
             this.isLoading.value = true;
-            const response = await ApiManager.post('${config.apiBaseRoute}/search', {
+            // Find a suitable read method or use default
+            const readMethod = config.methods.find(m => ['READ', 'GET_MANY', 'SEARCH'].includes(m.operation));
+            const endpoint = readMethod ? 
+                '${config.apiBaseRoute}/' + readMethod.name.toLowerCase() : 
+                '${config.apiBaseRoute}/getall';
+            
+            const response = await ApiManager.${readMethod && readMethod.operation === 'SEARCH' ? 'post' : 'get'}(endpoint, 
+                ${readMethod && readMethod.operation === 'SEARCH' ? `{
                 ClientID: this.sessionInfo.ClientID,
                 SiteID: this.sessionInfo.SiteID
-            });
-            this.${entityName.toLowerCase()}List.value = response.Items || [];
+            }` : ''});
+            
+            this.${entityName.toLowerCase()}List.value = response.Items || response || [];
         } catch (error) {
             console.error('Load data failed:', error);
         } finally {
@@ -2002,7 +2354,9 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
         }
     }`);
 
-            if (config.features.create || config.features.update) {
+            // Add save method if CREATE or UPDATE operations exist
+            const saveMethod = config.methods.find(m => ['CREATE', 'UPDATE'].includes(m.operation));
+            if (saveMethod) {
                 methods.push(`async save${entityName}() {
         try {
             const data = {
@@ -2011,7 +2365,7 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
                 ${config.fields.map(f => `${f.name}: this.${f.name.toLowerCase()}.value`).join(',\n                ')}
             };
             
-            const response = await ApiManager.post('${config.apiBaseRoute}/save', data);
+            const response = await ApiManager.post('${config.apiBaseRoute}/${saveMethod.name.toLowerCase()}', data);
             if (response.Status === 'S') {
                 await this.loadData();
                 this.clearForm();
@@ -2021,6 +2375,27 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
         }
     }`);
             }
+            
+            // Add delete method if DELETE operation exists
+            const deleteMethod = config.methods.find(m => m.operation === 'DELETE');
+            if (deleteMethod) {
+                methods.push(`async delete${entityName}(id) {
+        try {
+            const response = await ApiManager.delete('${config.apiBaseRoute}/${deleteMethod.name.toLowerCase()}/' + id);
+            if (response.Success) {
+                await this.loadData();
+            }
+        } catch (error) {
+            console.error('Delete failed:', error);
+        }
+    }`);
+            }
+            
+            // Add clearForm method
+            methods.push(`clearForm() {
+        ${config.fields.map(f => `this.${f.name.toLowerCase()}.value = '';`).join('\n        ')}
+        this.selectedItem.value = null;
+    }`);
             
             return methods.join('\n\n    ');
         }
@@ -2124,6 +2499,54 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
                         ]}
                     />
                 </div>`;
+        }
+
+        function generateEndpointDocumentation(config) {
+            const entityName = config.entityName;
+            const apiRoute = config.apiBaseRoute;
+            
+            // If no methods defined, add default CRUD methods
+            const methodsToGenerate = config.methods.length > 0 ? config.methods : [
+                { operation: 'CREATE', name: 'Create', description: 'Create new record' },
+                { operation: 'READ', name: 'GetAll', description: 'Get all records' }
+            ];
+            
+            const endpoints = [];
+            
+            methodsToGenerate.forEach(method => {
+                switch(method.operation) {
+                    case 'CREATE':
+                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ${entityName} object |`);
+                        break;
+                    case 'UPDATE':
+                        endpoints.push(`| PUT | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ${entityName} object |`);
+                        break;
+                    case 'READ':
+                    case 'GET_MANY':
+                        endpoints.push(`| GET | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | None |`);
+                        break;
+                    case 'DELETE':
+                        endpoints.push(`| DELETE | ${apiRoute}/${method.name.toLowerCase()}/{id} | ${method.description} | id parameter |`);
+                        break;
+                    case 'SEARCH':
+                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | SearchInput object |`);
+                        break;
+                    case 'GET_ONE':
+                        endpoints.push(`| GET | ${apiRoute}/${method.name.toLowerCase()}/{id} | ${method.description} | id parameter |`);
+                        break;
+                    case 'EXPORT':
+                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ExportInput object |`);
+                        break;
+                    case 'IMPORT':
+                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ImportInput object |`);
+                        break;
+                    case 'CUSTOM':
+                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | Custom object |`);
+                        break;
+                }
+            });
+            
+            return endpoints.join('\n');
         }
 
         function generateTableColumns(fields) {

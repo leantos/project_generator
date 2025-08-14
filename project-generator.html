@@ -958,6 +958,49 @@ Payment Processing</textarea>
                 </div>
 
                 <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Pagination Configuration</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Default Page Size (Limit)</label>
+                            <input type="number" id="pagination-limit" value="10" placeholder="10">
+                            <div class="hint">Default number of records per page. Common values: 10, 20, 25, 50, 100</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Maximum Page Size</label>
+                            <input type="number" id="pagination-max-limit" value="100" placeholder="100">
+                            <div class="hint">Maximum allowed records per page to prevent performance issues</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Default Offset</label>
+                            <input type="number" id="pagination-offset" value="0" placeholder="0">
+                            <div class="hint">Default starting position for pagination (usually 0)</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Pagination Strategy</label>
+                            <select id="pagination-strategy">
+                                <option value="offset-limit" selected>Offset/Limit (Traditional)</option>
+                                <option value="cursor-based">Cursor-based (For large datasets)</option>
+                                <option value="page-number">Page Number Based</option>
+                            </select>
+                            <div class="hint">Offset/Limit is most common. Cursor-based is better for large datasets. Page number calculates offset automatically.</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Include Total Count</label>
+                            <select id="pagination-include-total">
+                                <option value="true" selected>Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                            <div class="hint">Whether to include total record count in responses (may impact performance on large tables)</div>
+                        </div>
+                        <div class="form-group">
+                            <label>API Query Parameters</label>
+                            <input type="text" id="pagination-params" value="limit={limit}&offset={offset}" placeholder="e.g., limit={limit}&offset={offset}">
+                            <div class="hint">Query parameter format for API endpoints. Use {limit} and {offset} as placeholders</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
                     <div class="form-section-title collapsible" onclick="toggleSection(this)">Environment Variables</div>
                     <div class="advanced-section">
                         <div class="form-group">
@@ -1061,7 +1104,13 @@ API_TIMEOUT=30000</textarea>
                 'storage-config': 'LocalPath: E:\\Data',
                 'email-provider': 'Microsoft Graph API',
                 'email-config': 'Use OAuth2 with Microsoft Graph',
-                'external-services': 'External API Integration\nFile Import/Export\nPayment Processing'
+                'external-services': 'External API Integration\nFile Import/Export\nPayment Processing',
+                'pagination-limit': '10',
+                'pagination-max-limit': '100',
+                'pagination-offset': '0',
+                'pagination-strategy': 'offset-limit',
+                'pagination-include-total': 'true',
+                'pagination-params': 'limit={limit}&offset={offset}'
             },
             'simple-api': {
                 'project-name': 'SimpleAPI',
@@ -1258,7 +1307,8 @@ API_TIMEOUT=30000</textarea>
                 { label: 'Authentication', value: config['auth-type'] },
                 { label: 'Cache Provider', value: config['cache-provider'] },
                 { label: 'Real-time', value: config['realtime-tech'] },
-                { label: 'Logging', value: config['logging-framework'] }
+                { label: 'Logging', value: config['logging-framework'] },
+                { label: 'Pagination', value: `Limit: ${config['pagination-limit'] || '10'}, Max: ${config['pagination-max-limit'] || '100'}` }
             ];
             
             reviewContent.innerHTML = reviewItems.map(item => `
@@ -1433,7 +1483,9 @@ ${config['project-name']}/
 │   │   └── 📄 BaseController.cs [CREATE]
 │   ├── 📂 Domain/
 │   │   ├── 📄 AppConstants.cs [CREATE]
-│   │   └── 📄 Token.cs [CREATE]
+│   │   ├── 📄 Token.cs [CREATE]
+│   │   ├── 📄 PaginationRequest.cs [CREATE]
+│   │   └── 📄 PaginatedResponse.cs [CREATE]
 │   ├── 📂 Services/
 │   │   ├── 📂 Interfaces/
 │   │   └── 📄 TokenService.cs [CREATE]
@@ -1482,6 +1534,14 @@ ${config['frontend-framework'].includes('React') ? `│   ├── 📂 UIPages
   },
   "CorsSettings": {
     "AllowedOrigins": [${config['cors-origins'] ? config['cors-origins'].split('\n').map(o => `"${o.trim()}"`).join(', ') : ''}]
+  },
+  "PaginationSettings": {
+    "DefaultPageSize": ${config['pagination-limit'] || '10'},
+    "MaxPageSize": ${config['pagination-max-limit'] || '100'},
+    "DefaultOffset": ${config['pagination-offset'] || '0'},
+    "Strategy": "${config['pagination-strategy'] || 'offset-limit'}",
+    "IncludeTotalCount": ${config['pagination-include-total'] || 'true'},
+    "QueryParameters": "${config['pagination-params'] || 'limit={limit}&offset={offset}'}"
   }${config['cache-provider'] === 'SQLite' ? `,
   "SqliteCache": "${config['cache-connection'] || 'cache.db'}"` : ''}${config['logging-framework'] === 'Serilog' ? `,
   "Serilog": {
@@ -1591,6 +1651,66 @@ app.MapControllers();
 app.Run();
 \`\`\`
 
+### CREATE FILE: ${config['project-name']}.WebApi/Domain/PaginationRequest.cs
+\`\`\`csharp
+namespace ${config['project-name']}.WebApi.Domain
+{
+    public class PaginationRequest
+    {
+        private int _limit = ${config['pagination-limit'] || '10'};
+        private int _offset = ${config['pagination-offset'] || '0'};
+
+        public int Limit
+        {
+            get => _limit;
+            set => _limit = Math.Min(value, ${config['pagination-max-limit'] || '100'});
+        }
+
+        public int Offset
+        {
+            get => _offset;
+            set => _offset = Math.Max(0, value);
+        }
+
+        public bool IncludeTotalCount { get; set; } = ${config['pagination-include-total'] || 'true'};
+        
+        public string? SortBy { get; set; }
+        public bool SortDescending { get; set; }
+        
+        // Helper properties
+        public int PageNumber => (Offset / Limit) + 1;
+        public int Skip => Offset;
+        public int Take => Limit;
+    }
+}
+\`\`\`
+
+### CREATE FILE: ${config['project-name']}.WebApi/Domain/PaginatedResponse.cs
+\`\`\`csharp
+namespace ${config['project-name']}.WebApi.Domain
+{
+    public class PaginatedResponse<T>
+    {
+        public List<T> Data { get; set; } = new();
+        public int Offset { get; set; }
+        public int Limit { get; set; }
+        public int? TotalCount { get; set; }
+        public bool HasNext => TotalCount.HasValue && (Offset + Limit) < TotalCount;
+        public bool HasPrevious => Offset > 0;
+        public int? TotalPages => TotalCount.HasValue && Limit > 0 ? (int)Math.Ceiling((double)TotalCount / Limit) : null;
+        public int CurrentPage => Limit > 0 ? (Offset / Limit) + 1 : 1;
+        
+        public PaginatedResponse(List<T> data, int offset, int limit, int? totalCount = null)
+        {
+            Data = data;
+            Offset = offset;
+            Limit = limit;
+            TotalCount = totalCount;
+        }
+    }
+}
+\`\`\`
+
 ${config['frontend-framework'].includes('React') ? `### CREATE FILE: ${config['project-name']}.WebApi/UIPages/package.json
 \`\`\`json
 {
@@ -1683,6 +1803,15 @@ ${config['tenancy-strategy'] ? `### Multi-Tenancy Configuration
 ### CORS Configuration
 Allowed Origins:
 ${config['cors-origins'] ? config['cors-origins'].split('\n').map(o => `- ${o.trim()}`).join('\n') : '- *'}
+
+## 📄 PAGINATION CONFIGURATION
+=====================================
+- **Default Page Size**: ${config['pagination-limit'] || '10'} records
+- **Maximum Page Size**: ${config['pagination-max-limit'] || '100'} records
+- **Default Offset**: ${config['pagination-offset'] || '0'}
+- **Pagination Strategy**: ${config['pagination-strategy'] || 'offset-limit'}
+- **Include Total Count**: ${config['pagination-include-total'] || 'true'}
+- **Query Parameters**: ${config['pagination-params'] || 'limit={limit}&offset={offset}'}
 
 ## 💾 CACHING CONFIGURATION
 =====================================
