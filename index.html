@@ -707,21 +707,15 @@
                 </div>
 
                 <div class="form-section">
-                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Multi-Tenancy Configuration</div>
-                    <div class="advanced-section">
-                        <div class="form-group">
-                            <label>Multi-Tenancy Strategy</label>
-                            <input type="text" id="tenancy-strategy" value="Single DB - Shared Schema with Site ID" placeholder="e.g., Single DB, Multiple DBs">
-                            <div class="hint">Examples: Single DB - Shared Schema, Single DB - Separate Schema, Multiple DBs per Tenant</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Tenant Identification</label>
-                            <input type="text" id="tenant-identification" value="JWT Claim (site_id)" placeholder="e.g., Subdomain, Header, JWT Claim">
-                        </div>
-                        <div class="form-group">
-                            <label>Tenant Isolation Level</label>
-                            <input type="text" id="tenant-isolation" value="Row-level (clnt_id, site_id)" placeholder="e.g., Row-level, Schema-level">
-                        </div>
+                    <div class="form-section-title">Multi-Tenancy Configuration</div>
+                    <div class="form-group">
+                        <label>Multi-Tenancy Strategy</label>
+                        <select id="tenancy-strategy">
+                            <option value="">None (Single-tenant)</option>
+                            <option value="single-db" selected>Multi-Tenant with Single DB</option>
+                            <option value="multiple-db">Multi-Tenant with Multiple DBs</option>
+                        </select>
+                        <div class="hint">Single DB: All tenants share one database with row-level isolation. Multiple DBs: Each tenant gets their own database.</div>
                     </div>
                 </div>
 
@@ -1003,9 +997,7 @@ API_TIMEOUT=30000</textarea>
                 'db-port': '5432',
                 'db-username': 'postgres',
                 'db-params': 'application name=MyApp_WebApi;',
-                'tenancy-strategy': 'Single DB - Shared Schema with Site ID',
-                'tenant-identification': 'JWT Claim (site_id)',
-                'tenant-isolation': 'Row-level (clnt_id, site_id)',
+                'tenancy-strategy': 'single-db',
                 'cache-provider': 'SQLite',
                 'cache-connection': 'Files\\DB File\\SqliteDB.db',
                 'cache-ttl': '3600',
@@ -1054,7 +1046,7 @@ API_TIMEOUT=30000</textarea>
                 'project-name': 'SaaSPlatform',
                 'project-description': 'Multi-tenant SaaS application',
                 'backend-framework': '.NET 8.0',
-                'tenancy-strategy': 'Multiple DBs per Tenant',
+                'tenancy-strategy': 'multiple-db',
                 'database-type': 'PostgreSQL',
                 'cache-provider': 'Redis'
             }
@@ -1629,9 +1621,7 @@ Server={PROD_HOST};Port=${config['db-port']};Database={PROD_DB};User Id={PROD_US
 \`\`\`
 
 ${config['tenancy-strategy'] ? `### Multi-Tenancy Configuration
-- **Strategy**: ${config['tenancy-strategy']}
-- **Identification**: ${config['tenant-identification']}
-- **Isolation**: ${config['tenant-isolation']}` : ''}
+- **Strategy**: ${config['tenancy-strategy'] === 'single-db' ? 'Multi-Tenant with Single DB (Row-level isolation using site_id)' : config['tenancy-strategy'] === 'multiple-db' ? 'Multi-Tenant with Multiple DBs (Database per tenant)' : 'Single-tenant'}` : ''}
 
 ## 🔐 SECURITY CONFIGURATION
 =====================================
