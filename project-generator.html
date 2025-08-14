@@ -232,18 +232,13 @@
             border-radius: 2px;
         }
         
-        .form-section-title.collapsible {
-            padding-left: 36px;
-        }
-        
-        .form-section-title.collapsible::after {
+        .form-section-title.collapsible::before {
             content: '';
             width: 4px;
             height: 20px;
             background: linear-gradient(180deg, #8ab4f8, #81c995);
+            margin-right: 12px;
             border-radius: 2px;
-            position: absolute;
-            left: 20px;
         }
 
         .form-group {
@@ -486,18 +481,19 @@
             user-select: none;
             display: flex;
             align-items: center;
+            justify-content: space-between;
         }
 
-        .collapsible::before {
+        .collapsible::after {
             content: '▼';
-            position: absolute;
-            left: 0;
+            margin-left: auto;
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 12px;
             color: #9aa0a6;
+            flex-shrink: 0;
         }
 
-        .collapsible.collapsed::before {
+        .collapsible.collapsed::after {
             transform: rotate(-90deg);
         }
 
