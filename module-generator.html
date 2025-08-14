@@ -1864,7 +1864,7 @@
                 moduleName: moduleName,
                 moduleCode: document.getElementById('module-code').value.trim(),
                 description: document.getElementById('module-description').value.trim(),
-                namespacePrefix: document.getElementById('namespace-prefix').value.trim() || 'CVS',
+                namespacePrefix: '{PROJECT_NAMESPACE}', // Will be replaced with actual namespace from PROJECT_SEED.md
                 apiBaseRoute: apiBaseRoute || `/api/${moduleName.toLowerCase()}`,
                 entityName: document.getElementById('entity-name').value.trim(),
                 tableName: document.getElementById('table-name').value.trim(),
@@ -1904,7 +1904,7 @@
                     <div><strong>Module Name:</strong></div>
                     <div>${config.moduleName}</div>
                     <div><strong>Namespace:</strong></div>
-                    <div>${config.namespacePrefix}</div>
+                    <div>[Inherited from PROJECT_SEED.md]</div>
                     ${(config.moduleType === 'frontend' || config.moduleType === 'fullstack') ? `
                     <div><strong>UI Approach:</strong></div>
                     <div>${config.uiApproach === 'template' ? `Template: ${config.uiTemplate}` : 'Custom Wireframe'}</div>` : ''}
@@ -1948,11 +1948,16 @@ This file contains instructions to create a ${config.moduleType} module for ${co
 
 **DO NOT PROCEED without checking @claude_docs for the proper XOS patterns!**
 
+### 📦 IMPORTANT: Namespace Configuration
+**The namespace for this module should be inherited from the PROJECT_SEED.md file in the root directory.**
+- Look for the namespace configuration in PROJECT_SEED.md
+- Use that namespace throughout this module (e.g., if PROJECT_SEED.md specifies "CVS", use "CVS.Transaction.Domain", etc.)
+
 ### Module Configuration
 - **Name**: ${config.moduleName}
 - **Type**: ${config.moduleType}
 - **Entity**: ${config.entityName}
-- **Namespace**: ${config.namespacePrefix}
+- **Namespace**: [Use namespace from PROJECT_SEED.md]
 - **Code**: ${config.moduleCode || 'Generated'}
 ${(config.moduleType === 'frontend' || config.moduleType === 'fullstack') ? `- **UI Template**: ${config.uiTemplate}` : ''}
 ${(config.moduleType === 'backend' || config.moduleType === 'fullstack') ? `- **API Route**: ${config.apiBaseRoute}` : ''}
@@ -1962,11 +1967,11 @@ ${(config.moduleType === 'backend' || config.moduleType === 'fullstack') ? `- **
 ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
 **CLAUDE: Create the domain model class:**
 
-### CREATE FILE: ${config.namespacePrefix}.Transaction/Domain/${config.entityName}.cs
+### CREATE FILE: [PROJECT_NAMESPACE].Transaction/Domain/${config.entityName}.cs
 \`\`\`csharp
 using System.ComponentModel.DataAnnotations;
 
-namespace ${config.namespacePrefix}.Transaction.Domain
+namespace [PROJECT_NAMESPACE].Transaction.Domain
 {
     public class ${config.entityName}
     {
@@ -1983,11 +1988,11 @@ namespace ${config.namespacePrefix}.Transaction.Domain
 ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
 **CLAUDE: Create the service interface:**
 
-### CREATE FILE: ${config.namespacePrefix}.Transaction/Interfaces/I${config.entityName}Service.cs
+### CREATE FILE: [PROJECT_NAMESPACE].Transaction/Interfaces/I${config.entityName}Service.cs
 \`\`\`csharp
-using ${config.namespacePrefix}.Transaction.Domain;
+using [PROJECT_NAMESPACE].Transaction.Domain;
 
-namespace ${config.namespacePrefix}.Transaction.Interfaces
+namespace [PROJECT_NAMESPACE].Transaction.Interfaces
 {
     public interface I${config.entityName}Service
     {
@@ -2006,15 +2011,15 @@ ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
 ⚠️ **IMPORTANT**: Review @claude_docs/xos-framework/data-access for repository patterns
 ⚠️ **IMPORTANT**: Follow @claude_docs/error-handling for proper error handling
 
-### CREATE FILE: ${config.namespacePrefix}.Transaction/Services/${config.entityName}Service.cs
+### CREATE FILE: [PROJECT_NAMESPACE].Transaction/Services/${config.entityName}Service.cs
 \`\`\`csharp
-using ${config.namespacePrefix}.Transaction.Core;
-using ${config.namespacePrefix}.Transaction.Domain;
-using ${config.namespacePrefix}.Transaction.Interfaces;
+using [PROJECT_NAMESPACE].Transaction.Core;
+using [PROJECT_NAMESPACE].Transaction.Domain;
+using [PROJECT_NAMESPACE].Transaction.Interfaces;
 using Microsoft.Extensions.Logging;
 using XOS.Data;
 
-namespace ${config.namespacePrefix}.Transaction.Services
+namespace [PROJECT_NAMESPACE].Transaction.Services
 {
     public class ${config.entityName}Service : XOSServiceBase, I${config.entityName}Service
     {
