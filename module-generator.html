@@ -1170,20 +1170,60 @@
         function updateFormVisibility() {
             const moduleType = configuration.moduleType;
             
-            // Show/hide UI template dropdown
+            // Get elements
             const uiTemplateGroup = document.getElementById('ui-template-group');
             const apiRouteGroup = document.getElementById('api-base-route-group');
+            const step2Text = document.querySelector('.step-item[data-step="2"] .step-text');
             
-            if (moduleType === 'frontend' || moduleType === 'fullstack') {
-                uiTemplateGroup.style.display = 'block';
-            } else {
-                uiTemplateGroup.style.display = 'none';
+            // Handle Backend Only - NO UI STUFF AT ALL
+            if (moduleType === 'backend') {
+                // Hide all UI-related fields
+                if (uiTemplateGroup) {
+                    uiTemplateGroup.style.display = 'none';
+                }
+                
+                // Show API route field
+                if (apiRouteGroup) {
+                    apiRouteGroup.style.display = 'block';
+                }
+                
+                // Update step text to remove UI references
+                if (step2Text) {
+                    step2Text.textContent = 'API Configuration';
+                }
+            } 
+            // Handle Frontend Only
+            else if (moduleType === 'frontend') {
+                // Show UI fields
+                if (uiTemplateGroup) {
+                    uiTemplateGroup.style.display = 'block';
+                }
+                
+                // Hide API route field
+                if (apiRouteGroup) {
+                    apiRouteGroup.style.display = 'none';
+                }
+                
+                // Update step text
+                if (step2Text) {
+                    step2Text.textContent = 'UI Configuration';
+                }
             }
-            
-            if (moduleType === 'backend' || moduleType === 'fullstack') {
-                apiRouteGroup.style.display = 'block';
-            } else {
-                apiRouteGroup.style.display = 'none';
+            // Handle Full Stack
+            else if (moduleType === 'fullstack') {
+                // Show both UI and API fields
+                if (uiTemplateGroup) {
+                    uiTemplateGroup.style.display = 'block';
+                }
+                
+                if (apiRouteGroup) {
+                    apiRouteGroup.style.display = 'block';
+                }
+                
+                // Update step text
+                if (step2Text) {
+                    step2Text.textContent = 'UI Configuration';
+                }
             }
         }
 
@@ -2118,6 +2158,11 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             const approach = config.uiApproach === 'wireframe' ? 'custom wireframe' : 'template';
             alert(`Module instructions generated successfully!\nApproach: ${approach}\nGive this file to Claude Code to create your ${config.moduleType} module.`);
         }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFormVisibility();
+        });
     </script>
 </body>
 </html>
