@@ -1175,11 +1175,14 @@
             const apiRouteGroup = document.getElementById('api-base-route-group');
             const step2Text = document.querySelector('.step-item[data-step="2"] .step-text');
             
+            // Get the entire UI Template section (the whole form-section)
+            const uiTemplateSection = document.querySelector('#step-2 .form-section:has(#ui-template-group)');
+            
             // Handle Backend Only - NO UI STUFF AT ALL
             if (moduleType === 'backend') {
-                // Hide all UI-related fields
-                if (uiTemplateGroup) {
-                    uiTemplateGroup.style.display = 'none';
+                // Hide entire UI template section
+                if (uiTemplateSection) {
+                    uiTemplateSection.style.display = 'none';
                 }
                 
                 // Show API route field
@@ -1194,7 +1197,12 @@
             } 
             // Handle Frontend Only
             else if (moduleType === 'frontend') {
-                // Show UI fields
+                // Show UI template section
+                if (uiTemplateSection) {
+                    uiTemplateSection.style.display = 'block';
+                }
+                
+                // Show UI fields within the section
                 if (uiTemplateGroup) {
                     uiTemplateGroup.style.display = 'block';
                 }
@@ -1211,11 +1219,17 @@
             }
             // Handle Full Stack
             else if (moduleType === 'fullstack') {
-                // Show both UI and API fields
+                // Show UI template section
+                if (uiTemplateSection) {
+                    uiTemplateSection.style.display = 'block';
+                }
+                
+                // Show UI fields within the section
                 if (uiTemplateGroup) {
                     uiTemplateGroup.style.display = 'block';
                 }
                 
+                // Show API route field
                 if (apiRouteGroup) {
                     apiRouteGroup.style.display = 'block';
                 }
