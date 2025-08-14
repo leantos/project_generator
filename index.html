@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Generator Hub - Project & Module Creation</title>
+    <title>MD File Generator - Project & Module Creation</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@300;400;500&family=Roboto+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -109,22 +109,25 @@
 
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 40px;
-            margin-top: 60px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
             animation: fadeInUp 0.8s ease;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .card {
             background: linear-gradient(135deg, #1f1f1f, #292a2d);
-            border-radius: 28px;
-            padding: 48px 40px;
+            border-radius: 24px;
+            padding: 36px 32px;
             border: 2px solid #313131;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            min-height: 420px;
+            min-height: 360px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -159,14 +162,14 @@
         }
 
         .card-icon {
-            width: 100px;
-            height: 100px;
-            border-radius: 24px;
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
-            margin-bottom: 32px;
+            font-size: 40px;
+            margin-bottom: 24px;
             position: relative;
         }
 
@@ -199,34 +202,34 @@
         }
 
         .card-title {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 500;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             color: #e8eaed;
             letter-spacing: -0.25px;
         }
 
         .card-description {
-            font-size: 16px;
+            font-size: 14px;
             color: #9aa0a6;
-            line-height: 1.6;
-            margin-bottom: 32px;
-            max-width: 350px;
+            line-height: 1.5;
+            margin-bottom: 24px;
+            max-width: 300px;
         }
 
         .card-features {
             list-style: none;
             text-align: left;
             width: 100%;
-            max-width: 350px;
+            max-width: 280px;
         }
 
         .card-features li {
             display: flex;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             color: #bdc1c6;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .card-features li::before {
@@ -388,13 +391,13 @@
     <div class="container">
         <div class="header">
             <div class="logo-container">
-                <div class="logo-icon">CG</div>
+                <div class="logo-icon">MD</div>
                 <div>
-                    <h1>Code Generator Hub</h1>
+                    <h1>MD File Generator</h1>
                 </div>
             </div>
             <p class="subtitle">
-                Enterprise-grade code generation tools for Claude Code. 
+                Generate markdown instruction files for Claude Code. 
                 Choose between creating a complete project from scratch or adding new modules to existing projects.
             </p>
         </div>
@@ -402,7 +405,7 @@
         <div class="cards-container">
             <a href="project-generator.html" class="card">
                 <div class="card-icon project-icon">
-                    <span class="material-icons" style="color: #202124; font-size: 48px;">rocket_launch</span>
+                    <span class="material-icons" style="color: #202124; font-size: 40px;">rocket_launch</span>
                 </div>
                 <h2 class="card-title">New Project</h2>
                 <p class="card-description">
@@ -424,7 +427,7 @@
             <a href="module-generator.html" class="card">
                 <span class="badge">New</span>
                 <div class="card-icon module-icon">
-                    <span class="material-icons" style="color: #202124; font-size: 48px;">widgets</span>
+                    <span class="material-icons" style="color: #202124; font-size: 40px;">widgets</span>
                 </div>
                 <h2 class="card-title">New Module</h2>
                 <p class="card-description">
@@ -445,11 +448,11 @@
         </div>
 
         <div class="footer">
-            <p>Powered by Claude Code Generation Framework v1.0.0</p>
+            <p>Powered by MD Generation Framework v1.0.0</p>
             <div class="footer-links">
                 <a href="https://github.com" target="_blank">GitHub</a>
                 <a href="https://claude.ai" target="_blank">Claude AI</a>
-                <a href="#" onclick="alert('Generator Hub v1.0.0\n\nProject Generator: Create full enterprise applications\nModule Generator: Add features to existing projects\n\nBoth tools generate markdown files optimized for Claude Code.')">About</a>
+                <a href="#" onclick="alert('MD File Generator v1.0.0\n\nProject Generator: Create full enterprise applications\nModule Generator: Add features to existing projects\n\nBoth tools generate markdown files optimized for Claude Code.')">About</a>
             </div>
         </div>
     </div>
