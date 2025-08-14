@@ -81,3 +81,19 @@ When Claude Code builds projects from this generator, it uses patterns from:
 
 ## Version
 1.0.0 - Initial release with full enterprise application support
+
+## GitHub Repository
+https://github.com/leantos/project_generator.git
+
+## Quick Start
+1. Download or clone the repository
+2. Open `index.html` in any modern browser
+3. Follow the wizard to configure your project
+4. Download the generated `PROJECT_SEED.md`
+5. Use with Claude Code to build your project automatically
+
+## Contributing
+Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
+
+## License
+MIT License - See LICENSE file for details
