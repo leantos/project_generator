@@ -1751,15 +1751,19 @@
                             <div class="method-edit-form">
                                 <div class="edit-row">
                                     <span class="method-tag ${method.operation.toLowerCase().replace('_', '')}">${method.operation}</span>
-                                    <input type="text" class="edit-input" id="edit-name-${index}" value="${method.name}" placeholder="Method name">
+                                    <input type="text" class="edit-input" id="edit-name-${index}" value="${method.name}" placeholder="Method name (e.g., FindStudentById, CreateNewRecord)">
                                 </div>
                                 <div class="edit-row">
-                                    <input type="text" class="edit-input" id="edit-desc-${index}" value="${method.description}" placeholder="Method description">
+                                    <input type="text" class="edit-input" id="edit-desc-${index}" value="${method.description}" placeholder="Method description - what does this method do?">
                                 </div>
-                            </div>
-                            <div class="method-actions">
-                                <button class="btn-save" onclick="saveMethodEdit(${index})">Save</button>
-                                <button class="btn-cancel" onclick="cancelMethodEdit()">Cancel</button>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin-top: 12px;">
+                                    <button class="btn-save" onclick="saveMethodEdit(${index})" style="width: 140px;">
+                                        <span style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                            ✓ Save Changes
+                                        </span>
+                                    </button>
+                                    <button class="btn-cancel" onclick="cancelMethodEdit()" style="width: 140px;">Cancel</button>
+                                </div>
                             </div>
                         </div>
                     `;
