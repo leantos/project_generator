@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Generator - Enterprise Application Wizard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: #202020;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .wizard-container {
+            background: #2d2d30;
+            border-radius: 0;
+            box-shadow: 0 2.4px 7.2px rgba(0, 0, 0, 0.48), 0 12.8px 28.8px rgba(0, 0, 0, 0.32);
+            width: 100%;
+            max-width: 1200px;
+            min-height: 700px;
+            display: flex;
+            overflow: hidden;
+            border: 1px solid #3e3e42;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #252526;
+            padding: 30px 20px;
+            border-right: 1px solid #3e3e42;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0078d4, #40e0d0);
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: 600;
+            font-size: 20px;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .step-list {
+            list-style: none;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #cccccc;
+        }
+
+        .step-item:hover {
+            background: #2d2d30;
+            color: #ffffff;
+        }
+
+        .step-item.active {
+            background: #0078d4;
+            color: #ffffff;
+        }
+
+        .step-item.completed {
+            color: #40e0d0;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 0;
+            background: transparent;
+            border: 2px solid #3e3e42;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .step-item.active .step-number {
+            background: #ffffff;
+            border-color: #ffffff;
+            color: #0078d4;
+        }
+
+        .step-item.completed .step-number {
+            background: #40e0d0;
+            border-color: #40e0d0;
+            color: #252526;
+        }
+
+        .step-text {
+            font-size: 14px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background: #1e1e1e;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .step-description {
+            color: #a19f9d;
+            margin-bottom: 30px;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .form-section {
+            background: #1e1e1e;
+            border-radius: 0;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #3e3e42;
+        }
+
+        .form-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-section-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: #0078d4;
+            margin-right: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #cccccc;
+            font-weight: 400;
+        }
+
+        .required {
+            color: #f85149;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            background: #3c3c3c;
+            border: 1px solid #3e3e42;
+            border-radius: 0;
+            color: #cccccc;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0078d4;
+            background: #3c3c3c;
+            box-shadow: inset 0 0 0 1px #0078d4;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #8b8b8b;
+            margin-top: 6px;
+            line-height: 16px;
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .template-card {
+            background: #1e1e1e;
+            border: 2px solid #3e3e42;
+            border-radius: 0;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .template-card:hover {
+            border-color: #0078d4;
+            background: #252526;
+        }
+
+        .template-card.selected {
+            border-color: #0078d4;
+            background: #0e639c;
+        }
+
+        .template-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .template-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .template-desc {
+            font-size: 12px;
+            color: #969696;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #3e3e42;
+        }
+
+        button {
+            padding: 6px 20px;
+            border: 1px solid transparent;
+            border-radius: 0;
+            font-size: 13px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', sans-serif;
+            min-width: 80px;
+        }
+
+        .btn-primary {
+            background: #0078d4;
+            color: white;
+            border-color: #0078d4;
+        }
+
+        .btn-primary:hover {
+            background: #106ebe;
+            border-color: #106ebe;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #cccccc;
+            border: 1px solid #3e3e42;
+        }
+
+        .btn-secondary:hover {
+            background: #3e3e42;
+            border-color: #525252;
+        }
+
+        .btn-success {
+            background: #16825d;
+            color: white;
+            border-color: #16825d;
+        }
+
+        .btn-success:hover {
+            background: #0e5a3f;
+            border-color: #0e5a3f;
+        }
+
+        .review-section {
+            background: #1e1e1e;
+            border-radius: 0;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #3e3e42;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-label {
+            color: #8b8b8b;
+            font-size: 13px;
+        }
+
+        .review-value {
+            color: #cccccc;
+            font-weight: 400;
+            font-size: 13px;
+        }
+
+        .code-preview {
+            background: #1e1e1e;
+            border-radius: 0;
+            padding: 20px;
+            font-family: 'Cascadia Code', 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre;
+            color: #d4d4d4;
+            border: 1px solid #3e3e42;
+        }
+
+        .progress-bar {
+            height: 2px;
+            background: #3e3e42;
+            border-radius: 0;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #0078d4;
+            border-radius: 0;
+            transition: width 0.3s ease;
+        }
+
+        .collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible::before {
+            content: '❯';
+            display: inline-block;
+            margin-right: 8px;
+            transition: transform 0.2s ease;
+            font-size: 10px;
+            color: #cccccc;
+        }
+
+        .collapsible.collapsed::before {
+            transform: rotate(-90deg);
+        }
+
+        .advanced-section {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .advanced-section.collapsed {
+            max-height: 0;
+        }
+
+        .connection-string-preview {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 0;
+            padding: 12px;
+            margin-top: 10px;
+            font-family: 'Cascadia Code', 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            color: #ce9178;
+        }
+
+        .save-template-btn {
+            background: transparent;
+            color: #cccccc;
+            padding: 6px 16px;
+            border-radius: 0;
+            font-size: 13px;
+            margin-left: 10px;
+            cursor: pointer;
+            border: 1px solid #3e3e42;
+        }
+
+        .save-template-btn:hover {
+            background: #3e3e42;
+            border-color: #525252;
+        }
+    </style>
+</head>
+<body>
+    <div class="wizard-container">
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">PG</div>
+                <div class="logo-text">Project Generator</div>
+            </div>
+            <ul class="step-list">
+                <li class="step-item active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Project Type</div>
+                </li>
+                <li class="step-item" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Basic Configuration</div>
+                </li>
+                <li class="step-item" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Technology Stack</div>
+                </li>
+                <li class="step-item" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-text">Database Setup</div>
+                </li>
+                <li class="step-item" data-step="5">
+                    <div class="step-number">5</div>
+                    <div class="step-text">Security & Auth</div>
+                </li>
+                <li class="step-item" data-step="6">
+                    <div class="step-number">6</div>
+                    <div class="step-text">Advanced Settings</div>
+                </li>
+                <li class="step-item" data-step="7">
+                    <div class="step-number">7</div>
+                    <div class="step-text">Review & Create</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <!-- Step 1: Project Type -->
+            <div class="step-content active" id="step-1">
+                <h1>Choose Project Template</h1>
+                <p class="step-description">Select a template to start with pre-configured settings, or choose Custom to configure everything from scratch.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 14%"></div>
+                </div>
+
+                <div class="template-selector">
+                    <div class="template-card selected" data-template="xos-enterprise">
+                        <div class="template-icon">🏢</div>
+                        <div class="template-name">XOS Enterprise</div>
+                        <div class="template-desc">Full-featured enterprise application template</div>
+                    </div>
+                    <div class="template-card" data-template="simple-api">
+                        <div class="template-icon">⚡</div>
+                        <div class="template-name">Simple API</div>
+                        <div class="template-desc">Basic REST API with authentication</div>
+                    </div>
+                    <div class="template-card" data-template="microservices">
+                        <div class="template-icon">🔧</div>
+                        <div class="template-name">Microservices</div>
+                        <div class="template-desc">Docker-ready microservices architecture</div>
+                    </div>
+                    <div class="template-card" data-template="saas-multitenant">
+                        <div class="template-icon">☁️</div>
+                        <div class="template-name">SaaS Multi-tenant</div>
+                        <div class="template-desc">Multi-tenant SaaS application</div>
+                    </div>
+                    <div class="template-card" data-template="custom">
+                        <div class="template-icon">✏️</div>
+                        <div class="template-name">Custom</div>
+                        <div class="template-desc">Configure everything from scratch</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Template Management</div>
+                    <div class="form-group">
+                        <label>Load Saved Template</label>
+                        <select id="saved-templates">
+                            <option value="">-- Select a saved template --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Basic Configuration -->
+            <div class="step-content" id="step-2">
+                <h1>Basic Configuration</h1>
+                <p class="step-description">Configure the basic project information and metadata.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 28%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Project Information</div>
+                    <div class="form-group">
+                        <label>Project Name <span class="required">*</span></label>
+                        <input type="text" id="project-name" value="MyProject" placeholder="Enter project name">
+                        <div class="hint">This will be used as the solution and namespace name</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="project-description" placeholder="Enter project description">Enterprise Application Platform</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Version</label>
+                        <input type="text" id="project-version" value="1.0.0" placeholder="1.0.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Organization</label>
+                        <input type="text" id="organization" placeholder="Your company name">
+                    </div>
+                    <div class="form-group">
+                        <label>Industry Domain</label>
+                        <input type="text" id="industry-domain" value="Enterprise" placeholder="e.g., Healthcare, Finance, Retail">
+                        <div class="hint">Examples: Hotel Management, Healthcare, Finance, Retail, Education</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Technology Stack -->
+            <div class="step-content" id="step-3">
+                <h1>Technology Stack</h1>
+                <p class="step-description">Choose your technology stack. All fields accept custom values.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 42%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Backend Technology</div>
+                    <div class="form-group">
+                        <label>Backend Framework</label>
+                        <input type="text" id="backend-framework" value=".NET 8.0" placeholder="e.g., .NET 8, Node.js, Django, Spring Boot">
+                        <div class="hint">Examples: .NET 8.0, Node.js + Express, Django, Spring Boot, Ruby on Rails</div>
+                    </div>
+                    <div class="form-group">
+                        <label>ORM/Data Layer</label>
+                        <input type="text" id="orm-layer" value="XOS.Data + Npgsql" placeholder="e.g., Entity Framework, Dapper, Mongoose">
+                        <div class="hint">Examples: Entity Framework Core, Dapper, Mongoose, Sequelize, Prisma</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Frontend Technology</div>
+                    <div class="form-group">
+                        <label>Frontend Framework</label>
+                        <input type="text" id="frontend-framework" value="React 18 + XOS Components" placeholder="e.g., React, Angular, Vue.js">
+                        <div class="hint">Examples: React + XOS, Angular 15, Vue.js 3, Blazor, Next.js</div>
+                    </div>
+                    <div class="form-group">
+                        <label>UI Component Library</label>
+                        <input type="text" id="ui-library" value="XOS Components + Bootstrap 5" placeholder="e.g., Material-UI, Ant Design">
+                    </div>
+                    <div class="form-group">
+                        <label>State Management</label>
+                        <input type="text" id="state-management" value="XOS ViewModels (MVVM)" placeholder="e.g., Redux, MobX, Context API">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Database Setup -->
+            <div class="step-content" id="step-4">
+                <h1>Database Configuration</h1>
+                <p class="step-description">Configure your database connection and settings.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 56%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Primary Database</div>
+                    <div class="form-group">
+                        <label>Database Type</label>
+                        <input type="text" id="database-type" value="PostgreSQL" placeholder="e.g., PostgreSQL, MySQL, MongoDB">
+                        <div class="hint">Examples: PostgreSQL, MySQL, SQL Server, MongoDB, DynamoDB, CockroachDB</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Host/Server</label>
+                        <input type="text" id="db-host" value="localhost" placeholder="localhost or IP address">
+                    </div>
+                    <div class="form-group">
+                        <label>Port</label>
+                        <input type="text" id="db-port" value="5432" placeholder="Database port">
+                    </div>
+                    <div class="form-group">
+                        <label>Database Name</label>
+                        <input type="text" id="db-name" placeholder="Your database name">
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="db-username" value="postgres" placeholder="Database username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="db-password" placeholder="Database password">
+                    </div>
+                    <div class="form-group">
+                        <label>Additional Parameters</label>
+                        <input type="text" id="db-params" value="application name=MyApp_WebApi;" placeholder="e.g., sslmode=require;pooling=true">
+                    </div>
+                    <div class="form-group">
+                        <label>Connection String Preview</label>
+                        <div class="connection-string-preview" id="connection-preview">
+                            Connection string will appear here...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Multi-Tenancy Configuration</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Multi-Tenancy Strategy</label>
+                            <input type="text" id="tenancy-strategy" value="Single DB - Shared Schema with Site ID" placeholder="e.g., Single DB, Multiple DBs">
+                            <div class="hint">Examples: Single DB - Shared Schema, Single DB - Separate Schema, Multiple DBs per Tenant</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tenant Identification</label>
+                            <input type="text" id="tenant-identification" value="JWT Claim (site_id)" placeholder="e.g., Subdomain, Header, JWT Claim">
+                        </div>
+                        <div class="form-group">
+                            <label>Tenant Isolation Level</label>
+                            <input type="text" id="tenant-isolation" value="Row-level (clnt_id, site_id)" placeholder="e.g., Row-level, Schema-level">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Caching Configuration</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Cache Provider</label>
+                            <input type="text" id="cache-provider" value="SQLite" placeholder="e.g., Redis, Memcached, SQLite">
+                            <div class="hint">Examples: Redis, Memcached, SQLite, In-Memory, Hazelcast, NCache</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Cache Connection</label>
+                            <input type="text" id="cache-connection" value="Files\\DB File\\SqliteDB.db" placeholder="e.g., localhost:6379, cache.db">
+                        </div>
+                        <div class="form-group">
+                            <label>Default TTL (seconds)</label>
+                            <input type="text" id="cache-ttl" value="3600" placeholder="3600">
+                        </div>
+                        <div class="form-group">
+                            <label>Cache Key Pattern</label>
+                            <input type="text" id="cache-pattern" value="{site}:{entity}:{id}" placeholder="e.g., {tenant}:{entity}:{id}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Security & Auth -->
+            <div class="step-content" id="step-5">
+                <h1>Security & Authentication</h1>
+                <p class="step-description">Configure security, authentication, and encryption settings.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 70%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Authentication Configuration</div>
+                    <div class="form-group">
+                        <label>Authentication Type</label>
+                        <input type="text" id="auth-type" value="JWT Bearer" placeholder="e.g., JWT, OAuth2, SAML">
+                        <div class="hint">Examples: JWT Bearer, OAuth2, Basic Auth, API Key, SAML, Active Directory</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Token Signing Algorithm</label>
+                        <input type="text" id="token-signing" value="HS256" placeholder="e.g., HS256, RS256">
+                    </div>
+                    <div class="form-group">
+                        <label>Secret Key</label>
+                        <input type="password" id="secret-key" placeholder="Enter secret key or leave blank to auto-generate">
+                        <div class="hint">Leave blank to generate a secure 64-character key</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Access Token Expiry (minutes)</label>
+                        <input type="text" id="access-token-expiry" value="5" placeholder="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Refresh Token Expiry (minutes)</label>
+                        <input type="text" id="refresh-token-expiry" value="1440" placeholder="1440">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Password Security</div>
+                    <div class="form-group">
+                        <label>Password Hashing Algorithm</label>
+                        <input type="text" id="password-algorithm" value="BCrypt" placeholder="e.g., BCrypt, Argon2, PBKDF2">
+                        <div class="hint">Examples: BCrypt, Argon2id, PBKDF2, Scrypt</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Salt Rounds/Iterations</label>
+                        <input type="text" id="salt-rounds" value="10" placeholder="10">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">CORS Configuration</div>
+                    <div class="form-group">
+                        <label>Allowed Origins</label>
+                        <textarea id="cors-origins" placeholder="One origin per line">https://localhost:3000
+http://localhost:3000</textarea>
+                        <div class="hint">Enter allowed origins, one per line. Use * for all origins (not recommended for production)</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Encryption Settings</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Encryption at Rest</label>
+                            <input type="text" id="encryption-rest" value="Database-native" placeholder="e.g., AES-256, Database-native">
+                        </div>
+                        <div class="form-group">
+                            <label>Encryption in Transit</label>
+                            <input type="text" id="encryption-transit" value="TLS 1.2+" placeholder="e.g., TLS 1.3, mTLS">
+                        </div>
+                        <div class="form-group">
+                            <label>Key Management</label>
+                            <input type="text" id="key-management" value="Local (appsettings.json)" placeholder="e.g., Azure Key Vault, AWS KMS">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Advanced Settings -->
+            <div class="step-content" id="step-6">
+                <h1>Advanced Settings</h1>
+                <p class="step-description">Configure additional services and integrations.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 84%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Real-time Communication</div>
+                    <div class="form-group">
+                        <label>Real-time Technology</label>
+                        <input type="text" id="realtime-tech" value="SignalR" placeholder="e.g., SignalR, Socket.io, WebSockets">
+                        <div class="hint">Examples: SignalR, Socket.io, WebSockets, Server-Sent Events, Pusher</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Hub/Endpoint Configuration</label>
+                        <input type="text" id="realtime-config" value="/notificationHub" placeholder="e.g., /notificationHub">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Logging Configuration</div>
+                    <div class="form-group">
+                        <label>Logging Framework</label>
+                        <input type="text" id="logging-framework" value="Serilog" placeholder="e.g., Serilog, NLog, Log4Net">
+                    </div>
+                    <div class="form-group">
+                        <label>Log Destinations</label>
+                        <input type="text" id="log-destinations" value="File (Logs\\transaction-log.txt), Console" placeholder="e.g., File, Console, Elasticsearch">
+                    </div>
+                    <div class="form-group">
+                        <label>Log Level</label>
+                        <input type="text" id="log-level" value="Debug (Dev), Information (Prod)" placeholder="e.g., Debug, Information, Warning, Error">
+                    </div>
+                    <div class="form-group">
+                        <label>Log Rotation</label>
+                        <input type="text" id="log-rotation" value="Daily, 7 days retention" placeholder="e.g., Daily, 7 days retention">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">File Storage</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Storage Type</label>
+                            <input type="text" id="storage-type" value="Local FileSystem" placeholder="e.g., Local, AWS S3, Azure Blob">
+                            <div class="hint">Examples: Local FileSystem, AWS S3, Azure Blob Storage, Google Cloud Storage, MinIO</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Storage Configuration</label>
+                            <textarea id="storage-config" placeholder="Storage configuration details">LocalPath: E:\\Data</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Email Configuration</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Email Provider</label>
+                            <input type="text" id="email-provider" value="Microsoft Graph API" placeholder="e.g., SMTP, SendGrid, AWS SES">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Configuration</label>
+                            <textarea id="email-config" placeholder="Email configuration details">Use OAuth2 with Microsoft Graph</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Message Queue</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Message System</label>
+                            <input type="text" id="message-system" placeholder="e.g., RabbitMQ, Kafka, Azure Service Bus">
+                            <div class="hint">Examples: RabbitMQ, Apache Kafka, Azure Service Bus, AWS SQS, Redis Pub/Sub</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Connection Details</label>
+                            <textarea id="message-config" placeholder="Message queue configuration"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">External Integrations</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Additional Services</label>
+                            <textarea id="external-services" placeholder="List any external services or APIs">External API Integration
+File Import/Export  
+Payment Processing</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Environment Variables</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Custom Environment Variables</label>
+                            <textarea id="env-variables" placeholder="KEY=VALUE format, one per line">NODE_ENV=development
+API_TIMEOUT=30000</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7: Review & Create -->
+            <div class="step-content" id="step-7">
+                <h1>Review Configuration</h1>
+                <p class="step-description">Review your configuration and generate the project seed file.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Save Template <button class="save-template-btn" onclick="saveTemplate()">Save as Template</button></div>
+                    <div class="form-group">
+                        <label>Template Name</label>
+                        <input type="text" id="template-name" placeholder="Enter name to save this configuration as a template">
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <h3 style="margin-bottom: 20px; color: #ffffff;">Configuration Summary</h3>
+                    <div id="review-content">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Generated Configuration Preview</div>
+                    <div class="code-preview" id="config-preview">
+                        # Configuration will be shown here...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation buttons -->
+            <div class="button-group">
+                <div>
+                    <button class="btn-secondary" onclick="previousStep()" id="prev-btn" style="display: none;">Previous</button>
+                </div>
+                <div>
+                    <button class="btn-primary" onclick="nextStep()" id="next-btn">Next</button>
+                    <button class="btn-success" onclick="generateProject()" id="generate-btn" style="display: none;">Generate Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 7;
+        let configuration = {};
+
+        // Template defaults
+        const templates = {
+            'xos-enterprise': {
+                'project-name': 'MyProject',
+                'project-description': 'Enterprise Application Platform',
+                'project-version': '1.0.0',
+                'industry-domain': 'Enterprise',
+                'backend-framework': '.NET 8.0',
+                'orm-layer': 'XOS.Data + Npgsql',
+                'frontend-framework': 'React 18 + XOS Components',
+                'ui-library': 'XOS Components + Bootstrap 5',
+                'state-management': 'XOS ViewModels (MVVM)',
+                'database-type': 'PostgreSQL',
+                'db-host': 'localhost',
+                'db-port': '5432',
+                'db-username': 'postgres',
+                'db-params': 'application name=MyApp_WebApi;',
+                'tenancy-strategy': 'Single DB - Shared Schema with Site ID',
+                'tenant-identification': 'JWT Claim (site_id)',
+                'tenant-isolation': 'Row-level (clnt_id, site_id)',
+                'cache-provider': 'SQLite',
+                'cache-connection': 'Files\\DB File\\SqliteDB.db',
+                'cache-ttl': '3600',
+                'cache-pattern': '{site}:{entity}:{id}',
+                'auth-type': 'JWT Bearer',
+                'token-signing': 'HS256',
+                'access-token-expiry': '5',
+                'refresh-token-expiry': '1440',
+                'password-algorithm': 'BCrypt',
+                'salt-rounds': '10',
+                'cors-origins': 'https://localhost:3000\nhttp://localhost:3000',
+                'encryption-rest': 'Database-native',
+                'encryption-transit': 'TLS 1.2+',
+                'key-management': 'Local (appsettings.json)',
+                'realtime-tech': 'SignalR',
+                'realtime-config': '/notificationHub',
+                'logging-framework': 'Serilog',
+                'log-destinations': 'File (Logs\\transaction-log.txt), Console',
+                'log-level': 'Debug (Dev), Information (Prod)',
+                'log-rotation': 'Daily, 7 days retention',
+                'storage-type': 'Local FileSystem',
+                'storage-config': 'LocalPath: E:\\Data',
+                'email-provider': 'Microsoft Graph API',
+                'email-config': 'Use OAuth2 with Microsoft Graph',
+                'external-services': 'External API Integration\nFile Import/Export\nPayment Processing'
+            },
+            'simple-api': {
+                'project-name': 'SimpleAPI',
+                'project-description': 'Basic REST API with authentication',
+                'project-version': '1.0.0',
+                'backend-framework': '.NET 8.0',
+                'frontend-framework': 'None',
+                'database-type': 'SQLite',
+                'auth-type': 'JWT Bearer',
+                'cache-provider': 'In-Memory'
+            },
+            'microservices': {
+                'project-name': 'Microservices',
+                'project-description': 'Docker-ready microservices architecture',
+                'backend-framework': '.NET 8.0',
+                'database-type': 'PostgreSQL',
+                'cache-provider': 'Redis',
+                'message-system': 'RabbitMQ'
+            },
+            'saas-multitenant': {
+                'project-name': 'SaaSPlatform',
+                'project-description': 'Multi-tenant SaaS application',
+                'backend-framework': '.NET 8.0',
+                'tenancy-strategy': 'Multiple DBs per Tenant',
+                'database-type': 'PostgreSQL',
+                'cache-provider': 'Redis'
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedTemplates();
+            updateConnectionString();
+            applyTemplate('xos-enterprise');
+            
+            // Add event listeners for connection string updates
+            ['db-host', 'db-port', 'db-name', 'db-username', 'db-password', 'db-params'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateConnectionString);
+            });
+        });
+
+        // Template selection
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                const templateName = this.dataset.template;
+                if (templateName && templateName !== 'custom') {
+                    applyTemplate(templateName);
+                }
+            });
+        });
+
+        function applyTemplate(templateName) {
+            const template = templates[templateName];
+            if (template) {
+                Object.keys(template).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = template[key];
+                    }
+                });
+                updateConnectionString();
+            }
+        }
+
+        // Step navigation
+        document.querySelectorAll('.step-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const step = parseInt(this.dataset.step);
+                if (step <= currentStep || validateCurrentStep()) {
+                    goToStep(step);
+                }
+            });
+        });
+
+        function goToStep(step) {
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`step-${step}`).classList.add('active');
+
+            document.querySelectorAll('.step-item').forEach(item => {
+                item.classList.remove('active');
+                const itemStep = parseInt(item.dataset.step);
+                if (itemStep < step) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+            document.querySelector(`.step-item[data-step="${step}"]`).classList.add('active');
+
+            currentStep = step;
+            updateNavigationButtons();
+            
+            if (step === 7) {
+                showReview();
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps && validateCurrentStep()) {
+                goToStep(currentStep + 1);
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                goToStep(currentStep - 1);
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const generateBtn = document.getElementById('generate-btn');
+
+            prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
+            
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+                generateBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                generateBtn.style.display = 'none';
+            }
+        }
+
+        function validateCurrentStep() {
+            // Add validation logic here if needed
+            return true;
+        }
+
+        function updateConnectionString() {
+            const host = document.getElementById('db-host').value || 'localhost';
+            const port = document.getElementById('db-port').value || '5432';
+            const dbName = document.getElementById('db-name').value || '{database}';
+            const username = document.getElementById('db-username').value || '{username}';
+            const password = document.getElementById('db-password').value || '{password}';
+            const params = document.getElementById('db-params').value || '';
+            
+            const connectionString = `Server=${host};Port=${port};Database=${dbName};User Id=${username};Password=${password};${params}`;
+            document.getElementById('connection-preview').textContent = connectionString;
+        }
+
+        function toggleSection(element) {
+            element.classList.toggle('collapsed');
+            const section = element.nextElementSibling;
+            section.classList.toggle('collapsed');
+        }
+
+        function collectConfiguration() {
+            const config = {};
+            
+            // Collect all input values
+            document.querySelectorAll('input[type="text"], input[type="password"], input[type="number"], textarea').forEach(input => {
+                if (input.id) {
+                    config[input.id] = input.value || '';
+                }
+            });
+            
+            // Add selected template
+            const selectedTemplate = document.querySelector('.template-card.selected');
+            config.template = selectedTemplate ? selectedTemplate.dataset.template : 'custom';
+            
+            // Generate secret key if not provided
+            if (!config['secret-key']) {
+                config['secret-key'] = generateSecretKey();
+            }
+            
+            return config;
+        }
+
+        function generateSecretKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+            let key = '';
+            for (let i = 0; i < 64; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return key;
+        }
+
+        function showReview() {
+            const config = collectConfiguration();
+            const reviewContent = document.getElementById('review-content');
+            
+            const reviewItems = [
+                { label: 'Project Name', value: config['project-name'] },
+                { label: 'Version', value: config['project-version'] },
+                { label: 'Backend', value: config['backend-framework'] },
+                { label: 'Frontend', value: config['frontend-framework'] },
+                { label: 'Database', value: config['database-type'] },
+                { label: 'Authentication', value: config['auth-type'] },
+                { label: 'Cache Provider', value: config['cache-provider'] },
+                { label: 'Real-time', value: config['realtime-tech'] },
+                { label: 'Logging', value: config['logging-framework'] }
+            ];
+            
+            reviewContent.innerHTML = reviewItems.map(item => `
+                <div class="review-item">
+                    <div class="review-label">${item.label}</div>
+                    <div class="review-value">${item.value || 'Not configured'}</div>
+                </div>
+            `).join('');
+            
+            // Show configuration preview
+            const preview = generateMarkdownPreview(config);
+            document.getElementById('config-preview').textContent = preview.substring(0, 1000) + '...';
+        }
+
+        function generateMarkdownPreview(config) {
+            const timestamp = new Date().toISOString();
+            
+            return `╔════════════════════════════════════════════════════════════════════╗
+║                    PROJECT INITIALIZATION WIZARD                   ║
+║                         Configuration Report                       ║
+║                     Generated: ${timestamp}                        ║
+╚════════════════════════════════════════════════════════════════════╝
+
+[■■■■■■■■■■] 100% Configuration Complete
+
+## 📋 PROJECT MANIFEST
+=====================================
+Project Name: ${config['project-name']}
+Version: ${config['project-version']}
+Description: ${config['project-description']}
+Organization: ${config['organization']}
+Industry: ${config['industry-domain']}
+Template: ${config.template}
+
+## 🚀 QUICK START COMMANDS FOR CLAUDE CODE
+\`\`\`bash
+# Initialize project structure
+mkdir ${config['project-name']}
+cd ${config['project-name']}
+
+# Create solution
+dotnet new sln -n ${config['project-name']}
+
+# Create projects
+dotnet new webapi -n ${config['project-name']}.WebApi
+dotnet new classlib -n ${config['project-name']}.Transaction
+
+# Add projects to solution
+dotnet sln add ${config['project-name']}.WebApi/${config['project-name']}.WebApi.csproj
+dotnet sln add ${config['project-name']}.Transaction/${config['project-name']}.Transaction.csproj
+
+# Add reference
+cd ${config['project-name']}.WebApi
+dotnet add reference ../${config['project-name']}.Transaction/${config['project-name']}.Transaction.csproj
+
+# Install packages
+dotnet add package Npgsql --version 9.0.3
+dotnet add package Serilog.AspNetCore --version 9.0.0
+dotnet add package Swashbuckle.AspNetCore --version 7.3.1
+\`\`\`
+
+## ⚙️ SYSTEM REQUIREMENTS CHECK
+✅ ${config['backend-framework']} SDK
+✅ Node.js 18+ ${config['frontend-framework'].includes('React') ? '(for React frontend)' : ''}
+✅ ${config['database-type']}
+✅ Git
+
+## 🗄️ DATABASE CONFIGURATION
+Connection String (Development):
+\`\`\`
+${document.getElementById('connection-preview').textContent}
+\`\`\`
+
+...continued in full file`;
+        }
+
+        function generateFullMarkdown(config) {
+            const timestamp = new Date().toISOString();
+            
+            return `╔════════════════════════════════════════════════════════════════════╗
+║                    PROJECT INITIALIZATION WIZARD                   ║
+║                         Configuration Report                       ║
+║                     Generated: ${timestamp}                        ║
+╚════════════════════════════════════════════════════════════════════╝
+
+[■■■■■■■■■■] 100% Configuration Complete
+
+## 📋 PROJECT MANIFEST
+=====================================
+Project Name: ${config['project-name']}
+Version: ${config['project-version']}
+Description: ${config['project-description']}
+Organization: ${config['organization']}
+Industry: ${config['industry-domain']}
+Build Type: Enterprise Application
+Template: ${config.template}
+
+## 📚 CLAUDE CODE INSTRUCTIONS
+=====================================
+This project uses the XOS Framework architecture. Please refer to @claude_docs for:
+- XOS component implementation patterns
+- MVVM architecture guidelines  
+- API service layer patterns
+- Database schema templates
+
+## 🚀 QUICK START COMMANDS FOR CLAUDE CODE
+
+### Step 1: Create Solution Structure
+\`\`\`bash
+# Create project directory
+mkdir ${config['project-name']}
+cd ${config['project-name']}
+
+# Create solution
+dotnet new sln -n ${config['project-name']}
+
+# Create projects
+dotnet new webapi -n ${config['project-name']}.WebApi
+dotnet new classlib -n ${config['project-name']}.Transaction
+
+# Add projects to solution
+dotnet sln add ${config['project-name']}.WebApi/${config['project-name']}.WebApi.csproj
+dotnet sln add ${config['project-name']}.Transaction/${config['project-name']}.Transaction.csproj
+
+# Add project reference
+cd ${config['project-name']}.WebApi
+dotnet add reference ../${config['project-name']}.Transaction/${config['project-name']}.Transaction.csproj
+cd ..
+\`\`\`
+
+### Step 2: Install Backend Packages
+\`\`\`bash
+# WebApi packages
+cd ${config['project-name']}.WebApi
+dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson --version 8.0.14
+dotnet add package Npgsql --version 9.0.3
+dotnet add package Serilog.AspNetCore --version 9.0.0
+dotnet add package Serilog.Sinks.Async --version 2.1.0
+dotnet add package Serilog.Sinks.File --version 6.0.0
+dotnet add package Swashbuckle.AspNetCore --version 7.3.1
+
+# Transaction packages
+cd ../${config['project-name']}.Transaction
+dotnet add package CsvHelper --version 33.1.0
+dotnet add package Microsoft.Extensions.DependencyInjection.Abstractions --version 9.0.2
+dotnet add package Microsoft.Extensions.Logging.Abstractions --version 9.0.2
+cd ..
+\`\`\`
+
+### Step 3: Setup Frontend (if React selected)
+${config['frontend-framework'].includes('React') ? `\`\`\`bash
+cd ${config['project-name']}.WebApi
+mkdir UIPages
+cd UIPages
+npx create-react-app . --template typescript
+npm install bootstrap@5.1.3
+npm install @microsoft/signalr@8.0.7
+npm install moment@2.29.4
+npm install react-router-dom@6
+cd ../..
+\`\`\`` : '# No frontend framework selected'}
+
+### Step 4: Initialize Database
+\`\`\`sql
+-- Connect to PostgreSQL and run:
+CREATE DATABASE ${config['db-name'] || config['project-name'] + '_DEV'};
+\`\`\`
+
+## ⚙️ SYSTEM REQUIREMENTS CHECK
+================================
+✅ ${config['backend-framework']} SDK
+${config['frontend-framework'].includes('React') ? '✅ Node.js 18+ (for React frontend)' : ''}
+✅ ${config['database-type']}
+✅ Git
+${config['cache-provider'] === 'Redis' ? '✅ Redis Server' : ''}
+${config['message-system'] ? '✅ ' + config['message-system'] : ''}
+
+## 📁 PROJECT STRUCTURE TO GENERATE
+\`\`\`
+${config['project-name']}/
+├── 📦 ${config['project-name']}.sln
+├── 📂 ${config['project-name']}.WebApi/
+│   ├── 📄 ${config['project-name']}.WebApi.csproj
+│   ├── 📄 Program.cs [CREATE]
+│   ├── 📄 appsettings.json [GENERATE FROM TEMPLATE]
+│   ├── 📄 appsettings.Development.json [GENERATE FROM TEMPLATE]
+│   ├── 📂 Controllers/
+│   │   ├── 📄 AuthController.cs [CREATE]
+│   │   └── 📄 BaseController.cs [CREATE]
+│   ├── 📂 Domain/
+│   │   ├── 📄 AppConstants.cs [CREATE]
+│   │   └── 📄 Token.cs [CREATE]
+│   ├── 📂 Services/
+│   │   ├── 📂 Interfaces/
+│   │   └── 📄 TokenService.cs [CREATE]
+│   ├── 📂 Extensions/
+│   │   └── 📄 ServiceExtensions.cs [CREATE]
+${config['realtime-tech'] === 'SignalR' ? `│   ├── 📂 SignalR/
+│   │   └── 📄 NotificationHub.cs [CREATE]` : ''}
+${config['frontend-framework'].includes('React') ? `│   ├── 📂 UIPages/
+│   │   ├── 📄 package.json [GENERATE]
+│   │   ├── 📂 src/
+│   │   └── 📂 public/` : ''}
+│   └── 📂 wwwroot/
+├── 📂 ${config['project-name']}.Transaction/
+│   ├── 📄 ${config['project-name']}.Transaction.csproj
+│   ├── 📂 Domain/
+│   ├── 📂 Services/
+│   └── 📂 Interfaces/
+└── 📂 Documents/
+    └── 📄 README.md [GENERATE]
+\`\`\`
+
+## 🔧 CONFIGURATION FILES TO CREATE
+
+### File: ${config['project-name']}.WebApi/appsettings.json
+\`\`\`json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "DefaultConnection": "${document.getElementById('connection-preview').textContent}"${config['cache-provider'] === 'Redis' ? `,
+    "RedisCache": "${config['cache-connection'] || 'localhost:6379'}"` : ''}
+  },
+  "JwtSettings": {
+    "SecretKey": "${config['secret-key']}",
+    "Issuer": "http://localhost:5000",
+    "Audience": "${config['project-name']}",
+    "AccessTokenExpirationMinutes": ${config['access-token-expiry'] || '5'},
+    "RefreshTokenExpirationMinutes": ${config['refresh-token-expiry'] || '1440'}
+  },
+  "CorsSettings": {
+    "AllowedOrigins": [${config['cors-origins'] ? config['cors-origins'].split('\n').map(o => `"${o.trim()}"`).join(', ') : ''}]
+  }${config['cache-provider'] === 'SQLite' ? `,
+  "SqliteCache": "${config['cache-connection'] || 'cache.db'}"` : ''}${config['logging-framework'] === 'Serilog' ? `,
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Debug",
+      "Override": {
+        "Microsoft": "Information",
+        "System": "Error"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "${config['log-destinations'].includes('File') ? 'Logs/log-.txt' : ''}",
+          "rollingInterval": "Day",
+          "retainedFileCountLimit": 7
+        }
+      }${config['log-destinations'].includes('Console') ? `,
+      {
+        "Name": "Console"
+      }` : ''}
+    ]
+  }` : ''}
+}
+\`\`\`
+
+### File: ${config['project-name']}.WebApi/Program.cs
+\`\`\`csharp
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+${config['logging-framework'] === 'Serilog' ? 'using Serilog;' : ''}
+${config['realtime-tech'] === 'SignalR' ? 'using Microsoft.AspNetCore.SignalR;' : ''}
+
+var builder = WebApplication.CreateBuilder(args);
+
+${config['logging-framework'] === 'Serilog' ? `// Configure Serilog
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));` : ''}
+
+// Add services to the container
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins",
+        policy =>
+        {
+            policy.WithOrigins(builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? new[] { "*" })
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()${config['realtime-tech'] === 'SignalR' ? `
+                  .AllowCredentials()` : ''};
+        });
+});
+
+// Configure JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT Secret Key not configured"));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+        };
+    });
+
+${config['realtime-tech'] === 'SignalR' ? '// Add SignalR\nbuilder.Services.AddSignalR();' : ''}
+
+${config['cache-provider'] === 'Redis' ? `// Add Redis Cache
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisCache");
+});` : config['cache-provider'] === 'In-Memory' ? '// Add Memory Cache\nbuilder.Services.AddMemoryCache();' : ''}
+
+// Register application services
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigins");
+app.UseAuthentication();
+app.UseAuthorization();
+
+${config['realtime-tech'] === 'SignalR' ? 'app.MapHub<NotificationHub>("/notificationHub");' : ''}
+app.MapControllers();
+
+app.Run();
+\`\`\`
+
+${config['frontend-framework'].includes('React') ? `### File: ${config['project-name']}.WebApi/UIPages/package.json
+\`\`\`json
+{
+  "name": "${config['project-name'].toLowerCase()}-ui",
+  "version": "${config['project-version']}",
+  "private": true,
+  "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^14.2.5",
+    "bootstrap": "^5.1.3",
+    "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.0.0",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
+\`\`\`` : ''}
+
+## 🗄️ DATABASE CONFIGURATION
+=====================================
+
+### Primary Database
+- **Type**: ${config['database-type']}
+- **Host**: ${config['db-host']}
+- **Port**: ${config['db-port']}
+- **Database**: ${config['db-name'] || '{database_name}'}
+- **Username**: ${config['db-username']}
+
+### Connection Strings
+**Development**:
+\`\`\`
+${document.getElementById('connection-preview').textContent}
+\`\`\`
+
+**Production** (update credentials):
+\`\`\`
+Server={PROD_HOST};Port=${config['db-port']};Database={PROD_DB};User Id={PROD_USER};Password={PROD_PASSWORD};${config['db-params'] || ''}
+\`\`\`
+
+${config['tenancy-strategy'] ? `### Multi-Tenancy Configuration
+- **Strategy**: ${config['tenancy-strategy']}
+- **Identification**: ${config['tenant-identification']}
+- **Isolation**: ${config['tenant-isolation']}` : ''}
+
+## 🔐 SECURITY CONFIGURATION
+=====================================
+
+### Authentication
+- **Type**: ${config['auth-type']}
+- **Token Signing**: ${config['token-signing']}
+- **Access Token Expiry**: ${config['access-token-expiry']} minutes
+- **Refresh Token Expiry**: ${config['refresh-token-expiry']} minutes
+
+### Password Security
+- **Algorithm**: ${config['password-algorithm']}
+- **Salt Rounds**: ${config['salt-rounds']}
+
+### Encryption
+- **At Rest**: ${config['encryption-rest'] || 'Database-native'}
+- **In Transit**: ${config['encryption-transit'] || 'TLS 1.2+'}
+- **Key Management**: ${config['key-management'] || 'Local'}
+
+### CORS Configuration
+Allowed Origins:
+${config['cors-origins'] ? config['cors-origins'].split('\n').map(o => `- ${o.trim()}`).join('\n') : '- *'}
+
+## 💾 CACHING CONFIGURATION
+=====================================
+- **Provider**: ${config['cache-provider']}
+- **Connection**: ${config['cache-connection'] || 'Default'}
+- **Default TTL**: ${config['cache-ttl']} seconds
+- **Key Pattern**: ${config['cache-pattern'] || '{entity}:{id}'}
+
+## 📡 ADDITIONAL SERVICES
+=====================================
+
+${config['realtime-tech'] ? `### Real-time Communication
+- **Technology**: ${config['realtime-tech']}
+- **Endpoint**: ${config['realtime-config'] || '/hub'}` : ''}
+
+${config['logging-framework'] ? `### Logging
+- **Framework**: ${config['logging-framework']}
+- **Destinations**: ${config['log-destinations']}
+- **Level**: ${config['log-level']}
+- **Rotation**: ${config['log-rotation']}` : ''}
+
+${config['storage-type'] ? `### File Storage
+- **Type**: ${config['storage-type']}
+- **Configuration**: ${config['storage-config']}` : ''}
+
+${config['email-provider'] ? `### Email Service
+- **Provider**: ${config['email-provider']}
+- **Configuration**: ${config['email-config']}` : ''}
+
+${config['message-system'] ? `### Message Queue
+- **System**: ${config['message-system']}
+- **Configuration**: ${config['message-config']}` : ''}
+
+${config['external-services'] ? `### External Integrations
+${config['external-services'].split('\n').map(s => `- ${s.trim()}`).join('\n')}` : ''}
+
+## 🎯 NEXT STEPS FOR CLAUDE CODE
+=====================================
+
+1. **Create solution structure**
+   - Execute the commands in "Quick Start Commands" section
+   - Create the folder structure as specified
+
+2. **Install dependencies**
+   - Run all package installation commands
+   - Verify all packages are installed successfully
+
+3. **Configure database**
+   - Create the database using the provided connection string
+   - Run initial migrations if needed
+
+4. **Setup authentication**
+   - Implement JWT token service
+   - Create authentication controllers
+
+5. **Initialize frontend** (if applicable)
+   - Setup React application
+   - Configure API connection
+
+6. **Configure services**
+   - Setup dependency injection
+   - Configure middleware pipeline
+
+7. **Test the application**
+   - Run \`dotnet build\` to verify compilation
+   - Run \`dotnet run\` to start the application
+   - Test API endpoints with Swagger
+
+## 📊 INSTALLATION SUMMARY
+====================================
+### Components Selected:
+${config['backend-framework'] ? '☑ Backend API (' + config['backend-framework'] + ')' : '☐ Backend API'}
+${config['frontend-framework'] && config['frontend-framework'] !== 'None' ? '☑ Frontend (' + config['frontend-framework'] + ')' : '☐ Frontend'}
+${config['database-type'] ? '☑ Database (' + config['database-type'] + ')' : '☐ Database'}
+${config['cache-provider'] ? '☑ Caching (' + config['cache-provider'] + ')' : '☐ Caching'}
+${config['realtime-tech'] ? '☑ Real-time (' + config['realtime-tech'] + ')' : '☐ Real-time'}
+${config['auth-type'] ? '☑ Authentication (' + config['auth-type'] + ')' : '☐ Authentication'}
+${config['message-system'] ? '☑ Message Queue (' + config['message-system'] + ')' : '☐ Message Queue'}
+
+### Resource Requirements:
+- **Disk Space**: ~500 MB (including packages)
+- **Memory**: 2 GB minimum for development
+- **Setup Time**: ~5-10 minutes
+
+## 🚦 READY TO BUILD
+====================================
+This configuration has been validated and is ready for project generation.
+
+**To use this configuration:**
+1. Save this file as \`PROJECT_SEED.md\`
+2. Open it with Claude Code
+3. Ask Claude to "Create this project based on the configuration"
+
+**Configuration Template**: ${config.template}
+**Generated**: ${timestamp}
+**Generator Version**: 1.0.0
+
+═══════════════════════════════════════════════════════════════════
+                    Configuration Complete ✓
+═══════════════════════════════════════════════════════════════════
+`;
+        }
+
+        function generateProject() {
+            const config = collectConfiguration();
+            const markdown = generateFullMarkdown(config);
+            
+            // Create a blob and download
+            const blob = new Blob([markdown], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `PROJECT_SEED_${config['project-name']}_${Date.now()}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Project seed file generated successfully! Give this file to Claude Code to create your project.');
+        }
+
+        function saveTemplate() {
+            const templateName = document.getElementById('template-name').value;
+            if (!templateName) {
+                alert('Please enter a template name');
+                return;
+            }
+            
+            const config = collectConfiguration();
+            const savedTemplates = JSON.parse(localStorage.getItem('savedTemplates') || '{}');
+            savedTemplates[templateName] = config;
+            localStorage.setItem('savedTemplates', JSON.stringify(savedTemplates));
+            
+            alert(`Template "${templateName}" saved successfully!`);
+            loadSavedTemplates();
+        }
+
+        function loadSavedTemplates() {
+            const savedTemplates = JSON.parse(localStorage.getItem('savedTemplates') || '{}');
+            const select = document.getElementById('saved-templates');
+            
+            // Clear existing options except the first one
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // Add saved templates
+            Object.keys(savedTemplates).forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+        }
+
+        document.getElementById('saved-templates').addEventListener('change', function() {
+            const templateName = this.value;
+            if (templateName) {
+                const savedTemplates = JSON.parse(localStorage.getItem('savedTemplates') || '{}');
+                const template = savedTemplates[templateName];
+                if (template) {
+                    Object.keys(template).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            element.value = template[key];
+                        }
+                    });
+                    updateConnectionString();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
