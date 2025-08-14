@@ -17,6 +17,9 @@
         body {
             font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', sans-serif;
             background: #0f0f0f;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.03) 0%, transparent 50%);
             color: #e8eaed;
             min-height: 100vh;
             display: flex;
@@ -102,7 +105,9 @@
             font-size: 18px;
             font-weight: bold;
             color: #202124;
-            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+            box-shadow: 
+                0 2px 8px rgba(66, 133, 244, 0.3),
+                0 0 20px rgba(138, 180, 248, 0.1);
         }
 
         .logo-text {
@@ -137,6 +142,7 @@
             background: linear-gradient(135deg, rgba(138, 180, 248, 0.16), rgba(129, 201, 149, 0.12));
             color: #8ab4f8;
             border-left: 3px solid #8ab4f8;
+            box-shadow: inset 0 0 20px rgba(138, 180, 248, 0.05);
         }
 
         .step-item.completed {
@@ -236,6 +242,7 @@
             background: linear-gradient(180deg, #8ab4f8, #81c995);
             margin-right: 12px;
             border-radius: 2px;
+            box-shadow: 0 0 8px rgba(138, 180, 248, 0.4);
         }
 
         .form-group {
@@ -383,12 +390,18 @@
         .btn-primary {
             background: linear-gradient(135deg, #8ab4f8, #81c995);
             color: #202124;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+            box-shadow: 
+                0 1px 2px 0 rgba(0, 0, 0, 0.3), 
+                0 1px 3px 1px rgba(0, 0, 0, 0.15),
+                0 0 10px rgba(138, 180, 248, 0.3);
         }
 
         .btn-primary:hover {
             background: linear-gradient(135deg, #aecbfa, #a8dab5);
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+            box-shadow: 
+                0 1px 2px 0 rgba(0, 0, 0, 0.3), 
+                0 2px 6px 2px rgba(0, 0, 0, 0.15),
+                0 0 15px rgba(138, 180, 248, 0.5);
         }
 
         .btn-secondary {
@@ -440,6 +453,13 @@
             border-radius: 2px;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background-size: 200% 100%;
+            box-shadow: 0 0 10px rgba(138, 180, 248, 0.4);
+            animation: cyberpunk-glow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes cyberpunk-glow {
+            from { box-shadow: 0 0 10px rgba(138, 180, 248, 0.4); }
+            to { box-shadow: 0 0 15px rgba(138, 180, 248, 0.6), 0 0 25px rgba(129, 201, 149, 0.3); }
         }
 
         .field-list {
@@ -2220,18 +2240,23 @@ CREATE TABLE ${config.tableName || `${config.namespacePrefix.toLowerCase()}_${co
 ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
 **CLAUDE: Your module will expose these API endpoints:**
 
-| Method | Route | Purpose | Request Body |
-|--------|-------|---------|--------------|
+| Method | Route | Purpose | Request Body | Pagination |
+|--------|-------|---------|--------------|------------|
 ${generateEndpointDocumentation(config)}
 
 **Example API Calls:**
 \`\`\`javascript
-// Search ${config.entityName}s
+// Search ${config.entityName}s with pagination
 const searchResult = await ApiManager.post('${config.apiBaseRoute}/search', {
     ClientID: 1,
     SiteID: 1,
-    SearchTerm: 'example'
+    SearchTerm: 'example',
+    PageNumber: 1,
+    PageSize: 20,
+    SortBy: 'Id',
+    SortOrder: 'ASC'
 });
+// Response: { Items: [...], TotalCount: 100, TotalPages: 5, CurrentPage: 1, PageSize: 20 }
 
 // Save ${config.entityName}
 const saveResult = await ApiManager.post('${config.apiBaseRoute}/save', {
@@ -2306,12 +2331,19 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             public short ClientID { get; set; }
             public short SiteID { get; set; }
             public string SearchTerm { get; set; }
+            public int PageNumber { get; set; } = 1;
+            public int PageSize { get; set; } = 20;
+            public string SortBy { get; set; } = "Id";
+            public string SortOrder { get; set; } = "ASC";
         }
 
         public class SearchOutput
         {
             public List<${config.entityName}> Items { get; set; } = new List<${config.entityName}>();
             public int TotalCount { get; set; }
+            public int TotalPages { get; set; }
+            public int CurrentPage { get; set; }
+            public int PageSize { get; set; }
         }`;
         }
 
@@ -2334,7 +2366,7 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
                         break;
                     case 'READ':
                     case 'GET_MANY':
-                        methods.push(`Task<List<${entityName}>> ${method.name}${entityName}Async();`);
+                        methods.push(`Task<${entityName}.SearchOutput> ${method.name}${entityName}Async(int pageNumber = 1, int pageSize = 20, string sortBy = "Id", string sortOrder = "ASC");`);
                         break;
                     case 'UPDATE':
                         methods.push(`Task<string> ${method.name}${entityName}Async(${entityName} input);`);
@@ -2395,12 +2427,30 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
         }`;
                 case 'READ':
                 case 'GET_MANY':
-                    return `public async Task<List<${entityName}>> ${method.name}${entityName}Async()
+                    return `public async Task<${entityName}.SearchOutput> ${method.name}${entityName}Async(int pageNumber = 1, int pageSize = 20, string sortBy = "Id", string sortOrder = "ASC")
         {
             // ${method.description}
-            var result = new List<${entityName}>();
-            await Task.CompletedTask;
-            return result;
+            var output = new ${entityName}.SearchOutput
+            {
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                TotalCount = 0,
+                TotalPages = 0
+            };
+            
+            try
+            {
+                // Apply pagination
+                var skip = (pageNumber - 1) * pageSize;
+                // Implementation here with skip/take
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, $"${method.name} ${entityName} failed");
+            }
+            
+            return output;
         }`;
                 case 'DELETE':
                     return `public async Task<bool> ${method.name}${entityName}Async(int id)
@@ -2413,10 +2463,25 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
                     return `public async Task<${entityName}.SearchOutput> ${method.name}${entityName}Async(${entityName}.SearchInput input)
         {
             // ${method.description}
-            var output = new ${entityName}.SearchOutput();
+            var output = new ${entityName}.SearchOutput
+            {
+                CurrentPage = input.PageNumber,
+                PageSize = input.PageSize,
+                TotalCount = 0,
+                TotalPages = 0
+            };
+            
             try
             {
-                // Implementation here
+                // Apply pagination
+                var skip = (input.PageNumber - 1) * input.PageSize;
+                
+                // Apply search filters
+                // Implementation here with skip/take
+                
+                // Calculate total pages
+                output.TotalPages = (int)Math.Ceiling((double)output.TotalCount / input.PageSize);
+                
                 await Task.CompletedTask;
             }
             catch (Exception ex)
@@ -2499,9 +2564,9 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
                 case 'READ':
                 case 'GET_MANY':
                     return `[HttpGet("${method.name.toLowerCase()}")]
-        public async Task<IActionResult> ${method.name}()
+        public async Task<IActionResult> ${method.name}(int pageNumber = 1, int pageSize = 20, string sortBy = "Id", string sortOrder = "ASC")
         {
-            var result = await ${serviceName}.${method.name}${entityName}Async();
+            var result = await ${serviceName}.${method.name}${entityName}Async(pageNumber, pageSize, sortBy, sortOrder);
             return Ok(result);
         }`;
                 case 'DELETE':
@@ -2781,34 +2846,37 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             const endpoints = [];
             
             methodsToGenerate.forEach(method => {
+                let paginationInfo = '';
                 switch(method.operation) {
                     case 'CREATE':
-                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ${entityName} object |`);
+                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ${entityName} object | N/A |`);
                         break;
                     case 'UPDATE':
-                        endpoints.push(`| PUT | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ${entityName} object |`);
+                        endpoints.push(`| PUT | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ${entityName} object | N/A |`);
                         break;
                     case 'READ':
                     case 'GET_MANY':
-                        endpoints.push(`| GET | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | None |`);
+                        paginationInfo = 'Yes (pageNumber, pageSize, sortBy, sortOrder)';
+                        endpoints.push(`| GET | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | Query params | ${paginationInfo} |`);
                         break;
                     case 'DELETE':
-                        endpoints.push(`| DELETE | ${apiRoute}/${method.name.toLowerCase()}/{id} | ${method.description} | id parameter |`);
+                        endpoints.push(`| DELETE | ${apiRoute}/${method.name.toLowerCase()}/{id} | ${method.description} | id parameter | N/A |`);
                         break;
                     case 'SEARCH':
-                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | SearchInput object |`);
+                        paginationInfo = 'Yes (in SearchInput)';
+                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | SearchInput object | ${paginationInfo} |`);
                         break;
                     case 'GET_ONE':
-                        endpoints.push(`| GET | ${apiRoute}/${method.name.toLowerCase()}/{id} | ${method.description} | id parameter |`);
+                        endpoints.push(`| GET | ${apiRoute}/${method.name.toLowerCase()}/{id} | ${method.description} | id parameter | N/A |`);
                         break;
                     case 'EXPORT':
-                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ExportInput object |`);
+                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ExportInput object | Optional |`);
                         break;
                     case 'IMPORT':
-                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ImportInput object |`);
+                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ImportInput object | N/A |`);
                         break;
                     case 'CUSTOM':
-                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | Custom object |`);
+                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | Custom object | Check implementation |`);
                         break;
                 }
             });
