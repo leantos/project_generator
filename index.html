@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Generator - Enterprise Application Wizard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@300;400;500&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,9 +14,9 @@
         }
 
         body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-            background: #202020;
-            color: #ffffff;
+            font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #0f0f0f;
+            color: #e8eaed;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -26,22 +28,23 @@
         }
 
         .wizard-container {
-            background: #2d2d30;
-            border-radius: 0;
-            box-shadow: 0 2.4px 7.2px rgba(0, 0, 0, 0.48), 0 12.8px 28.8px rgba(0, 0, 0, 0.32);
+            background: #1f1f1f;
+            border-radius: 28px;
+            box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
             width: 100%;
             max-width: 1200px;
             min-height: 700px;
             display: flex;
             overflow: hidden;
-            border: 1px solid #3e3e42;
+            border: 1px solid #313131;
         }
 
         .sidebar {
             width: 280px;
-            background: #252526;
-            padding: 30px 20px;
-            border-right: 1px solid #3e3e42;
+            background: #171717;
+            padding: 32px 24px;
+            border-right: 1px solid #313131;
+            border-radius: 28px 0 0 28px;
         }
 
         .logo {
@@ -49,28 +52,29 @@
             align-items: center;
             margin-bottom: 40px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #3e3e42;
+            border-bottom: 1px solid #313131;
         }
 
         .logo-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #0078d4, #40e0d0);
-            border-radius: 0;
+            background: linear-gradient(135deg, #4285f4, #34a853, #fbbc04, #ea4335);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 12px;
-            font-weight: 600;
+            font-weight: 500;
             font-size: 20px;
             color: white;
+            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
         }
 
         .logo-text {
-            font-size: 16px;
-            font-weight: 600;
-            color: #ffffff;
-            letter-spacing: -0.5px;
+            font-size: 18px;
+            font-weight: 500;
+            color: #e8eaed;
+            letter-spacing: 0;
         }
 
         .step-list {
@@ -80,52 +84,53 @@
         .step-item {
             display: flex;
             align-items: center;
-            padding: 12px 15px;
+            padding: 12px 16px;
             margin-bottom: 8px;
-            border-radius: 0;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            color: #cccccc;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #9aa0a6;
         }
 
         .step-item:hover {
-            background: #2d2d30;
-            color: #ffffff;
+            background: rgba(138, 180, 248, 0.08);
+            color: #e8eaed;
         }
 
         .step-item.active {
-            background: #0078d4;
-            color: #ffffff;
+            background: linear-gradient(135deg, rgba(138, 180, 248, 0.16), rgba(129, 201, 149, 0.12));
+            color: #8ab4f8;
+            border-left: 3px solid #8ab4f8;
         }
 
         .step-item.completed {
-            color: #40e0d0;
+            color: #81c995;
         }
 
         .step-number {
             width: 24px;
             height: 24px;
-            border-radius: 0;
+            border-radius: 50%;
             background: transparent;
-            border: 2px solid #3e3e42;
+            border: 2px solid #5f6368;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 12px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .step-item.active .step-number {
-            background: #ffffff;
-            border-color: #ffffff;
-            color: #0078d4;
+            background: linear-gradient(135deg, #8ab4f8, #aecbfa);
+            border-color: #8ab4f8;
+            color: #202124;
         }
 
         .step-item.completed .step-number {
-            background: #40e0d0;
-            border-color: #40e0d0;
-            color: #252526;
+            background: linear-gradient(135deg, #81c995, #a8dab5);
+            border-color: #81c995;
+            color: #202124;
         }
 
         .step-text {
@@ -134,9 +139,10 @@
 
         .main-content {
             flex: 1;
-            padding: 40px;
+            padding: 48px;
             overflow-y: auto;
-            background: #1e1e1e;
+            background: #202124;
+            border-radius: 0 28px 28px 0;
         }
 
         .step-content {
@@ -154,45 +160,46 @@
         }
 
         h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #ffffff;
-            font-weight: 600;
-            letter-spacing: -0.5px;
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #e8eaed;
+            font-weight: 400;
+            letter-spacing: 0;
         }
 
         .step-description {
-            color: #a19f9d;
-            margin-bottom: 30px;
+            color: #9aa0a6;
+            margin-bottom: 32px;
             font-size: 14px;
             line-height: 20px;
         }
 
         .form-section {
-            background: #1e1e1e;
-            border-radius: 0;
-            padding: 20px;
+            background: #292a2d;
+            border-radius: 16px;
+            padding: 24px;
             margin-bottom: 16px;
-            border: 1px solid #3e3e42;
+            border: 1px solid #3c4043;
         }
 
         .form-section-title {
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 500;
             margin-bottom: 20px;
-            color: #ffffff;
+            color: #e8eaed;
             display: flex;
             align-items: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            text-transform: none;
+            letter-spacing: 0;
         }
 
         .form-section-title::before {
             content: '';
             width: 4px;
-            height: 16px;
-            background: #0078d4;
+            height: 20px;
+            background: linear-gradient(180deg, #8ab4f8, #81c995);
             margin-right: 12px;
+            border-radius: 2px;
         }
 
         .form-group {
@@ -202,13 +209,13 @@
         label {
             display: block;
             margin-bottom: 8px;
-            font-size: 13px;
-            color: #cccccc;
+            font-size: 14px;
+            color: #bdc1c6;
             font-weight: 400;
         }
 
         .required {
-            color: #f85149;
+            color: #f28b82;
         }
 
         input[type="text"],
@@ -217,23 +224,23 @@
         select,
         textarea {
             width: 100%;
-            padding: 8px 12px;
-            background: #3c3c3c;
-            border: 1px solid #3e3e42;
-            border-radius: 0;
-            color: #cccccc;
-            font-size: 13px;
-            transition: all 0.2s ease;
-            font-family: 'Segoe UI', sans-serif;
+            padding: 12px 16px;
+            background: #303134;
+            border: 1px solid #5f6368;
+            border-radius: 8px;
+            color: #e8eaed;
+            font-size: 14px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Roboto', 'Google Sans', sans-serif;
         }
 
         input:focus,
         select:focus,
         textarea:focus {
             outline: none;
-            border-color: #0078d4;
-            background: #3c3c3c;
-            box-shadow: inset 0 0 0 1px #0078d4;
+            border-color: #8ab4f8;
+            background: #303134;
+            box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2), 0 0 12px rgba(138, 180, 248, 0.1);
         }
 
         textarea {
@@ -244,7 +251,7 @@
 
         .hint {
             font-size: 12px;
-            color: #8b8b8b;
+            color: #9aa0a6;
             margin-top: 6px;
             line-height: 16px;
         }
@@ -257,124 +264,133 @@
         }
 
         .template-card {
-            background: #1e1e1e;
-            border: 2px solid #3e3e42;
-            border-radius: 0;
+            background: #303134;
+            border: 2px solid #5f6368;
+            border-radius: 12px;
             padding: 20px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: center;
         }
 
         .template-card:hover {
-            border-color: #0078d4;
-            background: #252526;
+            border-color: #8ab4f8;
+            background: #3c4043;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .template-card.selected {
-            border-color: #0078d4;
-            background: #0e639c;
+            border-color: #8ab4f8;
+            background: linear-gradient(135deg, rgba(138, 180, 248, 0.12), rgba(129, 201, 149, 0.08));
+            box-shadow: inset 0 0 20px rgba(138, 180, 248, 0.1);
         }
 
         .template-icon {
             font-size: 36px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            filter: brightness(1.2) saturate(1.2);
         }
 
         .template-name {
-            font-weight: 600;
-            margin-bottom: 5px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #e8eaed;
         }
 
         .template-desc {
             font-size: 12px;
-            color: #969696;
+            color: #9aa0a6;
         }
 
         .checkbox-group {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
         input[type="checkbox"] {
             width: 18px;
             height: 18px;
-            margin-right: 10px;
+            margin-right: 12px;
             cursor: pointer;
+            accent-color: #8ab4f8;
         }
 
         .checkbox-label {
             cursor: pointer;
             font-size: 14px;
+            color: #e8eaed;
         }
 
         .button-group {
             display: flex;
             justify-content: space-between;
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid #3e3e42;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid #3c4043;
         }
 
         button {
-            padding: 6px 20px;
-            border: 1px solid transparent;
-            border-radius: 0;
-            font-size: 13px;
-            font-weight: 400;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Segoe UI', sans-serif;
-            min-width: 80px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+            min-width: 88px;
+            text-transform: none;
+            letter-spacing: 0.25px;
         }
 
         .btn-primary {
-            background: #0078d4;
-            color: white;
-            border-color: #0078d4;
+            background: linear-gradient(135deg, #8ab4f8, #81c995);
+            color: #202124;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
         }
 
         .btn-primary:hover {
-            background: #106ebe;
-            border-color: #106ebe;
+            background: linear-gradient(135deg, #aecbfa, #a8dab5);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
         }
 
         .btn-secondary {
             background: transparent;
-            color: #cccccc;
-            border: 1px solid #3e3e42;
+            color: #8ab4f8;
+            border: 1px solid #5f6368;
         }
 
         .btn-secondary:hover {
-            background: #3e3e42;
-            border-color: #525252;
+            background: rgba(138, 180, 248, 0.08);
+            border-color: #8ab4f8;
         }
 
         .btn-success {
-            background: #16825d;
-            color: white;
-            border-color: #16825d;
+            background: linear-gradient(135deg, #81c995, #fbbf24);
+            color: #202124;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
         }
 
         .btn-success:hover {
-            background: #0e5a3f;
-            border-color: #0e5a3f;
+            background: linear-gradient(135deg, #a8dab5, #fcd34d);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
         }
 
         .review-section {
-            background: #1e1e1e;
-            border-radius: 0;
-            padding: 20px;
+            background: #292a2d;
+            border-radius: 16px;
+            padding: 24px;
             margin-bottom: 20px;
-            border: 1px solid #3e3e42;
+            border: 1px solid #3c4043;
         }
 
         .review-item {
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid #3e3e42;
+            border-bottom: 1px solid #313131;
         }
 
         .review-item:last-child {
@@ -382,41 +398,43 @@
         }
 
         .review-label {
-            color: #8b8b8b;
-            font-size: 13px;
+            color: #9aa0a6;
+            font-size: 14px;
         }
 
         .review-value {
-            color: #cccccc;
-            font-weight: 400;
-            font-size: 13px;
+            color: #e8eaed;
+            font-weight: 500;
+            font-size: 14px;
         }
 
         .code-preview {
-            background: #1e1e1e;
-            border-radius: 0;
+            background: linear-gradient(135deg, #1e1f22, #252629);
+            border-radius: 12px;
             padding: 20px;
-            font-family: 'Cascadia Code', 'Courier New', monospace;
-            font-size: 12px;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            font-size: 13px;
             overflow-x: auto;
             white-space: pre;
-            color: #d4d4d4;
-            border: 1px solid #3e3e42;
+            color: #adbac7;
+            border: 1px solid #3c4043;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .progress-bar {
-            height: 2px;
-            background: #3e3e42;
-            border-radius: 0;
-            margin-bottom: 30px;
+            height: 4px;
+            background: #3c4043;
+            border-radius: 2px;
+            margin-bottom: 32px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: #0078d4;
-            border-radius: 0;
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, #4285f4, #8ab4f8, #81c995, #fbbf24);
+            border-radius: 2px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-size: 200% 100%;
         }
 
         .collapsible {
@@ -425,12 +443,12 @@
         }
 
         .collapsible::before {
-            content: '❯';
+            content: '▼';
             display: inline-block;
             margin-right: 8px;
-            transition: transform 0.2s ease;
-            font-size: 10px;
-            color: #cccccc;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 12px;
+            color: #9aa0a6;
         }
 
         .collapsible.collapsed::before {
@@ -440,39 +458,44 @@
         .advanced-section {
             max-height: 1000px;
             overflow: hidden;
-            transition: max-height 0.3s ease;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 16px;
         }
 
         .advanced-section.collapsed {
             max-height: 0;
+            margin-top: 0;
         }
 
         .connection-string-preview {
-            background: #1e1e1e;
-            border: 1px solid #3e3e42;
-            border-radius: 0;
+            background: linear-gradient(135deg, #1e1f22, #252629);
+            border: 1px solid #3c4043;
+            border-radius: 8px;
             padding: 12px;
             margin-top: 10px;
-            font-family: 'Cascadia Code', 'Courier New', monospace;
-            font-size: 12px;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            font-size: 13px;
             word-break: break-all;
-            color: #ce9178;
+            color: #fbbf24;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .save-template-btn {
             background: transparent;
-            color: #cccccc;
-            padding: 6px 16px;
-            border-radius: 0;
-            font-size: 13px;
-            margin-left: 10px;
+            color: #8ab4f8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 12px;
             cursor: pointer;
-            border: 1px solid #3e3e42;
+            border: 1px solid #5f6368;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .save-template-btn:hover {
-            background: #3e3e42;
-            border-color: #525252;
+            background: rgba(138, 180, 248, 0.08);
+            border-color: #8ab4f8;
         }
     </style>
 </head>
@@ -527,7 +550,7 @@
 
                 <div class="template-selector">
                     <div class="template-card selected" data-template="xos-enterprise">
-                        <div class="template-icon">🏢</div>
+                        <div class="template-icon">🚀</div>
                         <div class="template-name">XOS Enterprise</div>
                         <div class="template-desc">Full-featured enterprise application template</div>
                     </div>
@@ -537,17 +560,17 @@
                         <div class="template-desc">Basic REST API with authentication</div>
                     </div>
                     <div class="template-card" data-template="microservices">
-                        <div class="template-icon">🔧</div>
+                        <div class="template-icon">🎯</div>
                         <div class="template-name">Microservices</div>
                         <div class="template-desc">Docker-ready microservices architecture</div>
                     </div>
                     <div class="template-card" data-template="saas-multitenant">
-                        <div class="template-icon">☁️</div>
+                        <div class="template-icon">🌟</div>
                         <div class="template-name">SaaS Multi-tenant</div>
                         <div class="template-desc">Multi-tenant SaaS application</div>
                     </div>
                     <div class="template-card" data-template="custom">
-                        <div class="template-icon">✏️</div>
+                        <div class="template-icon">🎨</div>
                         <div class="template-name">Custom</div>
                         <div class="template-desc">Configure everything from scratch</div>
                     </div>
@@ -1290,41 +1313,24 @@ ${document.getElementById('connection-preview').textContent}
         function generateFullMarkdown(config) {
             const timestamp = new Date().toISOString();
             
-            return `╔════════════════════════════════════════════════════════════════════╗
-║                    PROJECT INITIALIZATION WIZARD                   ║
-║                         Configuration Report                       ║
-║                     Generated: ${timestamp}                        ║
-╚════════════════════════════════════════════════════════════════════╝
+            return `# PROJECT SEED: ${config['project-name']}
 
-[■■■■■■■■■■] 100% Configuration Complete
+## CLAUDE CODE - BUILD THIS PROJECT HERE
+This file was placed in the project folder. Build the project in the current directory.
+Use @claude_docs for XOS framework patterns and best practices.
 
-## 📋 PROJECT MANIFEST
-=====================================
-Project Name: ${config['project-name']}
-Version: ${config['project-version']}
-Description: ${config['project-description']}
-Organization: ${config['organization']}
-Industry: ${config['industry-domain']}
-Build Type: Enterprise Application
-Template: ${config.template}
+### Project Configuration
+- **Name**: ${config['project-name']}
+- **Type**: ${config.template} template
+- **Stack**: ${config['backend-framework']} + ${config['frontend-framework']}
+- **Database**: ${config['database-type']}
 
-## 📚 CLAUDE CODE INSTRUCTIONS
-=====================================
-This project uses the XOS Framework architecture. Please refer to @claude_docs for:
-- XOS component implementation patterns
-- MVVM architecture guidelines  
-- API service layer patterns
-- Database schema templates
+## STEP 1: Initialize Project in Current Directory
 
-## 🚀 QUICK START COMMANDS FOR CLAUDE CODE
+**CLAUDE: You are in the project folder. Create the .NET solution here:**
 
-### Step 1: Create Solution Structure
 \`\`\`bash
-# Create project directory
-mkdir ${config['project-name']}
-cd ${config['project-name']}
-
-# Create solution
+# Create solution in current directory
 dotnet new sln -n ${config['project-name']}
 
 # Create projects
@@ -1341,7 +1347,9 @@ dotnet add reference ../${config['project-name']}.Transaction/${config['project-
 cd ..
 \`\`\`
 
-### Step 2: Install Backend Packages
+## STEP 2: Install Required Packages
+
+**CLAUDE: Install all necessary NuGet packages:**
 \`\`\`bash
 # WebApi packages
 cd ${config['project-name']}.WebApi
@@ -1362,9 +1370,7 @@ cd ..
 
 ### Step 3: Setup Frontend (if React selected)
 ${config['frontend-framework'].includes('React') ? `\`\`\`bash
-cd ${config['project-name']}.WebApi
-mkdir UIPages
-cd UIPages
+cd ${config['project-name']}.WebApi/UIPages
 npx create-react-app . --template typescript
 npm install bootstrap@5.1.3
 npm install @microsoft/signalr@8.0.7
@@ -1424,9 +1430,11 @@ ${config['frontend-framework'].includes('React') ? `│   ├── 📂 UIPages
     └── 📄 README.md [GENERATE]
 \`\`\`
 
-## 🔧 CONFIGURATION FILES TO CREATE
+## STEP 3: Create Configuration Files
 
-### File: ${config['project-name']}.WebApi/appsettings.json
+**CLAUDE: Create the following configuration files:**
+
+### CREATE FILE: ${config['project-name']}.WebApi/appsettings.json
 \`\`\`json
 {
   "Logging": {
@@ -1476,7 +1484,7 @@ ${config['frontend-framework'].includes('React') ? `│   ├── 📂 UIPages
 }
 \`\`\`
 
-### File: ${config['project-name']}.WebApi/Program.cs
+### CREATE FILE: ${config['project-name']}.WebApi/Program.cs
 \`\`\`csharp
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -1558,7 +1566,7 @@ app.MapControllers();
 app.Run();
 \`\`\`
 
-${config['frontend-framework'].includes('React') ? `### File: ${config['project-name']}.WebApi/UIPages/package.json
+${config['frontend-framework'].includes('React') ? `### CREATE FILE: ${config['project-name']}.WebApi/UIPages/package.json
 \`\`\`json
 {
   "name": "${config['project-name'].toLowerCase()}-ui",
@@ -1604,10 +1612,11 @@ ${config['frontend-framework'].includes('React') ? `### File: ${config['project-
 }
 \`\`\`` : ''}
 
-## 🗄️ DATABASE CONFIGURATION
-=====================================
+## STEP 4: Configure Database
 
-### Primary Database
+**CLAUDE: Set up the database with these settings:**
+
+### Database Configuration
 - **Type**: ${config['database-type']}
 - **Host**: ${config['db-host']}
 - **Port**: ${config['db-port']}
@@ -1687,37 +1696,23 @@ ${config['message-system'] ? `### Message Queue
 ${config['external-services'] ? `### External Integrations
 ${config['external-services'].split('\n').map(s => `- ${s.trim()}`).join('\n')}` : ''}
 
-## 🎯 NEXT STEPS FOR CLAUDE CODE
-=====================================
+## STEP 5: Final Setup and Verification
 
-1. **Create solution structure**
-   - Execute the commands in "Quick Start Commands" section
-   - Create the folder structure as specified
+**CLAUDE: Complete the project setup:**
 
-2. **Install dependencies**
-   - Run all package installation commands
-   - Verify all packages are installed successfully
+1. Create a database named \`${config['db-name'] || config['project-name'] + '_DEV'}\` in ${config['database-type']}
+2. Run \`dotnet build\` to verify everything compiles
+3. Run \`dotnet run --project ${config['project-name']}.WebApi\` to start the application
+4. The API should be available at https://localhost:5001/swagger
 
-3. **Configure database**
-   - Create the database using the provided connection string
-   - Run initial migrations if needed
+## IMPORTANT NOTES FOR CLAUDE
 
-4. **Setup authentication**
-   - Implement JWT token service
-   - Create authentication controllers
-
-5. **Initialize frontend** (if applicable)
-   - Setup React application
-   - Configure API connection
-
-6. **Configure services**
-   - Setup dependency injection
-   - Configure middleware pipeline
-
-7. **Test the application**
-   - Run \`dotnet build\` to verify compilation
-   - Run \`dotnet run\` to start the application
-   - Test API endpoints with Swagger
+- Use the XOS framework patterns from @claude_docs when implementing features
+- Follow MVVM pattern for all frontend components
+- All database operations should use the repository pattern
+- Implement proper error handling and logging throughout
+- Use dependency injection for all services
+- Follow the naming conventions established in the XOS framework
 
 ## 📊 INSTALLATION SUMMARY
 ====================================
@@ -1735,22 +1730,17 @@ ${config['message-system'] ? '☑ Message Queue (' + config['message-system'] + 
 - **Memory**: 2 GB minimum for development
 - **Setup Time**: ~5-10 minutes
 
-## 🚦 READY TO BUILD
-====================================
-This configuration has been validated and is ready for project generation.
+## PROJECT GENERATION COMPLETE
 
-**To use this configuration:**
-1. Save this file as \`PROJECT_SEED.md\`
-2. Open it with Claude Code
-3. Ask Claude to "Create this project based on the configuration"
+**CLAUDE: This project seed file is ready for execution.**
 
-**Configuration Template**: ${config.template}
+When you're ready, start with STEP 1 and work through each step in order.
+Remember to use @claude_docs for XOS framework patterns and best practices.
+
+---
 **Generated**: ${timestamp}
+**Template**: ${config.template}
 **Generator Version**: 1.0.0
-
-═══════════════════════════════════════════════════════════════════
-                    Configuration Complete ✓
-═══════════════════════════════════════════════════════════════════
 `;
         }
 
