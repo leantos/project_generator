@@ -805,6 +805,11 @@
                 </div>
 
                 <div class="module-type-selector">
+                    <div class="module-type-card selected" data-type="fullstack" onclick="selectModuleType('fullstack')">
+                        <div class="module-type-icon">🚀</div>
+                        <div class="module-type-name">Full Stack</div>
+                        <div class="module-type-desc">Complete module with frontend and backend</div>
+                    </div>
                     <div class="module-type-card" data-type="frontend" onclick="selectModuleType('frontend')">
                         <div class="module-type-icon">🎨</div>
                         <div class="module-type-name">Frontend Only</div>
@@ -814,11 +819,6 @@
                         <div class="module-type-icon">⚡</div>
                         <div class="module-type-name">Backend Only</div>
                         <div class="module-type-desc">API controllers, services, and domain models</div>
-                    </div>
-                    <div class="module-type-card selected" data-type="fullstack" onclick="selectModuleType('fullstack')">
-                        <div class="module-type-icon">🚀</div>
-                        <div class="module-type-name">Full Stack</div>
-                        <div class="module-type-desc">Complete module with frontend and backend</div>
                     </div>
                 </div>
             </div>
@@ -1174,6 +1174,7 @@
             const uiTemplateGroup = document.getElementById('ui-template-group');
             const apiRouteGroup = document.getElementById('api-base-route-group');
             const step2Text = document.querySelector('.step-item[data-step="2"] .step-text');
+            const step3Text = document.querySelector('.step-item[data-step="3"] .step-text');
             
             // Get the entire UI Template section (the whole form-section)
             const uiTemplateSection = document.querySelector('#step-2 .form-section:has(#ui-template-group)');
@@ -1185,6 +1186,11 @@
                     uiTemplateSection.style.display = 'none';
                 }
                 
+                // Hide UI template group
+                if (uiTemplateGroup) {
+                    uiTemplateGroup.style.display = 'none';
+                }
+                
                 // Show API route field
                 if (apiRouteGroup) {
                     apiRouteGroup.style.display = 'block';
@@ -1194,8 +1200,13 @@
                 if (step2Text) {
                     step2Text.textContent = 'API Configuration';
                 }
+                
+                // Entity fields are relevant for backend
+                if (step3Text) {
+                    step3Text.textContent = 'Entity & Fields';
+                }
             } 
-            // Handle Frontend Only
+            // Handle Frontend Only - NO BACKEND/API STUFF
             else if (moduleType === 'frontend') {
                 // Show UI template section
                 if (uiTemplateSection) {
@@ -1207,14 +1218,19 @@
                     uiTemplateGroup.style.display = 'block';
                 }
                 
-                // Hide API route field
+                // Hide ALL backend/API fields
                 if (apiRouteGroup) {
                     apiRouteGroup.style.display = 'none';
                 }
                 
-                // Update step text
+                // Update step texts for frontend focus
                 if (step2Text) {
                     step2Text.textContent = 'UI Configuration';
+                }
+                
+                // For frontend, entity fields might be for display models
+                if (step3Text) {
+                    step3Text.textContent = 'Display Fields';
                 }
             }
             // Handle Full Stack
@@ -1236,7 +1252,12 @@
                 
                 // Update step text
                 if (step2Text) {
-                    step2Text.textContent = 'UI Configuration';
+                    step2Text.textContent = 'UI & API Configuration';
+                }
+                
+                // Entity fields for both frontend and backend
+                if (step3Text) {
+                    step3Text.textContent = 'Entity & Fields';
                 }
             }
         }
