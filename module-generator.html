@@ -1747,7 +1747,7 @@
                 if (editingMethodIndex === index) {
                     // Show edit form
                     return `
-                        <div class="method-item editing">
+                        <div class="method-item editing" style="display: flex; gap: 16px;">
                             <div class="method-edit-form">
                                 <div class="edit-row">
                                     <span class="method-tag ${method.operation.toLowerCase().replace('_', '')}">${method.operation}</span>
@@ -1756,14 +1756,10 @@
                                 <div class="edit-row">
                                     <input type="text" class="edit-input" id="edit-desc-${index}" value="${method.description}" placeholder="Method description - what does this method do?">
                                 </div>
-                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin-top: 12px;">
-                                    <button class="btn-save" onclick="saveMethodEdit(${index})" style="width: 140px;">
-                                        <span style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                                            ✓ Save Changes
-                                        </span>
-                                    </button>
-                                    <button class="btn-cancel" onclick="cancelMethodEdit()" style="width: 140px;">Cancel</button>
-                                </div>
+                            </div>
+                            <div class="method-actions" style="display: flex; flex-direction: column; gap: 6px;">
+                                <button class="btn-save" onclick="saveMethodEdit(${index})">Save</button>
+                                <button class="btn-cancel" onclick="cancelMethodEdit()">Cancel</button>
                             </div>
                         </div>
                     `;
