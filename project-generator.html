@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Generator Hub - Project & Module Creation</title>
+    <title>Project Generator - Enterprise Application Wizard</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@300;400;500&family=Roboto+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -26,485 +26,1776 @@
             font-size: 14px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            position: relative;
-            overflow: hidden;
         }
 
-        /* Animated background gradient */
-        body::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 20% 80%, rgba(138, 180, 248, 0.1), transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(129, 201, 149, 0.1), transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(251, 191, 36, 0.05), transparent 50%);
-            animation: rotate 30s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .container {
+        .wizard-container {
+            background: #1f1f1f;
+            border-radius: 28px;
+            box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
             width: 100%;
             max-width: 1200px;
-            text-align: center;
-            z-index: 1;
-        }
-
-        .header {
-            margin-bottom: 60px;
-            animation: fadeInDown 0.6s ease;
-        }
-
-        .logo-container {
-            display: inline-flex;
-            align-items: center;
-            margin-bottom: 24px;
-            padding: 16px 32px;
-            background: linear-gradient(135deg, rgba(31, 31, 31, 0.9), rgba(41, 42, 45, 0.9));
-            border-radius: 20px;
+            min-height: 700px;
+            display: flex;
+            overflow: hidden;
             border: 1px solid #313131;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #171717;
+            padding: 32px 24px;
+            border-right: 1px solid #313131;
+            border-radius: 28px 0 0 28px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #313131;
         }
 
         .logo-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #8ab4f8, #81c995);
-            border-radius: 16px;
-            margin-right: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: #202124;
-            box-shadow: 0 4px 16px rgba(138, 180, 248, 0.3);
-        }
-
-        h1 {
-            font-size: 42px;
-            font-weight: 500;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #8ab4f8, #81c995, #fbbf24);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            font-size: 18px;
-            color: #9aa0a6;
-            line-height: 1.6;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 40px;
-            margin-top: 60px;
-            animation: fadeInUp 0.8s ease;
-        }
-
-        .card {
-            background: linear-gradient(135deg, #1f1f1f, #292a2d);
-            border-radius: 28px;
-            padding: 48px 40px;
-            border: 2px solid #313131;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            min-height: 420px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #8ab4f8, #81c995, #fbbf24);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: #8ab4f8;
-            box-shadow: 0 16px 48px rgba(138, 180, 248, 0.2),
-                        0 8px 24px rgba(0, 0, 0, 0.4);
-            background: linear-gradient(135deg, #202124, #2d2e31);
-        }
-
-        .card-icon {
-            width: 100px;
-            height: 100px;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            margin-bottom: 32px;
-            position: relative;
-        }
-
-        .project-icon {
-            background: linear-gradient(135deg, #8ab4f8, #4285f4);
-            box-shadow: 0 8px 24px rgba(138, 180, 248, 0.3);
-        }
-
-        .module-icon {
-            background: linear-gradient(135deg, #81c995, #34a853);
-            box-shadow: 0 8px 24px rgba(129, 201, 149, 0.3);
-        }
-
-        .card-icon::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 24px;
-            padding: 2px;
-            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .card:hover .card-icon::after {
-            opacity: 1;
-        }
-
-        .card-title {
-            font-size: 28px;
-            font-weight: 500;
-            margin-bottom: 16px;
-            color: #e8eaed;
-            letter-spacing: -0.25px;
-        }
-
-        .card-description {
-            font-size: 16px;
-            color: #9aa0a6;
-            line-height: 1.6;
-            margin-bottom: 32px;
-            max-width: 350px;
-        }
-
-        .card-features {
-            list-style: none;
-            text-align: left;
-            width: 100%;
-            max-width: 350px;
-        }
-
-        .card-features li {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            color: #bdc1c6;
-            font-size: 14px;
-        }
-
-        .card-features li::before {
-            content: '✓';
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: rgba(129, 201, 149, 0.2);
-            color: #81c995;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             margin-right: 12px;
-            text-align: center;
-            line-height: 20px;
-            font-size: 12px;
-            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
         }
 
-        .card-cta {
-            display: inline-flex;
-            align-items: center;
-            margin-top: auto;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, rgba(138, 180, 248, 0.1), rgba(129, 201, 149, 0.1));
-            border-radius: 24px;
-            color: #8ab4f8;
+        .logo-text {
+            font-size: 18px;
             font-weight: 500;
-            transition: all 0.2s ease;
+            color: #e8eaed;
+            letter-spacing: 0;
         }
 
-        .card:hover .card-cta {
-            background: linear-gradient(135deg, rgba(138, 180, 248, 0.2), rgba(129, 201, 149, 0.2));
-            padding-right: 32px;
+        .step-list {
+            list-style: none;
         }
 
-        .card-cta .material-icons {
-            margin-left: 8px;
-            transition: transform 0.2s ease;
-        }
-
-        .card:hover .card-cta .material-icons {
-            transform: translateX(4px);
-        }
-
-        .footer {
-            margin-top: 80px;
-            padding-top: 40px;
-            border-top: 1px solid #313131;
-            color: #5f6368;
-            font-size: 14px;
-            animation: fadeIn 1s ease;
-        }
-
-        .footer-links {
+        .step-item {
             display: flex;
-            justify-content: center;
-            gap: 32px;
-            margin-top: 16px;
-        }
-
-        .footer-links a {
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             color: #9aa0a6;
-            text-decoration: none;
-            transition: color 0.2s ease;
         }
 
-        .footer-links a:hover {
+        .step-item:hover {
+            background: rgba(138, 180, 248, 0.08);
+            color: #e8eaed;
+        }
+
+        .step-item.active {
+            background: linear-gradient(135deg, rgba(138, 180, 248, 0.16), rgba(129, 201, 149, 0.12));
             color: #8ab4f8;
+            border-left: 3px solid #8ab4f8;
         }
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .step-item.completed {
+            color: #81c995;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid #5f6368;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .step-item.active .step-number {
+            background: linear-gradient(135deg, #8ab4f8, #aecbfa);
+            border-color: #8ab4f8;
+            color: #202124;
+        }
+
+        .step-item.completed .step-number {
+            background: linear-gradient(135deg, #81c995, #a8dab5);
+            border-color: #81c995;
+            color: #202124;
+        }
+
+        .step-text {
+            font-size: 14px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 48px;
+            overflow-y: auto;
+            background: #202124;
+            border-radius: 0 28px 28px 0;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Responsive design */
-        @media (max-width: 900px) {
-            .cards-container {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            .card {
-                min-height: 380px;
-            }
-            
-            h1 {
-                font-size: 32px;
-            }
-            
-            .subtitle {
-                font-size: 16px;
-            }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #e8eaed;
+            font-weight: 400;
+            letter-spacing: 0;
         }
 
-        @media (max-width: 500px) {
-            .logo-container {
-                padding: 12px 20px;
-            }
-            
-            .logo-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 24px;
-            }
-            
-            h1 {
-                font-size: 28px;
-            }
-            
-            .card {
-                padding: 32px 24px;
-            }
-            
-            .card-title {
-                font-size: 24px;
-            }
+        .step-description {
+            color: #9aa0a6;
+            margin-bottom: 32px;
+            font-size: 14px;
+            line-height: 20px;
         }
 
-        /* Badge for new/beta features */
-        .badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            color: #202124;
-            padding: 4px 12px;
+        .form-section {
+            background: #292a2d;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 1px solid #3c4043;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #e8eaed;
+            display: flex;
+            align-items: center;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .form-section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, #8ab4f8, #81c995);
+            margin-right: 12px;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #bdc1c6;
+            font-weight: 400;
+        }
+
+        .required {
+            color: #f28b82;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: #303134;
+            border: 1px solid #5f6368;
+            border-radius: 8px;
+            color: #e8eaed;
+            font-size: 14px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Roboto', 'Google Sans', sans-serif;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #8ab4f8;
+            background: #303134;
+            box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2), 0 0 12px rgba(138, 180, 248, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #9aa0a6;
+            margin-top: 6px;
+            line-height: 16px;
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .template-card {
+            background: #303134;
+            border: 2px solid #5f6368;
             border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .template-card:hover {
+            border-color: #8ab4f8;
+            background: #3c4043;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .template-card.selected {
+            border-color: #8ab4f8;
+            background: linear-gradient(135deg, rgba(138, 180, 248, 0.12), rgba(129, 201, 149, 0.08));
+            box-shadow: inset 0 0 20px rgba(138, 180, 248, 0.1);
+        }
+
+        .template-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            filter: brightness(1.2) saturate(1.2);
+        }
+
+        .template-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #e8eaed;
+        }
+
+        .template-desc {
+            font-size: 12px;
+            color: #9aa0a6;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #8ab4f8;
+        }
+
+        .checkbox-label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #e8eaed;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid #3c4043;
+        }
+
+        button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+            min-width: 88px;
+            text-transform: none;
+            letter-spacing: 0.25px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8ab4f8, #81c995);
+            color: #202124;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #aecbfa, #a8dab5);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #8ab4f8;
+            border: 1px solid #5f6368;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(138, 180, 248, 0.08);
+            border-color: #8ab4f8;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #81c995, #fbbf24);
+            color: #202124;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #a8dab5, #fcd34d);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        .review-section {
+            background: #292a2d;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid #3c4043;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #313131;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-label {
+            color: #9aa0a6;
+            font-size: 14px;
+        }
+
+        .review-value {
+            color: #e8eaed;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .code-preview {
+            background: linear-gradient(135deg, #1e1f22, #252629);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            white-space: pre;
+            color: #adbac7;
+            border: 1px solid #3c4043;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #3c4043;
+            border-radius: 2px;
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4285f4, #8ab4f8, #81c995, #fbbf24);
+            border-radius: 2px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-size: 200% 100%;
+        }
+
+        .collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible::before {
+            content: '▼';
+            display: inline-block;
+            margin-right: 8px;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 12px;
+            color: #9aa0a6;
+        }
+
+        .collapsible.collapsed::before {
+            transform: rotate(-90deg);
+        }
+
+        .advanced-section {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 16px;
+        }
+
+        .advanced-section.collapsed {
+            max-height: 0;
+            margin-top: 0;
+        }
+
+        .connection-string-preview {
+            background: linear-gradient(135deg, #1e1f22, #252629);
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            font-size: 13px;
+            word-break: break-all;
+            color: #fbbf24;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .save-template-btn {
+            background: transparent;
+            color: #8ab4f8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 12px;
+            cursor: pointer;
+            border: 1px solid #5f6368;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .save-template-btn:hover {
+            background: rgba(138, 180, 248, 0.08);
+            border-color: #8ab4f8;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo-container">
-                <div class="logo-icon">CG</div>
-                <div>
-                    <h1>Code Generator Hub</h1>
+    <div class="wizard-container">
+        <div class="sidebar">
+            <div class="logo">
+                <img src="favicon.svg" alt="PG" class="logo-icon" style="width: 40px; height: 40px;">
+                <div class="logo-text">Project Generator</div>
+            </div>
+            <ul class="step-list">
+                <li class="step-item active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Project Type</div>
+                </li>
+                <li class="step-item" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Basic Configuration</div>
+                </li>
+                <li class="step-item" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Technology Stack</div>
+                </li>
+                <li class="step-item" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-text">Database Setup</div>
+                </li>
+                <li class="step-item" data-step="5">
+                    <div class="step-number">5</div>
+                    <div class="step-text">Security & Auth</div>
+                </li>
+                <li class="step-item" data-step="6">
+                    <div class="step-number">6</div>
+                    <div class="step-text">Advanced Settings</div>
+                </li>
+                <li class="step-item" data-step="7">
+                    <div class="step-number">7</div>
+                    <div class="step-text">Review & Create</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <!-- Step 1: Project Type -->
+            <div class="step-content active" id="step-1">
+                <h1>Choose Project Template</h1>
+                <p class="step-description">Select a template to start with pre-configured settings, or choose Custom to configure everything from scratch.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 14%"></div>
+                </div>
+
+                <div class="template-selector">
+                    <div class="template-card selected" data-template="xos-enterprise">
+                        <div class="template-icon">🚀</div>
+                        <div class="template-name">XOS Enterprise</div>
+                        <div class="template-desc">Full-featured enterprise application template</div>
+                    </div>
+                    <div class="template-card" data-template="simple-api">
+                        <div class="template-icon">⚡</div>
+                        <div class="template-name">Simple API</div>
+                        <div class="template-desc">Basic REST API with authentication</div>
+                    </div>
+                    <div class="template-card" data-template="microservices">
+                        <div class="template-icon">🎯</div>
+                        <div class="template-name">Microservices</div>
+                        <div class="template-desc">Docker-ready microservices architecture</div>
+                    </div>
+                    <div class="template-card" data-template="saas-multitenant">
+                        <div class="template-icon">🌟</div>
+                        <div class="template-name">SaaS Multi-tenant</div>
+                        <div class="template-desc">Multi-tenant SaaS application</div>
+                    </div>
+                    <div class="template-card" data-template="custom">
+                        <div class="template-icon">🎨</div>
+                        <div class="template-name">Custom</div>
+                        <div class="template-desc">Configure everything from scratch</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Template Management</div>
+                    <div class="form-group">
+                        <label>Load Saved Template</label>
+                        <select id="saved-templates">
+                            <option value="">-- Select a saved template --</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            <p class="subtitle">
-                Enterprise-grade code generation tools for Claude Code. 
-                Choose between creating a complete project from scratch or adding new modules to existing projects.
-            </p>
-        </div>
 
-        <div class="cards-container">
-            <a href="project-generator.html" class="card">
-                <div class="card-icon project-icon">
-                    <span class="material-icons" style="color: #202124; font-size: 48px;">rocket_launch</span>
+            <!-- Step 2: Basic Configuration -->
+            <div class="step-content" id="step-2">
+                <h1>Basic Configuration</h1>
+                <p class="step-description">Configure the basic project information and metadata.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 28%"></div>
                 </div>
-                <h2 class="card-title">New Project</h2>
-                <p class="card-description">
-                    Create a complete enterprise application from scratch with all configurations, dependencies, and boilerplate code.
-                </p>
-                <ul class="card-features">
-                    <li>Full-stack project scaffolding</li>
-                    <li>5 pre-built templates</li>
-                    <li>Database & auth setup</li>
-                    <li>Docker & CI/CD ready</li>
-                    <li>Technology stack selection</li>
-                </ul>
-                <div class="card-cta">
-                    Start New Project
-                    <span class="material-icons">arrow_forward</span>
-                </div>
-            </a>
 
-            <a href="module-generator.html" class="card">
-                <span class="badge">New</span>
-                <div class="card-icon module-icon">
-                    <span class="material-icons" style="color: #202124; font-size: 48px;">widgets</span>
+                <div class="form-section">
+                    <div class="form-section-title">Project Information</div>
+                    <div class="form-group">
+                        <label>Project Name <span class="required">*</span></label>
+                        <input type="text" id="project-name" value="MyProject" placeholder="Enter project name">
+                        <div class="hint">This will be used as the solution and namespace name</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="project-description" placeholder="Enter project description">Enterprise Application Platform</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Version</label>
+                        <input type="text" id="project-version" value="1.0.0" placeholder="1.0.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Organization</label>
+                        <input type="text" id="organization" placeholder="Your company name">
+                    </div>
+                    <div class="form-group">
+                        <label>Industry Domain</label>
+                        <input type="text" id="industry-domain" value="Enterprise" placeholder="e.g., Healthcare, Finance, Retail">
+                        <div class="hint">Examples: Hotel Management, Healthcare, Finance, Retail, Education</div>
+                    </div>
                 </div>
-                <h2 class="card-title">New Module</h2>
-                <p class="card-description">
-                    Add feature modules to existing projects. Generate complete CRUD operations, services, and UI components.
-                </p>
-                <ul class="card-features">
-                    <li>CRUD module generation</li>
-                    <li>Frontend/Backend/Full-stack</li>
-                    <li>UI template selection</li>
-                    <li>Wireframe support</li>
-                    <li>Entity field builder</li>
-                </ul>
-                <div class="card-cta">
-                    Create Module
-                    <span class="material-icons">arrow_forward</span>
-                </div>
-            </a>
-        </div>
+            </div>
 
-        <div class="footer">
-            <p>Powered by Claude Code Generation Framework v1.0.0</p>
-            <div class="footer-links">
-                <a href="https://github.com" target="_blank">GitHub</a>
-                <a href="https://claude.ai" target="_blank">Claude AI</a>
-                <a href="#" onclick="alert('Generator Hub v1.0.0\n\nProject Generator: Create full enterprise applications\nModule Generator: Add features to existing projects\n\nBoth tools generate markdown files optimized for Claude Code.')">About</a>
+            <!-- Step 3: Technology Stack -->
+            <div class="step-content" id="step-3">
+                <h1>Technology Stack</h1>
+                <p class="step-description">Choose your technology stack. All fields accept custom values.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 42%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Backend Technology</div>
+                    <div class="form-group">
+                        <label>Backend Framework</label>
+                        <input type="text" id="backend-framework" value=".NET 8.0" placeholder="e.g., .NET 8, Node.js, Django, Spring Boot">
+                        <div class="hint">Examples: .NET 8.0, Node.js + Express, Django, Spring Boot, Ruby on Rails</div>
+                    </div>
+                    <div class="form-group">
+                        <label>ORM/Data Layer</label>
+                        <input type="text" id="orm-layer" value="XOS.Data + Npgsql" placeholder="e.g., Entity Framework, Dapper, Mongoose">
+                        <div class="hint">Examples: Entity Framework Core, Dapper, Mongoose, Sequelize, Prisma</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Frontend Technology</div>
+                    <div class="form-group">
+                        <label>Frontend Framework</label>
+                        <input type="text" id="frontend-framework" value="React 18 + XOS Components" placeholder="e.g., React, Angular, Vue.js">
+                        <div class="hint">Examples: React + XOS, Angular 15, Vue.js 3, Blazor, Next.js</div>
+                    </div>
+                    <div class="form-group">
+                        <label>UI Component Library</label>
+                        <input type="text" id="ui-library" value="XOS Components + Bootstrap 5" placeholder="e.g., Material-UI, Ant Design">
+                    </div>
+                    <div class="form-group">
+                        <label>State Management</label>
+                        <input type="text" id="state-management" value="XOS ViewModels (MVVM)" placeholder="e.g., Redux, MobX, Context API">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Database Setup -->
+            <div class="step-content" id="step-4">
+                <h1>Database Configuration</h1>
+                <p class="step-description">Configure your database connection and settings.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 56%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Primary Database</div>
+                    <div class="form-group">
+                        <label>Database Type</label>
+                        <input type="text" id="database-type" value="PostgreSQL" placeholder="e.g., PostgreSQL, MySQL, MongoDB">
+                        <div class="hint">Examples: PostgreSQL, MySQL, SQL Server, MongoDB, DynamoDB, CockroachDB</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Host/Server</label>
+                        <input type="text" id="db-host" value="localhost" placeholder="localhost or IP address">
+                    </div>
+                    <div class="form-group">
+                        <label>Port</label>
+                        <input type="text" id="db-port" value="5432" placeholder="Database port">
+                    </div>
+                    <div class="form-group">
+                        <label>Database Name</label>
+                        <input type="text" id="db-name" placeholder="Your database name">
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="db-username" value="postgres" placeholder="Database username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="db-password" placeholder="Database password">
+                    </div>
+                    <div class="form-group">
+                        <label>Additional Parameters</label>
+                        <input type="text" id="db-params" value="application name=MyApp_WebApi;" placeholder="e.g., sslmode=require;pooling=true">
+                    </div>
+                    <div class="form-group">
+                        <label>Connection String Preview</label>
+                        <div class="connection-string-preview" id="connection-preview">
+                            Connection string will appear here...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Multi-Tenancy Configuration</div>
+                    <div class="form-group">
+                        <label>Multi-Tenancy Strategy</label>
+                        <select id="tenancy-strategy">
+                            <option value="">None (Single-tenant)</option>
+                            <option value="single-db" selected>Multi-Tenant with Single DB</option>
+                            <option value="multiple-db">Multi-Tenant with Multiple DBs</option>
+                        </select>
+                        <div class="hint">Single DB: All tenants share one database with row-level isolation. Multiple DBs: Each tenant gets their own database.</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Caching Configuration</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Cache Provider</label>
+                            <input type="text" id="cache-provider" value="SQLite" placeholder="e.g., Redis, Memcached, SQLite">
+                            <div class="hint">Examples: Redis, Memcached, SQLite, In-Memory, Hazelcast, NCache</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Cache Connection</label>
+                            <input type="text" id="cache-connection" value="Files\\DB File\\SqliteDB.db" placeholder="e.g., localhost:6379, cache.db">
+                        </div>
+                        <div class="form-group">
+                            <label>Default TTL (seconds)</label>
+                            <input type="text" id="cache-ttl" value="3600" placeholder="3600">
+                        </div>
+                        <div class="form-group">
+                            <label>Cache Key Pattern</label>
+                            <input type="text" id="cache-pattern" value="{site}:{entity}:{id}" placeholder="e.g., {tenant}:{entity}:{id}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Security & Auth -->
+            <div class="step-content" id="step-5">
+                <h1>Security & Authentication</h1>
+                <p class="step-description">Configure security, authentication, and encryption settings.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 70%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Authentication Configuration</div>
+                    <div class="form-group">
+                        <label>Authentication Type</label>
+                        <input type="text" id="auth-type" value="JWT Bearer" placeholder="e.g., JWT, OAuth2, SAML">
+                        <div class="hint">Examples: JWT Bearer, OAuth2, Basic Auth, API Key, SAML, Active Directory</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Token Signing Algorithm</label>
+                        <input type="text" id="token-signing" value="HS256" placeholder="e.g., HS256, RS256">
+                    </div>
+                    <div class="form-group">
+                        <label>Secret Key</label>
+                        <input type="password" id="secret-key" placeholder="Enter secret key or leave blank to auto-generate">
+                        <div class="hint">Leave blank to generate a secure 64-character key</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Access Token Expiry (minutes)</label>
+                        <input type="text" id="access-token-expiry" value="5" placeholder="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Refresh Token Expiry (minutes)</label>
+                        <input type="text" id="refresh-token-expiry" value="1440" placeholder="1440">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Password Security</div>
+                    <div class="form-group">
+                        <label>Password Hashing Algorithm</label>
+                        <input type="text" id="password-algorithm" value="BCrypt" placeholder="e.g., BCrypt, Argon2, PBKDF2">
+                        <div class="hint">Examples: BCrypt, Argon2id, PBKDF2, Scrypt</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Salt Rounds/Iterations</label>
+                        <input type="text" id="salt-rounds" value="10" placeholder="10">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">CORS Configuration</div>
+                    <div class="form-group">
+                        <label>Allowed Origins</label>
+                        <textarea id="cors-origins" placeholder="One origin per line">https://localhost:3000
+http://localhost:3000</textarea>
+                        <div class="hint">Enter allowed origins, one per line. Use * for all origins (not recommended for production)</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Encryption Settings</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Encryption at Rest</label>
+                            <input type="text" id="encryption-rest" value="Database-native" placeholder="e.g., AES-256, Database-native">
+                        </div>
+                        <div class="form-group">
+                            <label>Encryption in Transit</label>
+                            <input type="text" id="encryption-transit" value="TLS 1.2+" placeholder="e.g., TLS 1.3, mTLS">
+                        </div>
+                        <div class="form-group">
+                            <label>Key Management</label>
+                            <input type="text" id="key-management" value="Local (appsettings.json)" placeholder="e.g., Azure Key Vault, AWS KMS">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Advanced Settings -->
+            <div class="step-content" id="step-6">
+                <h1>Advanced Settings</h1>
+                <p class="step-description">Configure additional services and integrations.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 84%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Real-time Communication</div>
+                    <div class="form-group">
+                        <label>Real-time Technology</label>
+                        <input type="text" id="realtime-tech" value="SignalR" placeholder="e.g., SignalR, Socket.io, WebSockets">
+                        <div class="hint">Examples: SignalR, Socket.io, WebSockets, Server-Sent Events, Pusher</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Hub/Endpoint Configuration</label>
+                        <input type="text" id="realtime-config" value="/notificationHub" placeholder="e.g., /notificationHub">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Logging Configuration</div>
+                    <div class="form-group">
+                        <label>Logging Framework</label>
+                        <input type="text" id="logging-framework" value="Serilog" placeholder="e.g., Serilog, NLog, Log4Net">
+                    </div>
+                    <div class="form-group">
+                        <label>Log Destinations</label>
+                        <input type="text" id="log-destinations" value="File (Logs\\transaction-log.txt), Console" placeholder="e.g., File, Console, Elasticsearch">
+                    </div>
+                    <div class="form-group">
+                        <label>Log Level</label>
+                        <input type="text" id="log-level" value="Debug (Dev), Information (Prod)" placeholder="e.g., Debug, Information, Warning, Error">
+                    </div>
+                    <div class="form-group">
+                        <label>Log Rotation</label>
+                        <input type="text" id="log-rotation" value="Daily, 7 days retention" placeholder="e.g., Daily, 7 days retention">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">File Storage</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Storage Type</label>
+                            <input type="text" id="storage-type" value="Local FileSystem" placeholder="e.g., Local, AWS S3, Azure Blob">
+                            <div class="hint">Examples: Local FileSystem, AWS S3, Azure Blob Storage, Google Cloud Storage, MinIO</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Storage Configuration</label>
+                            <textarea id="storage-config" placeholder="Storage configuration details">LocalPath: E:\\Data</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Email Configuration</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Email Provider</label>
+                            <input type="text" id="email-provider" value="Microsoft Graph API" placeholder="e.g., SMTP, SendGrid, AWS SES">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Configuration</label>
+                            <textarea id="email-config" placeholder="Email configuration details">Use OAuth2 with Microsoft Graph</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Message Queue</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Message System</label>
+                            <input type="text" id="message-system" placeholder="e.g., RabbitMQ, Kafka, Azure Service Bus">
+                            <div class="hint">Examples: RabbitMQ, Apache Kafka, Azure Service Bus, AWS SQS, Redis Pub/Sub</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Connection Details</label>
+                            <textarea id="message-config" placeholder="Message queue configuration"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">External Integrations</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Additional Services</label>
+                            <textarea id="external-services" placeholder="List any external services or APIs">External API Integration
+File Import/Export  
+Payment Processing</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Environment Variables</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Custom Environment Variables</label>
+                            <textarea id="env-variables" placeholder="KEY=VALUE format, one per line">NODE_ENV=development
+API_TIMEOUT=30000</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7: Review & Create -->
+            <div class="step-content" id="step-7">
+                <h1>Review Configuration</h1>
+                <p class="step-description">Review your configuration and generate the project seed file.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Save Template <button class="save-template-btn" onclick="saveTemplate()">Save as Template</button></div>
+                    <div class="form-group">
+                        <label>Template Name</label>
+                        <input type="text" id="template-name" placeholder="Enter name to save this configuration as a template">
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <h3 style="margin-bottom: 20px; color: #ffffff;">Configuration Summary</h3>
+                    <div id="review-content">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Generated Configuration Preview</div>
+                    <div class="code-preview" id="config-preview">
+                        # Configuration will be shown here...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation buttons -->
+            <div class="button-group">
+                <div>
+                    <button class="btn-secondary" onclick="previousStep()" id="prev-btn" style="display: none;">Previous</button>
+                </div>
+                <div>
+                    <button class="btn-primary" onclick="nextStep()" id="next-btn">Next</button>
+                    <button class="btn-success" onclick="generateProject()" id="generate-btn" style="display: none;">Generate Project</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Add some interactive polish
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate cards on page load
-            const cards = document.querySelectorAll('.card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(30px)';
-                setTimeout(() => {
-                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, 100 + (index * 100));
-            });
+        let currentStep = 1;
+        const totalSteps = 7;
+        let configuration = {};
 
-            // Add ripple effect on click
-            cards.forEach(card => {
-                card.addEventListener('click', function(e) {
-                    const ripple = document.createElement('span');
-                    ripple.style.position = 'absolute';
-                    ripple.style.width = '20px';
-                    ripple.style.height = '20px';
-                    ripple.style.background = 'rgba(138, 180, 248, 0.5)';
-                    ripple.style.borderRadius = '50%';
-                    ripple.style.transform = 'translate(-50%, -50%)';
-                    ripple.style.pointerEvents = 'none';
-                    ripple.style.animation = 'ripple 0.6s ease-out';
-                    
-                    const rect = this.getBoundingClientRect();
-                    ripple.style.left = (e.clientX - rect.left) + 'px';
-                    ripple.style.top = (e.clientY - rect.top) + 'px';
-                    
-                    this.appendChild(ripple);
-                    
-                    setTimeout(() => ripple.remove(), 600);
-                });
+        // Template defaults
+        const templates = {
+            'xos-enterprise': {
+                'project-name': 'MyProject',
+                'project-description': 'Enterprise Application Platform',
+                'project-version': '1.0.0',
+                'industry-domain': 'Enterprise',
+                'backend-framework': '.NET 8.0',
+                'orm-layer': 'XOS.Data + Npgsql',
+                'frontend-framework': 'React 18 + XOS Components',
+                'ui-library': 'XOS Components + Bootstrap 5',
+                'state-management': 'XOS ViewModels (MVVM)',
+                'database-type': 'PostgreSQL',
+                'db-host': 'localhost',
+                'db-port': '5432',
+                'db-username': 'postgres',
+                'db-params': 'application name=MyApp_WebApi;',
+                'tenancy-strategy': 'single-db',
+                'cache-provider': 'SQLite',
+                'cache-connection': 'Files\\DB File\\SqliteDB.db',
+                'cache-ttl': '3600',
+                'cache-pattern': '{site}:{entity}:{id}',
+                'auth-type': 'JWT Bearer',
+                'token-signing': 'HS256',
+                'access-token-expiry': '5',
+                'refresh-token-expiry': '1440',
+                'password-algorithm': 'BCrypt',
+                'salt-rounds': '10',
+                'cors-origins': 'https://localhost:3000\nhttp://localhost:3000',
+                'encryption-rest': 'Database-native',
+                'encryption-transit': 'TLS 1.2+',
+                'key-management': 'Local (appsettings.json)',
+                'realtime-tech': 'SignalR',
+                'realtime-config': '/notificationHub',
+                'logging-framework': 'Serilog',
+                'log-destinations': 'File (Logs\\transaction-log.txt), Console',
+                'log-level': 'Debug (Dev), Information (Prod)',
+                'log-rotation': 'Daily, 7 days retention',
+                'storage-type': 'Local FileSystem',
+                'storage-config': 'LocalPath: E:\\Data',
+                'email-provider': 'Microsoft Graph API',
+                'email-config': 'Use OAuth2 with Microsoft Graph',
+                'external-services': 'External API Integration\nFile Import/Export\nPayment Processing'
+            },
+            'simple-api': {
+                'project-name': 'SimpleAPI',
+                'project-description': 'Basic REST API with authentication',
+                'project-version': '1.0.0',
+                'backend-framework': '.NET 8.0',
+                'frontend-framework': 'None',
+                'database-type': 'SQLite',
+                'auth-type': 'JWT Bearer',
+                'cache-provider': 'In-Memory'
+            },
+            'microservices': {
+                'project-name': 'Microservices',
+                'project-description': 'Docker-ready microservices architecture',
+                'backend-framework': '.NET 8.0',
+                'database-type': 'PostgreSQL',
+                'cache-provider': 'Redis',
+                'message-system': 'RabbitMQ'
+            },
+            'saas-multitenant': {
+                'project-name': 'SaaSPlatform',
+                'project-description': 'Multi-tenant SaaS application',
+                'backend-framework': '.NET 8.0',
+                'tenancy-strategy': 'multiple-db',
+                'database-type': 'PostgreSQL',
+                'cache-provider': 'Redis'
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedTemplates();
+            updateConnectionString();
+            applyTemplate('xos-enterprise');
+            
+            // Add event listeners for connection string updates
+            ['db-host', 'db-port', 'db-name', 'db-username', 'db-password', 'db-params'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateConnectionString);
             });
         });
 
-        // Add ripple animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ripple {
-                to {
-                    width: 400px;
-                    height: 400px;
-                    opacity: 0;
+        // Template selection
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                const templateName = this.dataset.template;
+                if (templateName && templateName !== 'custom') {
+                    applyTemplate(templateName);
+                }
+            });
+        });
+
+        function applyTemplate(templateName) {
+            const template = templates[templateName];
+            if (template) {
+                Object.keys(template).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = template[key];
+                    }
+                });
+                updateConnectionString();
+            }
+        }
+
+        // Step navigation
+        document.querySelectorAll('.step-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const step = parseInt(this.dataset.step);
+                if (step <= currentStep || validateCurrentStep()) {
+                    goToStep(step);
+                }
+            });
+        });
+
+        function goToStep(step) {
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`step-${step}`).classList.add('active');
+
+            document.querySelectorAll('.step-item').forEach(item => {
+                item.classList.remove('active');
+                const itemStep = parseInt(item.dataset.step);
+                if (itemStep < step) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+            document.querySelector(`.step-item[data-step="${step}"]`).classList.add('active');
+
+            currentStep = step;
+            updateNavigationButtons();
+            
+            if (step === 7) {
+                showReview();
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps && validateCurrentStep()) {
+                goToStep(currentStep + 1);
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                goToStep(currentStep - 1);
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const generateBtn = document.getElementById('generate-btn');
+
+            prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
+            
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+                generateBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                generateBtn.style.display = 'none';
+            }
+        }
+
+        function validateCurrentStep() {
+            // Add validation logic here if needed
+            return true;
+        }
+
+        function updateConnectionString() {
+            const host = document.getElementById('db-host').value || 'localhost';
+            const port = document.getElementById('db-port').value || '5432';
+            const dbName = document.getElementById('db-name').value || '{database}';
+            const username = document.getElementById('db-username').value || '{username}';
+            const password = document.getElementById('db-password').value || '{password}';
+            const params = document.getElementById('db-params').value || '';
+            
+            const connectionString = `Server=${host};Port=${port};Database=${dbName};User Id=${username};Password=${password};${params}`;
+            document.getElementById('connection-preview').textContent = connectionString;
+        }
+
+        function toggleSection(element) {
+            element.classList.toggle('collapsed');
+            const section = element.nextElementSibling;
+            section.classList.toggle('collapsed');
+        }
+
+        function collectConfiguration() {
+            const config = {};
+            
+            // Collect all input values
+            document.querySelectorAll('input[type="text"], input[type="password"], input[type="number"], textarea').forEach(input => {
+                if (input.id) {
+                    config[input.id] = input.value || '';
+                }
+            });
+            
+            // Add selected template
+            const selectedTemplate = document.querySelector('.template-card.selected');
+            config.template = selectedTemplate ? selectedTemplate.dataset.template : 'custom';
+            
+            // Generate secret key if not provided
+            if (!config['secret-key']) {
+                config['secret-key'] = generateSecretKey();
+            }
+            
+            return config;
+        }
+
+        function generateSecretKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+            let key = '';
+            for (let i = 0; i < 64; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return key;
+        }
+
+        function showReview() {
+            const config = collectConfiguration();
+            const reviewContent = document.getElementById('review-content');
+            
+            const reviewItems = [
+                { label: 'Project Name', value: config['project-name'] },
+                { label: 'Version', value: config['project-version'] },
+                { label: 'Backend', value: config['backend-framework'] },
+                { label: 'Frontend', value: config['frontend-framework'] },
+                { label: 'Database', value: config['database-type'] },
+                { label: 'Authentication', value: config['auth-type'] },
+                { label: 'Cache Provider', value: config['cache-provider'] },
+                { label: 'Real-time', value: config['realtime-tech'] },
+                { label: 'Logging', value: config['logging-framework'] }
+            ];
+            
+            reviewContent.innerHTML = reviewItems.map(item => `
+                <div class="review-item">
+                    <div class="review-label">${item.label}</div>
+                    <div class="review-value">${item.value || 'Not configured'}</div>
+                </div>
+            `).join('');
+            
+            // Show configuration preview
+            const preview = generateMarkdownPreview(config);
+            document.getElementById('config-preview').textContent = preview.substring(0, 1000) + '...';
+        }
+
+        function generateMarkdownPreview(config) {
+            const timestamp = new Date().toISOString();
+            
+            return `╔════════════════════════════════════════════════════════════════════╗
+║                    PROJECT INITIALIZATION WIZARD                   ║
+║                         Configuration Report                       ║
+║                     Generated: ${timestamp}                        ║
+╚════════════════════════════════════════════════════════════════════╝
+
+[■■■■■■■■■■] 100% Configuration Complete
+
+## 📋 PROJECT MANIFEST
+=====================================
+Project Name: ${config['project-name']}
+Version: ${config['project-version']}
+Description: ${config['project-description']}
+Organization: ${config['organization']}
+Industry: ${config['industry-domain']}
+Template: ${config.template}
+
+## 🚀 QUICK START COMMANDS FOR CLAUDE CODE
+\`\`\`bash
+# Initialize project structure
+mkdir ${config['project-name']}
+cd ${config['project-name']}
+
+# Create solution
+dotnet new sln -n ${config['project-name']}
+
+# Create projects
+dotnet new webapi -n ${config['project-name']}.WebApi
+dotnet new classlib -n ${config['project-name']}.Transaction
+
+# Add projects to solution
+dotnet sln add ${config['project-name']}.WebApi/${config['project-name']}.WebApi.csproj
+dotnet sln add ${config['project-name']}.Transaction/${config['project-name']}.Transaction.csproj
+
+# Add reference
+cd ${config['project-name']}.WebApi
+dotnet add reference ../${config['project-name']}.Transaction/${config['project-name']}.Transaction.csproj
+
+# Install packages
+dotnet add package Npgsql --version 9.0.3
+dotnet add package Serilog.AspNetCore --version 9.0.0
+dotnet add package Swashbuckle.AspNetCore --version 7.3.1
+\`\`\`
+
+## ⚙️ SYSTEM REQUIREMENTS CHECK
+✅ ${config['backend-framework']} SDK
+✅ Node.js 18+ ${config['frontend-framework'].includes('React') ? '(for React frontend)' : ''}
+✅ ${config['database-type']}
+✅ Git
+
+## 🗄️ DATABASE CONFIGURATION
+Connection String (Development):
+\`\`\`
+${document.getElementById('connection-preview').textContent}
+\`\`\`
+
+...continued in full file`;
+        }
+
+        function generateFullMarkdown(config) {
+            const timestamp = new Date().toISOString();
+            
+            return `# PROJECT SEED: ${config['project-name']}
+
+## CLAUDE CODE - BUILD THIS PROJECT HERE
+This file was placed in the project folder. Build the project in the current directory.
+Use @claude_docs for XOS framework patterns and best practices.
+
+### Project Configuration
+- **Name**: ${config['project-name']}
+- **Type**: ${config.template} template
+- **Stack**: ${config['backend-framework']} + ${config['frontend-framework']}
+- **Database**: ${config['database-type']}
+
+## STEP 1: Initialize Project in Current Directory
+
+**CLAUDE: You are in the project folder. Create the .NET solution here:**
+
+\`\`\`bash
+# Create solution in current directory
+dotnet new sln -n ${config['project-name']}
+
+# Create projects
+dotnet new webapi -n ${config['project-name']}.WebApi
+dotnet new classlib -n ${config['project-name']}.Transaction
+
+# Add projects to solution
+dotnet sln add ${config['project-name']}.WebApi/${config['project-name']}.WebApi.csproj
+dotnet sln add ${config['project-name']}.Transaction/${config['project-name']}.Transaction.csproj
+
+# Add project reference
+cd ${config['project-name']}.WebApi
+dotnet add reference ../${config['project-name']}.Transaction/${config['project-name']}.Transaction.csproj
+cd ..
+\`\`\`
+
+## STEP 2: Install Required Packages
+
+**CLAUDE: Install all necessary NuGet packages:**
+\`\`\`bash
+# WebApi packages
+cd ${config['project-name']}.WebApi
+dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson --version 8.0.14
+dotnet add package Npgsql --version 9.0.3
+dotnet add package Serilog.AspNetCore --version 9.0.0
+dotnet add package Serilog.Sinks.Async --version 2.1.0
+dotnet add package Serilog.Sinks.File --version 6.0.0
+dotnet add package Swashbuckle.AspNetCore --version 7.3.1
+
+# Transaction packages
+cd ../${config['project-name']}.Transaction
+dotnet add package CsvHelper --version 33.1.0
+dotnet add package Microsoft.Extensions.DependencyInjection.Abstractions --version 9.0.2
+dotnet add package Microsoft.Extensions.Logging.Abstractions --version 9.0.2
+cd ..
+\`\`\`
+
+### Step 3: Setup Frontend (if React selected)
+${config['frontend-framework'].includes('React') ? `\`\`\`bash
+cd ${config['project-name']}.WebApi/UIPages
+npx create-react-app . --template typescript
+npm install bootstrap@5.1.3
+npm install @microsoft/signalr@8.0.7
+npm install moment@2.29.4
+npm install react-router-dom@6
+cd ../..
+\`\`\`` : '# No frontend framework selected'}
+
+### Step 4: Initialize Database
+\`\`\`sql
+-- Connect to PostgreSQL and run:
+CREATE DATABASE ${config['db-name'] || config['project-name'] + '_DEV'};
+\`\`\`
+
+## ⚙️ SYSTEM REQUIREMENTS CHECK
+================================
+✅ ${config['backend-framework']} SDK
+${config['frontend-framework'].includes('React') ? '✅ Node.js 18+ (for React frontend)' : ''}
+✅ ${config['database-type']}
+✅ Git
+${config['cache-provider'] === 'Redis' ? '✅ Redis Server' : ''}
+${config['message-system'] ? '✅ ' + config['message-system'] : ''}
+
+## 📁 PROJECT STRUCTURE TO GENERATE
+\`\`\`
+${config['project-name']}/
+├── 📦 ${config['project-name']}.sln
+├── 📂 ${config['project-name']}.WebApi/
+│   ├── 📄 ${config['project-name']}.WebApi.csproj
+│   ├── 📄 Program.cs [CREATE]
+│   ├── 📄 appsettings.json [GENERATE FROM TEMPLATE]
+│   ├── 📄 appsettings.Development.json [GENERATE FROM TEMPLATE]
+│   ├── 📂 Controllers/
+│   │   ├── 📄 AuthController.cs [CREATE]
+│   │   └── 📄 BaseController.cs [CREATE]
+│   ├── 📂 Domain/
+│   │   ├── 📄 AppConstants.cs [CREATE]
+│   │   └── 📄 Token.cs [CREATE]
+│   ├── 📂 Services/
+│   │   ├── 📂 Interfaces/
+│   │   └── 📄 TokenService.cs [CREATE]
+│   ├── 📂 Extensions/
+│   │   └── 📄 ServiceExtensions.cs [CREATE]
+${config['realtime-tech'] === 'SignalR' ? `│   ├── 📂 SignalR/
+│   │   └── 📄 NotificationHub.cs [CREATE]` : ''}
+${config['frontend-framework'].includes('React') ? `│   ├── 📂 UIPages/
+│   │   ├── 📄 package.json [GENERATE]
+│   │   ├── 📂 src/
+│   │   └── 📂 public/` : ''}
+│   └── 📂 wwwroot/
+├── 📂 ${config['project-name']}.Transaction/
+│   ├── 📄 ${config['project-name']}.Transaction.csproj
+│   ├── 📂 Domain/
+│   ├── 📂 Services/
+│   └── 📂 Interfaces/
+└── 📂 Documents/
+    └── 📄 README.md [GENERATE]
+\`\`\`
+
+## STEP 3: Create Configuration Files
+
+**CLAUDE: Create the following configuration files:**
+
+### CREATE FILE: ${config['project-name']}.WebApi/appsettings.json
+\`\`\`json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "DefaultConnection": "${document.getElementById('connection-preview').textContent}"${config['cache-provider'] === 'Redis' ? `,
+    "RedisCache": "${config['cache-connection'] || 'localhost:6379'}"` : ''}
+  },
+  "JwtSettings": {
+    "SecretKey": "${config['secret-key']}",
+    "Issuer": "http://localhost:5000",
+    "Audience": "${config['project-name']}",
+    "AccessTokenExpirationMinutes": ${config['access-token-expiry'] || '5'},
+    "RefreshTokenExpirationMinutes": ${config['refresh-token-expiry'] || '1440'}
+  },
+  "CorsSettings": {
+    "AllowedOrigins": [${config['cors-origins'] ? config['cors-origins'].split('\n').map(o => `"${o.trim()}"`).join(', ') : ''}]
+  }${config['cache-provider'] === 'SQLite' ? `,
+  "SqliteCache": "${config['cache-connection'] || 'cache.db'}"` : ''}${config['logging-framework'] === 'Serilog' ? `,
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Debug",
+      "Override": {
+        "Microsoft": "Information",
+        "System": "Error"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "${config['log-destinations'].includes('File') ? 'Logs/log-.txt' : ''}",
+          "rollingInterval": "Day",
+          "retainedFileCountLimit": 7
+        }
+      }${config['log-destinations'].includes('Console') ? `,
+      {
+        "Name": "Console"
+      }` : ''}
+    ]
+  }` : ''}
+}
+\`\`\`
+
+### CREATE FILE: ${config['project-name']}.WebApi/Program.cs
+\`\`\`csharp
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+${config['logging-framework'] === 'Serilog' ? 'using Serilog;' : ''}
+${config['realtime-tech'] === 'SignalR' ? 'using Microsoft.AspNetCore.SignalR;' : ''}
+
+var builder = WebApplication.CreateBuilder(args);
+
+${config['logging-framework'] === 'Serilog' ? `// Configure Serilog
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));` : ''}
+
+// Add services to the container
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins",
+        policy =>
+        {
+            policy.WithOrigins(builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? new[] { "*" })
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()${config['realtime-tech'] === 'SignalR' ? `
+                  .AllowCredentials()` : ''};
+        });
+});
+
+// Configure JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT Secret Key not configured"));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+        };
+    });
+
+${config['realtime-tech'] === 'SignalR' ? '// Add SignalR\nbuilder.Services.AddSignalR();' : ''}
+
+${config['cache-provider'] === 'Redis' ? `// Add Redis Cache
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisCache");
+});` : config['cache-provider'] === 'In-Memory' ? '// Add Memory Cache\nbuilder.Services.AddMemoryCache();' : ''}
+
+// Register application services
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigins");
+app.UseAuthentication();
+app.UseAuthorization();
+
+${config['realtime-tech'] === 'SignalR' ? 'app.MapHub<NotificationHub>("/notificationHub");' : ''}
+app.MapControllers();
+
+app.Run();
+\`\`\`
+
+${config['frontend-framework'].includes('React') ? `### CREATE FILE: ${config['project-name']}.WebApi/UIPages/package.json
+\`\`\`json
+{
+  "name": "${config['project-name'].toLowerCase()}-ui",
+  "version": "${config['project-version']}",
+  "private": true,
+  "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^14.2.5",
+    "bootstrap": "^5.1.3",
+    "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.0.0",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
+\`\`\`` : ''}
+
+## STEP 4: Configure Database
+
+**CLAUDE: Set up the database with these settings:**
+
+### Database Configuration
+- **Type**: ${config['database-type']}
+- **Host**: ${config['db-host']}
+- **Port**: ${config['db-port']}
+- **Database**: ${config['db-name'] || '{database_name}'}
+- **Username**: ${config['db-username']}
+
+### Connection Strings
+**Development**:
+\`\`\`
+${document.getElementById('connection-preview').textContent}
+\`\`\`
+
+**Production** (update credentials):
+\`\`\`
+Server={PROD_HOST};Port=${config['db-port']};Database={PROD_DB};User Id={PROD_USER};Password={PROD_PASSWORD};${config['db-params'] || ''}
+\`\`\`
+
+${config['tenancy-strategy'] ? `### Multi-Tenancy Configuration
+- **Strategy**: ${config['tenancy-strategy'] === 'single-db' ? 'Multi-Tenant with Single DB (Row-level isolation using site_id)' : config['tenancy-strategy'] === 'multiple-db' ? 'Multi-Tenant with Multiple DBs (Database per tenant)' : 'Single-tenant'}` : ''}
+
+## 🔐 SECURITY CONFIGURATION
+=====================================
+
+### Authentication
+- **Type**: ${config['auth-type']}
+- **Token Signing**: ${config['token-signing']}
+- **Access Token Expiry**: ${config['access-token-expiry']} minutes
+- **Refresh Token Expiry**: ${config['refresh-token-expiry']} minutes
+
+### Password Security
+- **Algorithm**: ${config['password-algorithm']}
+- **Salt Rounds**: ${config['salt-rounds']}
+
+### Encryption
+- **At Rest**: ${config['encryption-rest'] || 'Database-native'}
+- **In Transit**: ${config['encryption-transit'] || 'TLS 1.2+'}
+- **Key Management**: ${config['key-management'] || 'Local'}
+
+### CORS Configuration
+Allowed Origins:
+${config['cors-origins'] ? config['cors-origins'].split('\n').map(o => `- ${o.trim()}`).join('\n') : '- *'}
+
+## 💾 CACHING CONFIGURATION
+=====================================
+- **Provider**: ${config['cache-provider']}
+- **Connection**: ${config['cache-connection'] || 'Default'}
+- **Default TTL**: ${config['cache-ttl']} seconds
+- **Key Pattern**: ${config['cache-pattern'] || '{entity}:{id}'}
+
+## 📡 ADDITIONAL SERVICES
+=====================================
+
+${config['realtime-tech'] ? `### Real-time Communication
+- **Technology**: ${config['realtime-tech']}
+- **Endpoint**: ${config['realtime-config'] || '/hub'}` : ''}
+
+${config['logging-framework'] ? `### Logging
+- **Framework**: ${config['logging-framework']}
+- **Destinations**: ${config['log-destinations']}
+- **Level**: ${config['log-level']}
+- **Rotation**: ${config['log-rotation']}` : ''}
+
+${config['storage-type'] ? `### File Storage
+- **Type**: ${config['storage-type']}
+- **Configuration**: ${config['storage-config']}` : ''}
+
+${config['email-provider'] ? `### Email Service
+- **Provider**: ${config['email-provider']}
+- **Configuration**: ${config['email-config']}` : ''}
+
+${config['message-system'] ? `### Message Queue
+- **System**: ${config['message-system']}
+- **Configuration**: ${config['message-config']}` : ''}
+
+${config['external-services'] ? `### External Integrations
+${config['external-services'].split('\n').map(s => `- ${s.trim()}`).join('\n')}` : ''}
+
+## STEP 5: Final Setup and Verification
+
+**CLAUDE: Complete the project setup:**
+
+1. Create a database named \`${config['db-name'] || config['project-name'] + '_DEV'}\` in ${config['database-type']}
+2. Run \`dotnet build\` to verify everything compiles
+3. Run \`dotnet run --project ${config['project-name']}.WebApi\` to start the application
+4. The API should be available at https://localhost:5001/swagger
+
+## IMPORTANT NOTES FOR CLAUDE
+
+- Use the XOS framework patterns from @claude_docs when implementing features
+- Follow MVVM pattern for all frontend components
+- All database operations should use the repository pattern
+- Implement proper error handling and logging throughout
+- Use dependency injection for all services
+- Follow the naming conventions established in the XOS framework
+
+## 📊 INSTALLATION SUMMARY
+====================================
+### Components Selected:
+${config['backend-framework'] ? '☑ Backend API (' + config['backend-framework'] + ')' : '☐ Backend API'}
+${config['frontend-framework'] && config['frontend-framework'] !== 'None' ? '☑ Frontend (' + config['frontend-framework'] + ')' : '☐ Frontend'}
+${config['database-type'] ? '☑ Database (' + config['database-type'] + ')' : '☐ Database'}
+${config['cache-provider'] ? '☑ Caching (' + config['cache-provider'] + ')' : '☐ Caching'}
+${config['realtime-tech'] ? '☑ Real-time (' + config['realtime-tech'] + ')' : '☐ Real-time'}
+${config['auth-type'] ? '☑ Authentication (' + config['auth-type'] + ')' : '☐ Authentication'}
+${config['message-system'] ? '☑ Message Queue (' + config['message-system'] + ')' : '☐ Message Queue'}
+
+### Resource Requirements:
+- **Disk Space**: ~500 MB (including packages)
+- **Memory**: 2 GB minimum for development
+- **Setup Time**: ~5-10 minutes
+
+## PROJECT GENERATION COMPLETE
+
+**CLAUDE: This project seed file is ready for execution.**
+
+When you're ready, start with STEP 1 and work through each step in order.
+Remember to use @claude_docs for XOS framework patterns and best practices.
+
+---
+**Generated**: ${timestamp}
+**Template**: ${config.template}
+**Generator Version**: 1.0.0
+`;
+        }
+
+        function generateProject() {
+            const config = collectConfiguration();
+            const markdown = generateFullMarkdown(config);
+            
+            // Create a blob and download
+            const blob = new Blob([markdown], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `PROJECT_SEED_${config['project-name']}_${Date.now()}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Project seed file generated successfully! Give this file to Claude Code to create your project.');
+        }
+
+        function saveTemplate() {
+            const templateName = document.getElementById('template-name').value;
+            if (!templateName) {
+                alert('Please enter a template name');
+                return;
+            }
+            
+            const config = collectConfiguration();
+            const savedTemplates = JSON.parse(localStorage.getItem('savedTemplates') || '{}');
+            savedTemplates[templateName] = config;
+            localStorage.setItem('savedTemplates', JSON.stringify(savedTemplates));
+            
+            alert(`Template "${templateName}" saved successfully!`);
+            loadSavedTemplates();
+        }
+
+        function loadSavedTemplates() {
+            const savedTemplates = JSON.parse(localStorage.getItem('savedTemplates') || '{}');
+            const select = document.getElementById('saved-templates');
+            
+            // Clear existing options except the first one
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // Add saved templates
+            Object.keys(savedTemplates).forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+        }
+
+        document.getElementById('saved-templates').addEventListener('change', function() {
+            const templateName = this.value;
+            if (templateName) {
+                const savedTemplates = JSON.parse(localStorage.getItem('savedTemplates') || '{}');
+                const template = savedTemplates[templateName];
+                if (template) {
+                    Object.keys(template).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            element.value = template[key];
+                        }
+                    });
+                    updateConnectionString();
                 }
             }
-        `;
-        document.head.appendChild(style);
+        });
     </script>
 </body>
 </html>
