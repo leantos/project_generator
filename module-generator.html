@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Generator - Enterprise Module Creation Wizard</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@300;400;500&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #0f0f0f;
+            color: #e8eaed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .wizard-container {
+            background: #1f1f1f;
+            border-radius: 28px;
+            box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 1200px;
+            min-height: 700px;
+            display: flex;
+            overflow: hidden;
+            border: 1px solid #313131;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #171717;
+            padding: 32px 24px;
+            border-right: 1px solid #313131;
+            border-radius: 28px 0 0 28px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #313131;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #8ab4f8, #81c995);
+            border-radius: 12px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #202124;
+            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: #e8eaed;
+            letter-spacing: 0;
+        }
+
+        .step-list {
+            list-style: none;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #9aa0a6;
+        }
+
+        .step-item:hover {
+            background: rgba(138, 180, 248, 0.08);
+            color: #e8eaed;
+        }
+
+        .step-item.active {
+            background: linear-gradient(135deg, rgba(138, 180, 248, 0.16), rgba(129, 201, 149, 0.12));
+            color: #8ab4f8;
+            border-left: 3px solid #8ab4f8;
+        }
+
+        .step-item.completed {
+            color: #81c995;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid #5f6368;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .step-item.active .step-number {
+            background: linear-gradient(135deg, #8ab4f8, #aecbfa);
+            border-color: #8ab4f8;
+            color: #202124;
+        }
+
+        .step-item.completed .step-number {
+            background: linear-gradient(135deg, #81c995, #a8dab5);
+            border-color: #81c995;
+            color: #202124;
+        }
+
+        .step-text {
+            font-size: 14px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 48px;
+            overflow-y: auto;
+            background: #202124;
+            border-radius: 0 28px 28px 0;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #e8eaed;
+            font-weight: 400;
+            letter-spacing: 0;
+        }
+
+        .step-description {
+            color: #9aa0a6;
+            margin-bottom: 32px;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .form-section {
+            background: #292a2d;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 1px solid #3c4043;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #e8eaed;
+            display: flex;
+            align-items: center;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .form-section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, #8ab4f8, #81c995);
+            margin-right: 12px;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #bdc1c6;
+            font-weight: 400;
+        }
+
+        .required {
+            color: #f28b82;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: #303134;
+            border: 1px solid #5f6368;
+            border-radius: 8px;
+            color: #e8eaed;
+            font-size: 14px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Roboto', 'Google Sans', sans-serif;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #8ab4f8;
+            background: #303134;
+            box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2), 0 0 12px rgba(138, 180, 248, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #9aa0a6;
+            margin-top: 6px;
+            line-height: 16px;
+        }
+
+        .module-type-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .module-type-card {
+            background: #303134;
+            border: 2px solid #5f6368;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .module-type-card:hover {
+            border-color: #8ab4f8;
+            background: #3c4043;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .module-type-card.selected {
+            border-color: #8ab4f8;
+            background: linear-gradient(135deg, rgba(138, 180, 248, 0.12), rgba(129, 201, 149, 0.08));
+            box-shadow: inset 0 0 20px rgba(138, 180, 248, 0.1);
+        }
+
+        .module-type-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            filter: brightness(1.2) saturate(1.2);
+        }
+
+        .module-type-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #e8eaed;
+        }
+
+        .module-type-desc {
+            font-size: 12px;
+            color: #9aa0a6;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #8ab4f8;
+        }
+
+        .checkbox-label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #e8eaed;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid #3c4043;
+        }
+
+        button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+            min-width: 88px;
+            text-transform: none;
+            letter-spacing: 0.25px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8ab4f8, #81c995);
+            color: #202124;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #aecbfa, #a8dab5);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #8ab4f8;
+            border: 1px solid #5f6368;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(138, 180, 248, 0.08);
+            border-color: #8ab4f8;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #81c995, #fbbf24);
+            color: #202124;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #a8dab5, #fcd34d);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-preview {
+            background: linear-gradient(135deg, #1e1f22, #252629);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            white-space: pre;
+            color: #adbac7;
+            border: 1px solid #3c4043;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #3c4043;
+            border-radius: 2px;
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4285f4, #8ab4f8, #81c995, #fbbf24);
+            border-radius: 2px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-size: 200% 100%;
+        }
+
+        .field-list {
+            background: #292a2d;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            min-height: 100px;
+            padding: 16px;
+            margin-top: 8px;
+        }
+
+        .field-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #3c4043;
+        }
+
+        .field-item:last-child {
+            border-bottom: none;
+        }
+
+        .field-name {
+            font-weight: 500;
+            color: #e8eaed;
+        }
+
+        .field-type {
+            color: #8ab4f8;
+            font-size: 12px;
+        }
+
+        .btn-remove {
+            background: #f28b82;
+            color: #202124;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* UI Approach Selector */
+        .ui-approach-selector {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .approach-option {
+            flex: 1;
+            border: 2px solid #5f6368;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #303134;
+        }
+
+        .approach-option:hover {
+            border-color: #8ab4f8;
+            background: #3c4043;
+        }
+
+        .approach-option input[type="radio"]:checked ~ .approach-content {
+            color: #8ab4f8;
+        }
+
+        .approach-option:has(input:checked) {
+            border-color: #8ab4f8;
+            background: rgba(138, 180, 248, 0.08);
+        }
+
+        .approach-content strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #e8eaed;
+        }
+
+        .approach-content p {
+            margin: 0;
+            font-size: 12px;
+            color: #9aa0a6;
+        }
+
+        /* Template Visual Selector */
+        .template-visual-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .template-option {
+            border: 2px solid #5f6368;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #303134;
+        }
+
+        .template-option:hover {
+            border-color: #8ab4f8;
+            background: #3c4043;
+            transform: translateY(-2px);
+        }
+
+        .template-option.selected {
+            border-color: #8ab4f8;
+            background: rgba(138, 180, 248, 0.08);
+        }
+
+        .template-preview {
+            margin-bottom: 12px;
+        }
+
+        .template-mockup {
+            background: #1e1f22;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 10px;
+            color: #adbac7;
+            min-height: 100px;
+        }
+
+        /* CRUD Template Mockup */
+        .crud-mockup .mockup-header {
+            background: #2d3748;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .crud-mockup .mockup-body {
+            margin-bottom: 8px;
+        }
+
+        .crud-mockup .mockup-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .crud-mockup .mockup-field {
+            flex: 1;
+            height: 12px;
+            background: #4a5568;
+            border-radius: 2px;
+        }
+
+        .crud-mockup .mockup-footer {
+            display: flex;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+
+        .mockup-btn {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+        }
+
+        .mockup-btn.save {
+            background: #81c995;
+            color: #202124;
+        }
+
+        .mockup-btn.close {
+            background: #5f6368;
+            color: #e8eaed;
+        }
+
+        /* Grid Template Mockup */
+        .grid-mockup .mockup-search {
+            background: #4a5568;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .grid-mockup .mockup-grid {
+            background: #2d3748;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        .grid-mockup .grid-header {
+            background: #4a5568;
+            padding: 2px 4px;
+            margin-bottom: 2px;
+            font-weight: bold;
+            font-size: 8px;
+        }
+
+        .grid-mockup .grid-row {
+            padding: 2px 4px;
+            margin-bottom: 1px;
+            background: rgba(138, 180, 248, 0.1);
+        }
+
+        /* Workflow Template Mockup */
+        .workflow-mockup .mockup-accordion {
+            margin-bottom: 4px;
+        }
+
+        .workflow-mockup .accordion-item {
+            background: #4a5568;
+            padding: 2px 4px;
+            margin-bottom: 2px;
+            border-radius: 2px;
+        }
+
+        .workflow-mockup .mockup-files,
+        .workflow-mockup .mockup-timeline {
+            background: #2d3748;
+            padding: 2px 4px;
+            margin-bottom: 4px;
+            border-radius: 2px;
+        }
+
+        .mockup-btn.approve {
+            background: #81c995;
+            color: #202124;
+        }
+
+        .mockup-btn.reject {
+            background: #f28b82;
+            color: #202124;
+        }
+
+        /* Report Template Mockup */
+        .report-mockup .mockup-params {
+            margin-bottom: 8px;
+        }
+
+        .report-mockup .param-row {
+            background: #4a5568;
+            padding: 2px 4px;
+            margin-bottom: 2px;
+            border-radius: 2px;
+        }
+
+        .mockup-btn.generate {
+            background: #8ab4f8;
+            color: #202124;
+        }
+
+        .mockup-btn.schedule {
+            background: #fbbf24;
+            color: #202124;
+        }
+
+        .template-info h4 {
+            margin: 0 0 4px 0;
+            color: #e8eaed;
+            font-size: 14px;
+        }
+
+        .template-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #9aa0a6;
+        }
+
+        /* File Upload Area */
+        .file-upload-area {
+            border: 2px dashed #5f6368;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #292a2d;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #8ab4f8;
+            background: #3c4043;
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #8ab4f8;
+            background: rgba(138, 180, 248, 0.08);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .upload-content p {
+            margin: 8px 0;
+            color: #e8eaed;
+        }
+
+        .upload-link {
+            color: #8ab4f8;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .upload-formats {
+            font-size: 12px;
+            color: #9aa0a6;
+            margin-top: 8px;
+        }
+
+        .wireframe-display {
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .wireframe-actions {
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wizard-container">
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">MG</div>
+                <div class="logo-text">Module Generator</div>
+            </div>
+            <ul class="step-list">
+                <li class="step-item active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Module Type</div>
+                </li>
+                <li class="step-item" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Basic Information</div>
+                </li>
+                <li class="step-item" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Entity & Fields</div>
+                </li>
+                <li class="step-item" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-text">Features</div>
+                </li>
+                <li class="step-item" data-step="5">
+                    <div class="step-number">5</div>
+                    <div class="step-text">Generate</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <!-- Step 1: Module Type -->
+            <div class="step-content active" id="step-1">
+                <h1>Choose Module Type</h1>
+                <p class="step-description">Select what type of module you want to create. This will determine which components are generated.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 20%"></div>
+                </div>
+
+                <div class="module-type-selector">
+                    <div class="module-type-card" data-type="frontend" onclick="selectModuleType('frontend')">
+                        <div class="module-type-icon">🎨</div>
+                        <div class="module-type-name">Frontend Only</div>
+                        <div class="module-type-desc">React components with XOS framework</div>
+                    </div>
+                    <div class="module-type-card" data-type="backend" onclick="selectModuleType('backend')">
+                        <div class="module-type-icon">⚡</div>
+                        <div class="module-type-name">Backend Only</div>
+                        <div class="module-type-desc">API controllers, services, and domain models</div>
+                    </div>
+                    <div class="module-type-card selected" data-type="fullstack" onclick="selectModuleType('fullstack')">
+                        <div class="module-type-icon">🚀</div>
+                        <div class="module-type-name">Full Stack</div>
+                        <div class="module-type-desc">Complete module with frontend and backend</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Basic Information -->
+            <div class="step-content" id="step-2">
+                <h1>Module Information</h1>
+                <p class="step-description">Enter basic information about your module.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 40%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Module Details</div>
+                    <div class="form-group">
+                        <label>Module Name <span class="required">*</span></label>
+                        <input type="text" id="module-name" placeholder="e.g., UserManagement, ProductCatalog">
+                        <div class="hint">Use PascalCase. This will be used for class names and filenames</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Module Code</label>
+                        <input type="text" id="module-code" placeholder="e.g., USRM, PRDM">
+                        <div class="hint">Short identifier for the module (usually 4 characters)</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="module-description" placeholder="Brief description of what this module does"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Configuration</div>
+                    <div class="form-group">
+                        <label>Namespace Prefix</label>
+                        <input type="text" id="namespace-prefix" value="CVS" placeholder="e.g., CVS, XOS">
+                        <div class="hint">Will be used as namespace prefix (e.g., CVS.Transaction.Services)</div>
+                    </div>
+                    <div class="form-group" id="ui-template-group">
+                        <label>UI Design Approach <span class="required">*</span></label>
+                        <div class="ui-approach-selector">
+                            <div class="approach-option" onclick="selectUIApproach('template')">
+                                <input type="radio" name="ui-approach" value="template" checked>
+                                <div class="approach-content">
+                                    <strong>Use Existing Template</strong>
+                                    <p>Choose from proven UI templates</p>
+                                </div>
+                            </div>
+                            <div class="approach-option" onclick="selectUIApproach('wireframe')">
+                                <input type="radio" name="ui-approach" value="wireframe">
+                                <div class="approach-content">
+                                    <strong>Upload Wireframe/UI Design</strong>
+                                    <p>Upload your own design or wireframe</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="template-selection" class="form-group">
+                        <label>Select UI Template</label>
+                        <div class="template-visual-selector">
+                            <div class="template-option selected" data-template="MasterDetailCRUDTemplate">
+                                <div class="template-preview">
+                                    <div class="template-mockup crud-mockup">
+                                        <div class="mockup-header">📝 Form Header</div>
+                                        <div class="mockup-body">
+                                            <div class="mockup-row">
+                                                <div class="mockup-field"></div>
+                                                <div class="mockup-field"></div>
+                                            </div>
+                                            <div class="mockup-row">
+                                                <div class="mockup-field"></div>
+                                                <div class="mockup-field"></div>
+                                            </div>
+                                        </div>
+                                        <div class="mockup-footer">
+                                            <div class="mockup-btn save">Save</div>
+                                            <div class="mockup-btn close">Close</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-info">
+                                    <h4>Master-Detail CRUD</h4>
+                                    <p>Two-column forms, CRUD operations (65% usage)</p>
+                                </div>
+                            </div>
+
+                            <div class="template-option" data-template="SearchListGridTemplate">
+                                <div class="template-preview">
+                                    <div class="template-mockup grid-mockup">
+                                        <div class="mockup-search">🔍 Search</div>
+                                        <div class="mockup-grid">
+                                            <div class="grid-header">Name | Type | Date | Actions</div>
+                                            <div class="grid-row">Item 1 | Type A | 2024 | ⚡</div>
+                                            <div class="grid-row">Item 2 | Type B | 2024 | ⚡</div>
+                                            <div class="grid-row">Item 3 | Type C | 2024 | ⚡</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-info">
+                                    <h4>Search/List Grid</h4>
+                                    <p>Search, filters, data grids (20% usage)</p>
+                                </div>
+                            </div>
+
+                            <div class="template-option" data-template="WorkflowFormTemplate">
+                                <div class="template-preview">
+                                    <div class="template-mockup workflow-mockup">
+                                        <div class="mockup-accordion">
+                                            <div class="accordion-item">▼ Section 1</div>
+                                            <div class="accordion-item">▶ Section 2</div>
+                                            <div class="accordion-item">▶ Section 3</div>
+                                        </div>
+                                        <div class="mockup-files">📎 Attachments</div>
+                                        <div class="mockup-timeline">📅 Timeline</div>
+                                        <div class="mockup-footer">
+                                            <div class="mockup-btn approve">Approve</div>
+                                            <div class="mockup-btn reject">Reject</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-info">
+                                    <h4>Workflow Form</h4>
+                                    <p>Approvals, attachments, timeline (10% usage)</p>
+                                </div>
+                            </div>
+
+                            <div class="template-option" data-template="ReportParameterTemplate">
+                                <div class="template-preview">
+                                    <div class="template-mockup report-mockup">
+                                        <div class="mockup-params">
+                                            <div class="param-row">📅 Date Range</div>
+                                            <div class="param-row">📊 Categories</div>
+                                            <div class="param-row">🏢 Sites</div>
+                                        </div>
+                                        <div class="mockup-footer">
+                                            <div class="mockup-btn generate">Generate</div>
+                                            <div class="mockup-btn schedule">Schedule</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-info">
+                                    <h4>Report Parameters</h4>
+                                    <p>Report generation, scheduling (5% usage)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="wireframe-upload" class="form-group" style="display: none;">
+                        <label>Upload Wireframe/UI Design</label>
+                        <div class="file-upload-area" id="wireframe-drop-zone">
+                            <div class="upload-content">
+                                <div class="upload-icon">📎</div>
+                                <p><strong>Drag & drop</strong> your wireframe or UI design here</p>
+                                <p>Or <span class="upload-link" onclick="document.getElementById('wireframe-file').click()">browse files</span></p>
+                                <div class="upload-formats">Supports: PNG, JPG, PDF, Figma links</div>
+                            </div>
+                            <input type="file" id="wireframe-file" accept="image/*,.pdf" style="display: none;">
+                        </div>
+                        <div id="wireframe-preview" style="display: none;">
+                            <div class="wireframe-display">
+                                <img id="wireframe-image" style="max-width: 100%; border-radius: 8px; border: 1px solid #3c4043;">
+                                <div class="wireframe-actions">
+                                    <button type="button" onclick="removeWireframe()" class="btn-remove">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Design Description</label>
+                            <textarea id="wireframe-description" placeholder="Describe your UI design, key features, layout requirements, etc."></textarea>
+                            <div class="hint">Help Claude understand your design intent and requirements</div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="api-base-route-group">
+                        <label>API Base Route</label>
+                        <input type="text" id="api-base-route" placeholder="e.g., /api/usermanagement">
+                        <div class="hint">Base route for API endpoints (auto-generated if empty)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Entity & Fields -->
+            <div class="step-content" id="step-3">
+                <h1>Entity Definition</h1>
+                <p class="step-description">Define the main entity and its properties for this module.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 60%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Entity Information</div>
+                    <div class="form-group">
+                        <label>Entity Name <span class="required">*</span></label>
+                        <input type="text" id="entity-name" placeholder="e.g., User, Product, Order">
+                        <div class="hint">Singular name for your main entity</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Table Name</label>
+                        <input type="text" id="table-name" placeholder="e.g., usr_mast, prd_mast">
+                        <div class="hint">Database table name (leave empty to auto-generate)</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Entity Fields</div>
+                    <div class="form-group">
+                        <label>Add Field</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <input type="text" id="field-name" placeholder="Field name" style="flex: 1;">
+                            <select id="field-type" style="flex: 1;">
+                                <option value="string">String</option>
+                                <option value="int">Integer</option>
+                                <option value="short">Short</option>
+                                <option value="decimal">Decimal</option>
+                                <option value="DateTime">DateTime</option>
+                                <option value="bool">Boolean</option>
+                            </select>
+                            <button type="button" onclick="addField()" class="btn-primary">Add</button>
+                        </div>
+                    </div>
+                    <div class="field-list" id="field-list">
+                        <div style="color: #9aa0a6; text-align: center;">No fields added yet. Add some fields above.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Features -->
+            <div class="step-content" id="step-4">
+                <h1>Module Features</h1>
+                <p class="step-description">Select which features to include in your module.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 80%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">CRUD Operations</div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="feature-create" checked>
+                        <label for="feature-create" class="checkbox-label">Create (Add new records)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="feature-read" checked>
+                        <label for="feature-read" class="checkbox-label">Read (List and search)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="feature-update" checked>
+                        <label for="feature-update" class="checkbox-label">Update (Edit existing records)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="feature-delete" checked>
+                        <label for="feature-delete" class="checkbox-label">Delete (Remove records)</label>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Advanced Features</div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="feature-audit">
+                        <label for="feature-audit" class="checkbox-label">Audit Trail (Track changes)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="feature-export">
+                        <label for="feature-export" class="checkbox-label">Export functionality</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="feature-search">
+                        <label for="feature-search" class="checkbox-label">Advanced search</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="feature-pagination">
+                        <label for="feature-pagination" class="checkbox-label">Pagination</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Generate -->
+            <div class="step-content" id="step-5">
+                <h1>Generate Module</h1>
+                <p class="step-description">Review your configuration and generate the module files.</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Module Summary</div>
+                    <div id="module-summary">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Generated Instructions Preview</div>
+                    <div class="code-preview" id="instructions-preview">
+                        # Generated instructions will appear here...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation buttons -->
+            <div class="button-group">
+                <div>
+                    <button class="btn-secondary" onclick="previousStep()" id="prev-btn" style="display: none;">Previous</button>
+                </div>
+                <div>
+                    <button class="btn-primary" onclick="nextStep()" id="next-btn">Next</button>
+                    <button class="btn-success" onclick="generateModule()" id="generate-btn" style="display: none;">Generate Module</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 5;
+        let configuration = {
+            moduleType: 'fullstack',
+            fields: []
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateModuleSummary();
+            updateFormVisibility();
+        });
+
+        // Step navigation
+        document.querySelectorAll('.step-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const step = parseInt(this.dataset.step);
+                if (step <= currentStep || validateCurrentStep()) {
+                    goToStep(step);
+                }
+            });
+        });
+
+        function selectModuleType(type) {
+            configuration.moduleType = type;
+            document.querySelectorAll('.module-type-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+            updateFormVisibility();
+        }
+
+        function updateFormVisibility() {
+            const moduleType = configuration.moduleType;
+            
+            // Show/hide UI template dropdown
+            const uiTemplateGroup = document.getElementById('ui-template-group');
+            const apiRouteGroup = document.getElementById('api-base-route-group');
+            
+            if (moduleType === 'frontend' || moduleType === 'fullstack') {
+                uiTemplateGroup.style.display = 'block';
+            } else {
+                uiTemplateGroup.style.display = 'none';
+            }
+            
+            if (moduleType === 'backend' || moduleType === 'fullstack') {
+                apiRouteGroup.style.display = 'block';
+            } else {
+                apiRouteGroup.style.display = 'none';
+            }
+        }
+
+        function selectUIApproach(approach) {
+            const templateSelection = document.getElementById('template-selection');
+            const wireframeUpload = document.getElementById('wireframe-upload');
+            
+            if (approach === 'template') {
+                templateSelection.style.display = 'block';
+                wireframeUpload.style.display = 'none';
+            } else {
+                templateSelection.style.display = 'none';
+                wireframeUpload.style.display = 'block';
+            }
+            
+            // Update radio button
+            document.querySelector(`input[value="${approach}"]`).checked = true;
+        }
+
+        // Template selection
+        document.addEventListener('DOMContentLoaded', function() {
+            // Template option selection
+            document.querySelectorAll('.template-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.template-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            // File upload handling
+            const dropZone = document.getElementById('wireframe-drop-zone');
+            const fileInput = document.getElementById('wireframe-file');
+            const wireframePreview = document.getElementById('wireframe-preview');
+            const wireframeImage = document.getElementById('wireframe-image');
+
+            // Drag and drop events
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+
+            // File input change
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+
+            // Click to upload
+            dropZone.addEventListener('click', function() {
+                fileInput.click();
+            });
+        });
+
+        function handleFileUpload(file) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('wireframe-image').src = e.target.result;
+                    document.getElementById('wireframe-drop-zone').style.display = 'none';
+                    document.getElementById('wireframe-preview').style.display = 'block';
+                    configuration.wireframeFile = file;
+                    configuration.wireframeData = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeWireframe() {
+            document.getElementById('wireframe-drop-zone').style.display = 'block';
+            document.getElementById('wireframe-preview').style.display = 'none';
+            document.getElementById('wireframe-file').value = '';
+            configuration.wireframeFile = null;
+            configuration.wireframeData = null;
+        }
+
+        function goToStep(step) {
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`step-${step}`).classList.add('active');
+
+            document.querySelectorAll('.step-item').forEach(item => {
+                item.classList.remove('active');
+                const itemStep = parseInt(item.dataset.step);
+                if (itemStep < step) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+            document.querySelector(`.step-item[data-step="${step}"]`).classList.add('active');
+
+            currentStep = step;
+            updateNavigationButtons();
+            
+            if (step === 5) {
+                showSummary();
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps && validateCurrentStep()) {
+                goToStep(currentStep + 1);
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                goToStep(currentStep - 1);
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const generateBtn = document.getElementById('generate-btn');
+
+            prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
+            
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+                generateBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                generateBtn.style.display = 'none';
+            }
+        }
+
+        function validateCurrentStep() {
+            switch(currentStep) {
+                case 2:
+                    const moduleName = document.getElementById('module-name').value.trim();
+                    if (!moduleName) {
+                        alert('Please enter a module name');
+                        return false;
+                    }
+                    break;
+                case 3:
+                    const entityName = document.getElementById('entity-name').value.trim();
+                    if (!entityName) {
+                        alert('Please enter an entity name');
+                        return false;
+                    }
+                    break;
+            }
+            return true;
+        }
+
+        function addField() {
+            const fieldName = document.getElementById('field-name').value.trim();
+            const fieldType = document.getElementById('field-type').value;
+            
+            if (!fieldName) {
+                alert('Please enter a field name');
+                return;
+            }
+            
+            // Check if field already exists
+            if (configuration.fields.some(f => f.name.toLowerCase() === fieldName.toLowerCase())) {
+                alert('Field already exists');
+                return;
+            }
+            
+            configuration.fields.push({ name: fieldName, type: fieldType });
+            updateFieldList();
+            
+            // Clear inputs
+            document.getElementById('field-name').value = '';
+            document.getElementById('field-type').value = 'string';
+        }
+
+        function removeField(index) {
+            configuration.fields.splice(index, 1);
+            updateFieldList();
+        }
+
+        function updateFieldList() {
+            const fieldList = document.getElementById('field-list');
+            if (configuration.fields.length === 0) {
+                fieldList.innerHTML = '<div style="color: #9aa0a6; text-align: center;">No fields added yet. Add some fields above.</div>';
+                return;
+            }
+            
+            fieldList.innerHTML = configuration.fields.map((field, index) => `
+                <div class="field-item">
+                    <div>
+                        <div class="field-name">${field.name}</div>
+                        <div class="field-type">${field.type}</div>
+                    </div>
+                    <button class="btn-remove" onclick="removeField(${index})">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function collectConfiguration() {
+            const apiBaseRoute = document.getElementById('api-base-route').value.trim();
+            const moduleName = document.getElementById('module-name').value.trim();
+            const uiApproach = document.querySelector('input[name="ui-approach"]:checked')?.value || 'template';
+            
+            const config = {
+                moduleType: configuration.moduleType,
+                moduleName: moduleName,
+                moduleCode: document.getElementById('module-code').value.trim(),
+                description: document.getElementById('module-description').value.trim(),
+                namespacePrefix: document.getElementById('namespace-prefix').value.trim() || 'CVS',
+                apiBaseRoute: apiBaseRoute || `/api/${moduleName.toLowerCase()}`,
+                entityName: document.getElementById('entity-name').value.trim(),
+                tableName: document.getElementById('table-name').value.trim(),
+                fields: configuration.fields,
+                features: {
+                    create: document.getElementById('feature-create').checked,
+                    read: document.getElementById('feature-read').checked,
+                    update: document.getElementById('feature-update').checked,
+                    delete: document.getElementById('feature-delete').checked,
+                    audit: document.getElementById('feature-audit').checked,
+                    export: document.getElementById('feature-export').checked,
+                    search: document.getElementById('feature-search').checked,
+                    pagination: document.getElementById('feature-pagination').checked
+                }
+            };
+            
+            // Add UI-specific configuration
+            if (configuration.moduleType === 'frontend' || configuration.moduleType === 'fullstack') {
+                config.uiApproach = uiApproach;
+                
+                if (uiApproach === 'template') {
+                    const selectedTemplate = document.querySelector('.template-option.selected');
+                    config.uiTemplate = selectedTemplate ? selectedTemplate.dataset.template : 'MasterDetailCRUDTemplate';
+                } else {
+                    config.wireframeDescription = document.getElementById('wireframe-description').value.trim();
+                    config.hasWireframe = !!configuration.wireframeData;
+                    if (configuration.wireframeData) {
+                        config.wireframeData = configuration.wireframeData;
+                    }
+                }
+            }
+            
+            return config;
+        }
+
+        function updateModuleSummary() {
+            const config = collectConfiguration();
+            const summary = document.getElementById('module-summary');
+            
+            if (!config.moduleName) return;
+            
+            summary.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px; color: #e8eaed;">
+                    <div><strong>Module Type:</strong></div>
+                    <div>${config.moduleType.charAt(0).toUpperCase() + config.moduleType.slice(1)}</div>
+                    <div><strong>Module Name:</strong></div>
+                    <div>${config.moduleName}</div>
+                    <div><strong>Namespace:</strong></div>
+                    <div>${config.namespacePrefix}</div>
+                    ${(config.moduleType === 'frontend' || config.moduleType === 'fullstack') ? `
+                    <div><strong>UI Approach:</strong></div>
+                    <div>${config.uiApproach === 'template' ? `Template: ${config.uiTemplate}` : 'Custom Wireframe'}</div>` : ''}
+                    ${(config.moduleType === 'backend' || config.moduleType === 'fullstack') ? `
+                    <div><strong>API Route:</strong></div>
+                    <div>${config.apiBaseRoute}</div>` : ''}
+                    <div><strong>Entity:</strong></div>
+                    <div>${config.entityName}</div>
+                    <div><strong>Fields:</strong></div>
+                    <div>${config.fields.map(f => `${f.name} (${f.type})`).join(', ') || 'None'}</div>
+                    <div><strong>Features:</strong></div>
+                    <div>${Object.keys(config.features).filter(k => config.features[k]).join(', ') || 'None'}</div>
+                </div>
+            `;
+        }
+
+        function showSummary() {
+            updateModuleSummary();
+            const config = collectConfiguration();
+            const preview = generateInstructions(config);
+            document.getElementById('instructions-preview').textContent = preview.substring(0, 1000) + '...';
+        }
+
+        function generateInstructions(config) {
+            const timestamp = new Date().toISOString();
+            
+            return `# MODULE GENERATOR: ${config.moduleName}
+
+## CLAUDE CODE - BUILD THIS MODULE
+
+This file contains instructions to create a ${config.moduleType} module for ${config.moduleName}.
+Use @claude_docs for XOS framework patterns and best practices.
+
+### Module Configuration
+- **Name**: ${config.moduleName}
+- **Type**: ${config.moduleType}
+- **Entity**: ${config.entityName}
+- **Namespace**: ${config.namespacePrefix}
+- **Code**: ${config.moduleCode || 'Generated'}
+${(config.moduleType === 'frontend' || config.moduleType === 'fullstack') ? `- **UI Template**: ${config.uiTemplate}` : ''}
+${(config.moduleType === 'backend' || config.moduleType === 'fullstack') ? `- **API Route**: ${config.apiBaseRoute}` : ''}
+
+## STEP 1: Create Domain Model ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+
+${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
+**CLAUDE: Create the domain model class:**
+
+### CREATE FILE: ${config.namespacePrefix}.Transaction/Domain/${config.entityName}.cs
+\`\`\`csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace ${config.namespacePrefix}.Transaction.Domain
+{
+    public class ${config.entityName}
+    {
+        ${generateDomainProperties(config.fields)}
+        
+        ${generateNestedClasses(config)}
+    }
+}
+\`\`\`
+` : ''}
+
+## STEP 2: Create Service Interface ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+
+${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
+**CLAUDE: Create the service interface:**
+
+### CREATE FILE: ${config.namespacePrefix}.Transaction/Interfaces/I${config.entityName}Service.cs
+\`\`\`csharp
+using ${config.namespacePrefix}.Transaction.Domain;
+
+namespace ${config.namespacePrefix}.Transaction.Interfaces
+{
+    public interface I${config.entityName}Service
+    {
+        ${generateServiceMethods(config)}
+    }
+}
+\`\`\`
+` : ''}
+
+## STEP 3: Create Service Implementation ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+
+${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
+**CLAUDE: Create the service implementation:**
+
+### CREATE FILE: ${config.namespacePrefix}.Transaction/Services/${config.entityName}Service.cs
+\`\`\`csharp
+using ${config.namespacePrefix}.Transaction.Core;
+using ${config.namespacePrefix}.Transaction.Domain;
+using ${config.namespacePrefix}.Transaction.Interfaces;
+using Microsoft.Extensions.Logging;
+using XOS.Data;
+
+namespace ${config.namespacePrefix}.Transaction.Services
+{
+    public class ${config.entityName}Service : XOSServiceBase, I${config.entityName}Service
+    {
+        #region Constructor
+        
+        public ${config.entityName}Service(IServiceProvider serviceProvider, ILogger<${config.entityName}Service> logger)
+          : base(serviceProvider, logger)
+        {
+        }
+        
+        #endregion
+        
+        #region Public Methods
+        
+        ${generateServiceImplementation(config)}
+        
+        #endregion
+        
+        #region Private Methods
+        
+        // Add private helper methods here
+        
+        #endregion
+    }
+}
+\`\`\`
+` : ''}
+
+## STEP 4: Create API Controller ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+
+${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
+**CLAUDE: Create the API controller:**
+
+### CREATE FILE: ${config.namespacePrefix}.WebApi/Controllers/${config.entityName}Controller.cs
+\`\`\`csharp
+using ${config.namespacePrefix}.Transaction.Domain;
+using ${config.namespacePrefix}.Transaction.Interfaces;
+using ${config.namespacePrefix}.WebApi.Domain;
+using Microsoft.AspNetCore.Mvc;
+
+namespace ${config.namespacePrefix}.WebApi.Controllers
+{
+    [Route("${config.apiBaseRoute}")]
+    [ApiController]
+    public class ${config.entityName}Controller : XOSBaseController
+    {
+        private readonly I${config.entityName}Service _${config.entityName.toLowerCase()}Service;
+        
+        public ${config.entityName}Controller(I${config.entityName}Service ${config.entityName.toLowerCase()}Service)
+        {
+            _${config.entityName.toLowerCase()}Service = ${config.entityName.toLowerCase()}Service;
+        }
+        
+        ${generateControllerMethods(config)}
+    }
+}
+\`\`\`
+` : ''}
+
+## STEP 5: Create Frontend Components ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? '' : '(Skip for backend-only)'}
+
+${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `
+**CLAUDE: Create the React components${config.uiApproach === 'template' ? ` using ${config.uiTemplate}` : ' based on the wireframe'}:**
+
+${config.uiApproach === 'wireframe' && config.hasWireframe ? `
+### 🎨 WIREFRAME ANALYSIS REQUIRED
+
+**CLAUDE**: The user has uploaded a wireframe/UI design. You need to:
+1. **Analyze the wireframe image** provided in the generated file
+2. **Understand the layout, components, and user interactions**
+3. **Create components that match the design intent**
+
+**Wireframe Description**: ${config.wireframeDescription || 'No description provided'}
+
+**Key Requirements**:
+- Match the visual layout shown in the wireframe
+- Implement all interactive elements visible in the design
+- Use XOS components where possible to maintain consistency
+- Follow the entity fields: ${config.fields.map(f => `${f.name} (${f.type})`).join(', ')}
+
+` : ''}
+
+### CREATE FILE: ${config.namespacePrefix}.WebApi/UIPages/src/components/${config.moduleName}/${config.entityName}VM.jsx
+\`\`\`javascript
+import { VMBase } from '../../xos-components/VMBase.js';
+import { ApiManager } from '../../xos-components/Core/ApiManager.js';
+
+export class ${config.entityName}VM extends VMBase {
+    constructor() {
+        super();
+        
+        // State properties
+        ${generateViewModelProperties(config.fields)}
+        
+        // Lists and collections
+        this.${config.entityName.toLowerCase()}List = this.observable([]);
+        this.selectedItem = this.observable(null);
+        this.isLoading = this.observable(false);
+        
+        // Form validation
+        this.validationErrors = this.observable({});
+    }
+    
+    ${generateViewModelMethods(config)}
+}
+\`\`\`
+
+### CREATE FILE: ${config.namespacePrefix}.WebApi/UIPages/src/components/${config.moduleName}/index.jsx
+
+${config.uiApproach === 'template' ? `**IMPORTANT**: Use the ${config.uiTemplate} from @claude_docs/frontend/ui-templates/ as your base template.` : `**IMPORTANT**: Create components based on the uploaded wireframe design.`}
+
+\`\`\`javascript
+import React from 'react';
+import { XOSComponent } from '../../xos-components/XOSComponent.js';
+import { ${config.entityName}VM } from './${config.entityName}VM.jsx';
+
+${config.uiApproach === 'template' ? `// CLAUDE: Copy from @claude_docs/frontend/ui-templates/${config.uiTemplate}/index.jsx
+// Then customize for ${config.entityName} entity with these fields:` : `// CLAUDE: Implement the wireframe design for ${config.entityName} entity with these fields:`}
+${config.fields.map(field => `//   - ${field.name} (${field.type})`).join('\n')}
+
+export class ${config.moduleName} extends XOSComponent {
+    constructor(props) {
+        super(props);
+        this.vm = new ${config.entityName}VM();
+    }
+    
+    async componentDidMount() {
+        await this.vm.loadData();
+    }
+    
+    render() {
+        // CLAUDE: Replace with ${config.uiTemplate} template render method
+        return (
+            ${generateComponentRender(config)}
+        );
+    }
+}
+
+export default ${config.moduleName};
+\`\`\`
+
+### ${config.uiApproach === 'template' ? 'Template-Specific Instructions:' : 'Wireframe Implementation Instructions:'}
+${config.uiApproach === 'template' ? getTemplateInstructions(config.uiTemplate, config) : getWireframeInstructions(config)}
+` : ''}
+
+## STEP 6: Register Services ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+
+${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
+**CLAUDE: Register the service in dependency injection:**
+
+### MODIFY FILE: ${config.namespacePrefix}.Transaction/Extensions/ServiceExtensions.cs
+
+Add this line in the service registration method:
+\`\`\`csharp
+services.AddScoped<I${config.entityName}Service, ${config.entityName}Service>();
+\`\`\`
+` : ''}
+
+## STEP 7: Database Setup ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+
+${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
+**CLAUDE: Create the database table:**
+
+### SQL Script for ${config.entityName} table:
+\`\`\`sql
+CREATE TABLE ${config.tableName || `${config.namespacePrefix.toLowerCase()}_${config.entityName.toLowerCase()}_mast`} (
+    clnt_id SMALLINT NOT NULL,
+    ${generateTableColumns(config.fields)}
+    rcrd_stat SMALLINT DEFAULT 1,
+    cre_by_usr_cd SMALLINT,
+    cre_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    mod_by_usr_cd SMALLINT,
+    mod_dttm TIMESTAMP,
+    
+    PRIMARY KEY (clnt_id, ${config.fields.find(f => f.name.toLowerCase().includes('id') || f.name.toLowerCase().includes('cd'))?.name.toLowerCase() || 'id'})
+);
+\`\`\`
+` : ''}
+
+## STEP 8: API Endpoints Documentation ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+
+${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
+**CLAUDE: Your module will expose these API endpoints:**
+
+| Method | Route | Purpose | Request Body |
+|--------|-------|---------|--------------|
+${config.features.create ? `| POST | ${config.apiBaseRoute}/save | Create/Update ${config.entityName} | ${config.entityName} object |` : ''}
+${config.features.read ? `| POST | ${config.apiBaseRoute}/search | Search ${config.entityName}s | SearchInput object |` : ''}
+${config.features.read ? `| GET | ${config.apiBaseRoute}/{id} | Get ${config.entityName} by ID | id parameter |` : ''}
+${config.features.delete ? `| DELETE | ${config.apiBaseRoute}/{id} | Delete ${config.entityName} | id parameter |` : ''}
+${config.features.export ? `| POST | ${config.apiBaseRoute}/export | Export ${config.entityName}s | ExportInput object |` : ''}
+
+**Example API Calls:**
+\`\`\`javascript
+// Search ${config.entityName}s
+const searchResult = await ApiManager.post('${config.apiBaseRoute}/search', {
+    ClientID: 1,
+    SiteID: 1,
+    SearchTerm: 'example'
+});
+
+// Save ${config.entityName}
+const saveResult = await ApiManager.post('${config.apiBaseRoute}/save', {
+    ClientID: 1,
+    SiteID: 1,
+    ${config.fields.map(f => `${f.name}: 'value'`).join(',\n    ')}
+});
+\`\`\`
+` : ''}
+
+## STEP 9: Testing
+
+**CLAUDE: Test the module:**
+
+1. Build the solution: \`dotnet build\`
+2. Run the application: \`dotnet run --project ${config.namespacePrefix}.WebApi\`
+3. Test API endpoints at: https://localhost:5001/swagger
+${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `4. Test frontend component using ${config.uiTemplate} patterns` : ''}
+
+## Features Included:
+
+${Object.keys(config.features).filter(k => config.features[k]).map(feature => `✅ ${feature.charAt(0).toUpperCase() + feature.slice(1)}`).join('\n')}
+
+## Module Structure Created:
+
+\`\`\`
+${config.namespacePrefix}/
+${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `├── ${config.namespacePrefix}.Transaction/
+│   ├── Domain/${config.entityName}.cs
+│   ├── Interfaces/I${config.entityName}Service.cs
+│   └── Services/${config.entityName}Service.cs
+├── ${config.namespacePrefix}.WebApi/
+│   └── Controllers/${config.entityName}Controller.cs` : ''}
+${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `├── UIPages/src/components/${config.moduleName}/
+│   ├── ${config.entityName}VM.jsx
+│   └── index.jsx` : ''}
+\`\`\`
+
+---
+**Generated**: ${timestamp}
+**Module Type**: ${config.moduleType}
+**Generator Version**: 1.0.0
+`;
+        }
+
+        // Helper functions for code generation
+        function generateDomainProperties(fields) {
+            if (!fields.length) return '// Add properties here';
+            
+            return fields.map(field => {
+                const propName = field.name.charAt(0).toUpperCase() + field.name.slice(1);
+                return `        public ${field.type} ${propName} { get; set; }`;
+            }).join('\n');
+        }
+
+        function generateNestedClasses(config) {
+            return `
+        public class SearchInput
+        {
+            public short ClientID { get; set; }
+            public short SiteID { get; set; }
+            public string SearchTerm { get; set; }
+        }
+
+        public class SearchOutput
+        {
+            public List<${config.entityName}> Items { get; set; } = new List<${config.entityName}>();
+            public int TotalCount { get; set; }
+        }`;
+        }
+
+        function generateServiceMethods(config) {
+            const methods = [];
+            const entityName = config.entityName;
+            
+            if (config.features.create) {
+                methods.push(`Task<string> Save${entityName}Async(${entityName} input);`);
+            }
+            if (config.features.read) {
+                methods.push(`Task<${entityName}.SearchOutput> Search${entityName}Async(${entityName}.SearchInput input);`);
+            }
+            if (config.features.update) {
+                methods.push(`Task<${entityName}> Get${entityName}ByIdAsync(short clientId, int id);`);
+            }
+            if (config.features.delete) {
+                methods.push(`Task<bool> Delete${entityName}Async(short clientId, int id);`);
+            }
+            
+            return methods.map(method => `        ${method}`).join('\n');
+        }
+
+        function generateServiceImplementation(config) {
+            const methods = [];
+            const entityName = config.entityName;
+            
+            if (config.features.create) {
+                methods.push(`public async Task<string> Save${entityName}Async(${entityName} input)
+        {
+            // Implementation here
+            await Task.CompletedTask;
+            return "S"; // Success
+        }`);
+            }
+            
+            if (config.features.read) {
+                methods.push(`public async Task<${entityName}.SearchOutput> Search${entityName}Async(${entityName}.SearchInput input)
+        {
+            var output = new ${entityName}.SearchOutput();
+            try
+            {
+                // Implementation here
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, $"Search ${entityName} failed");
+            }
+            return output;
+        }`);
+            }
+            
+            return methods.join('\n\n        ');
+        }
+
+        function generateControllerMethods(config) {
+            const methods = [];
+            const entityName = config.entityName;
+            
+            if (config.features.create) {
+                methods.push(`[HttpPost("save")]
+        public async Task<IActionResult> Save([FromBody] ${entityName} input)
+        {
+            var result = await _${entityName.toLowerCase()}Service.Save${entityName}Async(input);
+            return Ok(new { Status = result });
+        }`);
+            }
+            
+            if (config.features.read) {
+                methods.push(`[HttpPost("search")]
+        public async Task<IActionResult> Search([FromBody] ${entityName}.SearchInput input)
+        {
+            var result = await _${entityName.toLowerCase()}Service.Search${entityName}Async(input);
+            return Ok(result);
+        }`);
+            }
+            
+            return methods.map(method => `        ${method}`).join('\n\n');
+        }
+
+        function generateViewModelProperties(fields) {
+            if (!fields.length) return '        // Add properties here';
+            
+            return fields.map(field => {
+                const propName = field.name.charAt(0).toLowerCase() + field.name.slice(1);
+                return `        this.${propName} = this.observable('');`;
+            }).join('\n');
+        }
+
+        function generateViewModelMethods(config) {
+            const methods = [];
+            const entityName = config.entityName;
+            const apiRoute = config.apiBaseRoute.replace('/api/', '');
+            
+            methods.push(`async loadData() {
+        try {
+            this.isLoading.value = true;
+            const response = await ApiManager.post('${config.apiBaseRoute}/search', {
+                ClientID: this.sessionInfo.ClientID,
+                SiteID: this.sessionInfo.SiteID
+            });
+            this.${entityName.toLowerCase()}List.value = response.Items || [];
+        } catch (error) {
+            console.error('Load data failed:', error);
+        } finally {
+            this.isLoading.value = false;
+        }
+    }`);
+
+            if (config.features.create || config.features.update) {
+                methods.push(`async save${entityName}() {
+        try {
+            const data = {
+                ClientID: this.sessionInfo.ClientID,
+                SiteID: this.sessionInfo.SiteID,
+                ${config.fields.map(f => `${f.name}: this.${f.name.toLowerCase()}.value`).join(',\n                ')}
+            };
+            
+            const response = await ApiManager.post('${config.apiBaseRoute}/save', data);
+            if (response.Status === 'S') {
+                await this.loadData();
+                this.clearForm();
+            }
+        } catch (error) {
+            console.error('Save failed:', error);
+        }
+    }`);
+            }
+            
+            return methods.join('\n\n    ');
+        }
+
+        function getTemplateInstructions(template, config) {
+            const instructions = {
+                'MasterDetailCRUDTemplate': `
+**Master-Detail CRUD Template Usage:**
+- Use two-column form layout (col-md-6)
+- Include Save/Close buttons with standard classes (.btn-save1, .btn-close1)
+- Add mandatory field indicators for required fields
+- Implement validation with focus management
+- Add loading states during save operations
+- Use toast notifications for success/error feedback
+- Reference: @claude_docs/frontend/ui-templates/MasterDetailCRUDTemplate/`,
+
+                'SearchListGridTemplate': `
+**Search/List Grid Template Usage:**
+- Include search bar with filters at top
+- Use XOSGrid with pagination and row selection
+- Add export functionality if needed
+- Include audit trail integration
+- Use advanced filters with collapsible sections
+- Implement row actions (edit/delete/view)
+- Reference: @claude_docs/frontend/ui-templates/SearchListGridTemplate/`,
+
+                'WorkflowFormTemplate': `
+**Workflow Form Template Usage:**
+- Implement multi-section accordion layout
+- Add file attachment with drag-drop support
+- Include approval/rejection workflow buttons
+- Add history timeline component
+- Include comments section
+- Dynamic button visibility based on workflow state
+- Email notification triggers
+- Reference: @claude_docs/frontend/ui-templates/WorkflowFormTemplate/`,
+
+                'ReportParameterTemplate': `
+**Report Parameter Template Usage:**
+- Include date range selection with presets
+- Add multi-select filters with "Select All" option
+- Provide download format options (PDF/Excel/CSV)
+- Include email scheduling functionality
+- Add parameter saving/loading
+- Include report preview functionality
+- Reference: @claude_docs/frontend/ui-templates/ReportParameterTemplate/`
+            };
+            
+            return instructions[template] || '';
+        }
+
+        function getWireframeInstructions(config) {
+            return `
+**Wireframe Implementation Guidelines:**
+
+**CLAUDE: YOU HAVE ACCESS TO THE WIREFRAME IMAGE. ANALYZE IT CAREFULLY.**
+
+1. **Visual Analysis:**
+   - Examine the layout, spacing, and component arrangement
+   - Identify all UI elements (buttons, inputs, grids, etc.)
+   - Note the visual hierarchy and information flow
+   - Understand the responsive behavior if indicated
+
+2. **Component Mapping:**
+   - Map wireframe elements to XOS components
+   - Use standard XOS component patterns where possible
+   - Maintain consistency with existing CVS application design
+
+3. **Implementation Strategy:**
+   - Start with the main layout structure
+   - Implement each section progressively
+   - Add interactive functionality based on entity fields
+   - Follow XOS framework patterns from @claude_docs
+
+4. **Design Requirements:**
+   - Match the wireframe layout as closely as possible
+   - Use appropriate XOS components (XOSTextbox, XOSGrid, etc.)
+   - Implement proper validation and error handling
+   - Add loading states and user feedback
+
+5. **Entity Integration:**
+   - Map wireframe form fields to entity properties: ${config.fields.map(f => `${f.name} (${f.type})`).join(', ')}
+   - Implement CRUD operations as shown in the design
+   - Add appropriate API calls to backend endpoints
+
+**Remember**: The wireframe is your blueprint. Analyze it thoroughly and ask clarifying questions if the design intent is unclear.
+`;
+        }
+
+        function generateComponentRender(config) {
+            return `<div className="module-container">
+                    <div className="module-header">
+                        <h2>${config.moduleName}</h2>
+                    </div>
+                    
+                    {/* Add your UI components here */}
+                    <XOSGrid
+                        data={this.vm.${config.entityName.toLowerCase()}List}
+                        columns={[
+                            ${config.fields.map(f => `{ name: '${f.name}', title: '${f.name}' }`).join(',\n                            ')}
+                        ]}
+                    />
+                </div>`;
+        }
+
+        function generateTableColumns(fields) {
+            if (!fields.length) return '    -- Add columns here';
+            
+            return fields.map(field => {
+                let sqlType = 'VARCHAR(255)';
+                switch (field.type) {
+                    case 'int': sqlType = 'INTEGER'; break;
+                    case 'short': sqlType = 'SMALLINT'; break;
+                    case 'decimal': sqlType = 'DECIMAL(18,2)'; break;
+                    case 'DateTime': sqlType = 'TIMESTAMP'; break;
+                    case 'bool': sqlType = 'BOOLEAN'; break;
+                }
+                return `    ${field.name.toLowerCase()} ${sqlType},`;
+            }).join('\n');
+        }
+
+        function generateModule() {
+            const config = collectConfiguration();
+            
+            if (!config.moduleName || !config.entityName) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            let instructions = generateInstructions(config);
+            
+            // If there's a wireframe, embed it in the markdown
+            if (config.hasWireframe && config.wireframeData) {
+                const wireframeSection = `
+
+## 🎨 WIREFRAME REFERENCE
+
+**CLAUDE**: The user has provided a wireframe/UI design. Analyze this image carefully:
+
+![Wireframe Design](${config.wireframeData})
+
+**Description**: ${config.wireframeDescription || 'No description provided'}
+
+**Instructions**: 
+- Study the wireframe layout and components
+- Implement the design using XOS framework components
+- Match the visual structure and user interaction patterns shown
+- Map wireframe elements to the entity fields provided
+
+---
+
+`;
+                // Insert wireframe section after the module configuration
+                instructions = instructions.replace('## STEP 1:', wireframeSection + '## STEP 1:');
+            }
+            
+            // Create a blob and download
+            const blob = new Blob([instructions], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const wireframeTag = config.hasWireframe ? '_WIREFRAME' : '';
+            const templateTag = config.uiTemplate ? `_${config.uiTemplate.toUpperCase()}` : '';
+            a.download = `MODULE_${config.moduleName}_${config.moduleType.toUpperCase()}${wireframeTag}${templateTag}_${Date.now()}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            const approach = config.uiApproach === 'wireframe' ? 'custom wireframe' : 'template';
+            alert(`Module instructions generated successfully!\nApproach: ${approach}\nGive this file to Claude Code to create your ${config.moduleType} module.`);
+        }
+    </script>
+</body>
+</html>
