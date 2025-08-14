@@ -592,6 +592,86 @@
             font-size: 12px;
         }
 
+        .method-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit {
+            background: #8ab4f8;
+            color: #202124;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-edit:hover {
+            background: #aecbfa;
+        }
+
+        .method-item.editing {
+            background: #3c4043;
+            border-color: #8ab4f8;
+        }
+
+        .method-edit-form {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .edit-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .edit-input {
+            flex: 1;
+            padding: 6px 10px;
+            background: #202124;
+            border: 1px solid #5f6368;
+            border-radius: 4px;
+            color: #e8eaed;
+            font-size: 13px;
+        }
+
+        .edit-input:focus {
+            outline: none;
+            border-color: #8ab4f8;
+        }
+
+        .btn-save {
+            background: #81c995;
+            color: #202124;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #a8dab5;
+        }
+
+        .btn-cancel {
+            background: #5f6368;
+            color: #e8eaed;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #70757a;
+        }
+
         /* UI Approach Selector */
         .ui-approach-selector {
             display: flex;
@@ -1254,6 +1334,7 @@
             fields: [],
             methods: []
         };
+        let editingMethodIndex = -1;
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -1652,18 +1733,109 @@
                 return;
             }
             
-            methodList.innerHTML = configuration.methods.map((method, index) => `
-                <div class="method-item">
-                    <div class="method-info">
-                        <div class="method-header">
-                            <span class="method-tag ${method.operation.toLowerCase().replace('_', '')}">${method.operation}</span>
-                            <span class="method-name">${method.name}</span>
+            methodList.innerHTML = configuration.methods.map((method, index) => {
+                if (editingMethodIndex === index) {
+                    // Show edit form
+                    return `
+                        <div class="method-item editing">
+                            <div class="method-edit-form">
+                                <div class="edit-row">
+                                    <span class="method-tag ${method.operation.toLowerCase().replace('_', '')}">${method.operation}</span>
+                                    <input type="text" class="edit-input" id="edit-name-${index}" value="${method.name}" placeholder="Method name">
+                                </div>
+                                <div class="edit-row">
+                                    <input type="text" class="edit-input" id="edit-desc-${index}" value="${method.description}" placeholder="Method description">
+                                </div>
+                            </div>
+                            <div class="method-actions">
+                                <button class="btn-save" onclick="saveMethodEdit(${index})">Save</button>
+                                <button class="btn-cancel" onclick="cancelMethodEdit()">Cancel</button>
+                            </div>
                         </div>
-                        <div class="method-description">${method.description}</div>
-                    </div>
-                    <button class="btn-remove" onclick="removeMethod(${index})">Remove</button>
-                </div>
-            `).join('');
+                    `;
+                } else {
+                    // Show normal view
+                    return `
+                        <div class="method-item">
+                            <div class="method-info">
+                                <div class="method-header">
+                                    <span class="method-tag ${method.operation.toLowerCase().replace('_', '')}">${method.operation}</span>
+                                    <span class="method-name">${method.name}</span>
+                                </div>
+                                <div class="method-description">${method.description}</div>
+                            </div>
+                            <div class="method-actions">
+                                <button class="btn-edit" onclick="editMethod(${index})">Edit</button>
+                                <button class="btn-remove" onclick="removeMethod(${index})">Remove</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        function editMethod(index) {
+            editingMethodIndex = index;
+            updateMethodList();
+            // Focus on the name input
+            setTimeout(() => {
+                const nameInput = document.getElementById(`edit-name-${index}`);
+                const descInput = document.getElementById(`edit-desc-${index}`);
+                
+                if (nameInput) {
+                    nameInput.focus();
+                    nameInput.select();
+                    
+                    // Add keyboard event listeners
+                    nameInput.addEventListener('keydown', (e) => handleEditKeydown(e, index));
+                    descInput.addEventListener('keydown', (e) => handleEditKeydown(e, index));
+                }
+            }, 0);
+        }
+        
+        function handleEditKeydown(event, index) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                saveMethodEdit(index);
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                cancelMethodEdit();
+            }
+        }
+
+        function saveMethodEdit(index) {
+            const nameInput = document.getElementById(`edit-name-${index}`);
+            const descInput = document.getElementById(`edit-desc-${index}`);
+            
+            const newName = nameInput.value.trim();
+            const newDesc = descInput.value.trim();
+            
+            if (!newName) {
+                alert('Method name is required');
+                return;
+            }
+            
+            // Check if another method has the same name (excluding current method)
+            const duplicate = configuration.methods.some((m, i) => 
+                i !== index && m.name.toLowerCase() === newName.toLowerCase()
+            );
+            
+            if (duplicate) {
+                alert('Another method with this name already exists');
+                return;
+            }
+            
+            // Update the method
+            configuration.methods[index].name = newName;
+            configuration.methods[index].description = newDesc || `${configuration.methods[index].operation} operation`;
+            
+            editingMethodIndex = -1;
+            updateMethodList();
+        }
+
+        function cancelMethodEdit() {
+            editingMethodIndex = -1;
+            updateMethodList();
         }
 
         function collectConfiguration() {

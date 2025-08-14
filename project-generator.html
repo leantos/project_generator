@@ -882,6 +882,49 @@ http://localhost:3000</textarea>
                 </div>
 
                 <div class="form-section">
+                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Pagination Configuration</div>
+                    <div class="advanced-section">
+                        <div class="form-group">
+                            <label>Default Page Size (Limit)</label>
+                            <input type="number" id="pagination-limit" value="10" placeholder="10">
+                            <div class="hint">Default number of records per page. Common values: 10, 20, 25, 50, 100</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Maximum Page Size</label>
+                            <input type="number" id="pagination-max-limit" value="100" placeholder="100">
+                            <div class="hint">Maximum allowed records per page to prevent performance issues</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Default Offset</label>
+                            <input type="number" id="pagination-offset" value="0" placeholder="0">
+                            <div class="hint">Default starting position for pagination (usually 0)</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Pagination Strategy</label>
+                            <select id="pagination-strategy">
+                                <option value="offset-limit" selected>Offset/Limit (Traditional)</option>
+                                <option value="cursor-based">Cursor-based (For large datasets)</option>
+                                <option value="page-number">Page Number Based</option>
+                            </select>
+                            <div class="hint">Offset/Limit is most common. Cursor-based is better for large datasets. Page number calculates offset automatically.</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Include Total Count</label>
+                            <select id="pagination-include-total">
+                                <option value="true" selected>Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                            <div class="hint">Whether to include total record count in responses (may impact performance on large tables)</div>
+                        </div>
+                        <div class="form-group">
+                            <label>API Query Parameters</label>
+                            <input type="text" id="pagination-params" value="limit={limit}&offset={offset}" placeholder="e.g., limit={limit}&offset={offset}">
+                            <div class="hint">Query parameter format for API endpoints. Use {limit} and {offset} as placeholders</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
                     <div class="form-section-title">Logging Configuration</div>
                     <div class="form-group">
                         <label>Logging Framework</label>
@@ -953,49 +996,6 @@ http://localhost:3000</textarea>
                             <textarea id="external-services" placeholder="List any external services or APIs">External API Integration
 File Import/Export  
 Payment Processing</textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <div class="form-section-title collapsible" onclick="toggleSection(this)">Pagination Configuration</div>
-                    <div class="advanced-section">
-                        <div class="form-group">
-                            <label>Default Page Size (Limit)</label>
-                            <input type="number" id="pagination-limit" value="10" placeholder="10">
-                            <div class="hint">Default number of records per page. Common values: 10, 20, 25, 50, 100</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Maximum Page Size</label>
-                            <input type="number" id="pagination-max-limit" value="100" placeholder="100">
-                            <div class="hint">Maximum allowed records per page to prevent performance issues</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Default Offset</label>
-                            <input type="number" id="pagination-offset" value="0" placeholder="0">
-                            <div class="hint">Default starting position for pagination (usually 0)</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Pagination Strategy</label>
-                            <select id="pagination-strategy">
-                                <option value="offset-limit" selected>Offset/Limit (Traditional)</option>
-                                <option value="cursor-based">Cursor-based (For large datasets)</option>
-                                <option value="page-number">Page Number Based</option>
-                            </select>
-                            <div class="hint">Offset/Limit is most common. Cursor-based is better for large datasets. Page number calculates offset automatically.</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Include Total Count</label>
-                            <select id="pagination-include-total">
-                                <option value="true" selected>Yes</option>
-                                <option value="false">No</option>
-                            </select>
-                            <div class="hint">Whether to include total record count in responses (may impact performance on large tables)</div>
-                        </div>
-                        <div class="form-group">
-                            <label>API Query Parameters</label>
-                            <input type="text" id="pagination-params" value="limit={limit}&offset={offset}" placeholder="e.g., limit={limit}&offset={offset}">
-                            <div class="hint">Query parameter format for API endpoints. Use {limit} and {offset} as placeholders</div>
                         </div>
                     </div>
                 </div>
