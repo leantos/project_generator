@@ -434,8 +434,8 @@
                         </div>
                         ` : `
                         <div style="padding: 10px; color: #9aa0a6;">
-                            ${field.dataSource?.table ? `
-                                <div><strong>Table:</strong> ${field.dataSource.table}</div>
+                            ${field.dataSource && (field.dataSource.table || field.dataSource.displayField || field.dataSource.valueField) ? `
+                                <div><strong>Table:</strong> ${field.dataSource.table || 'Not set'}</div>
                                 <div><strong>Display:</strong> ${field.dataSource.displayField || 'Not set'}</div>
                                 <div><strong>Value:</strong> ${field.dataSource.valueField || 'Not set'}</div>
                                 ${field.dataSource.filter ? `<div><strong>Filter:</strong> ${field.dataSource.filter}</div>` : ''}
@@ -467,15 +467,25 @@
         
         function saveFieldConfiguration(fieldIndex) {
             // Configuration is already saved via onchange events
-            // Just close the editing mode
+            // Check if any data was actually entered
+            const ds = configuration.fields[fieldIndex].dataSource;
+            if (!ds || (!ds.table && !ds.displayField && !ds.valueField)) {
+                // No data was configured, remove the needsDataSource flag
+                configuration.fields[fieldIndex].needsDataSource = false;
+                configuration.fields[fieldIndex].dataSource = null;
+            }
+            // Close the editing mode
             currentEditingFieldIndex = -1;
+            updateFieldList();
             updateFieldMappings();
         }
         
         function cancelFieldConfiguration(fieldIndex) {
             // Reset the field's dataSource if it was being newly configured
-            if (!configuration.fields[fieldIndex].dataSource?.table) {
+            const ds = configuration.fields[fieldIndex].dataSource;
+            if (!ds || (!ds.table && !ds.displayField && !ds.valueField)) {
                 configuration.fields[fieldIndex].needsDataSource = false;
+                configuration.fields[fieldIndex].dataSource = null;
             }
             currentEditingFieldIndex = -1;
             updateFieldList();
