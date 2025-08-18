@@ -386,18 +386,20 @@
             
             mappingsDiv.innerHTML = fieldsNeedMapping.map((field, index) => {
                 const fieldIndex = configuration.fields.indexOf(field);
+                const isEditing = currentEditingFieldIndex === fieldIndex;
                 
                 // Use the entered table name as default if field doesn't have a dataSource yet
                 const tableValue = field.dataSource?.table || defaultTableName;
                 
                 return `
-                    <div class="field-mapping-item">
+                    <div class="field-mapping-item ${isEditing ? 'editing' : ''}" style="${isEditing ? 'border: 2px solid #8ab4f8; background: #1a1a1a;' : ''}">
                         <div class="field-mapping-header">
                             <div class="field-mapping-title">
                                 <span>${field.name}</span>
                                 <span class="field-badge">${field.type}</span>
                             </div>
                         </div>
+                        ${isEditing ? `
                         <div class="mapping-row">
                             <div class="mapping-label">Source Table:</div>
                             <input type="text" class="mapping-select" id="source-table-${fieldIndex}" 
@@ -426,13 +428,30 @@
                                 value="${field.dataSource?.filter || ''}"
                                 onchange="updateFieldDataSource(${fieldIndex}, 'filter', this.value)">
                         </div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px; justify-content: flex-end;">
+                            <button type="button" class="btn-primary" onclick="saveFieldConfiguration(${fieldIndex})">OK</button>
+                            <button type="button" class="btn-secondary" onclick="cancelFieldConfiguration(${fieldIndex})">Cancel</button>
+                        </div>
+                        ` : `
+                        <div style="padding: 10px; color: #9aa0a6;">
+                            ${field.dataSource?.table ? `
+                                <div><strong>Table:</strong> ${field.dataSource.table}</div>
+                                <div><strong>Display:</strong> ${field.dataSource.displayField || 'Not set'}</div>
+                                <div><strong>Value:</strong> ${field.dataSource.valueField || 'Not set'}</div>
+                                ${field.dataSource.filter ? `<div><strong>Filter:</strong> ${field.dataSource.filter}</div>` : ''}
+                            ` : '<em>Not configured. Click Configure button to set up.</em>'}
+                        </div>
+                        `}
                     </div>
                 `;
             }).join('');
         }
 
+        let currentEditingFieldIndex = -1;
+        
         function configureFieldDataSource(index) {
             configuration.fields[index].needsDataSource = true;
+            currentEditingFieldIndex = index;
             updateFieldList();
             updateFieldMappings();
             // Scroll to mapping section
@@ -444,6 +463,23 @@
                 configuration.fields[fieldIndex].dataSource = {};
             }
             configuration.fields[fieldIndex].dataSource[property] = value;
+        }
+        
+        function saveFieldConfiguration(fieldIndex) {
+            // Configuration is already saved via onchange events
+            // Just close the editing mode
+            currentEditingFieldIndex = -1;
+            updateFieldMappings();
+        }
+        
+        function cancelFieldConfiguration(fieldIndex) {
+            // Reset the field's dataSource if it was being newly configured
+            if (!configuration.fields[fieldIndex].dataSource?.table) {
+                configuration.fields[fieldIndex].needsDataSource = false;
+            }
+            currentEditingFieldIndex = -1;
+            updateFieldList();
+            updateFieldMappings();
         }
 
         function addRelationship() {
