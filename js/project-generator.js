@@ -90,6 +90,14 @@ document.addEventListener('DOMContentLoaded', function() {
     ['db-host', 'db-port', 'db-name', 'db-username', 'db-password', 'db-params'].forEach(id => {
         document.getElementById(id).addEventListener('input', updateConnectionString);
     });
+    
+    // Add event listeners for master database connection string updates
+    ['master-db-host', 'master-db-port', 'master-db-name', 'master-db-username', 'master-db-password'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', updateMasterConnectionString);
+        }
+    });
 });
 
 // Template selection
@@ -197,6 +205,200 @@ function updateConnectionString() {
     document.getElementById('connection-preview').textContent = connectionString;
 }
 
+function updateMasterConnectionString() {
+    const host = document.getElementById('master-db-host').value || 'localhost';
+    const port = document.getElementById('master-db-port').value || '5432';
+    const dbName = document.getElementById('master-db-name').value || 'master_catalog';
+    const username = document.getElementById('master-db-username').value || '{username}';
+    const password = document.getElementById('master-db-password').value || '{password}';
+    
+    const connectionString = `Server=${host};Port=${port};Database=${dbName};User Id=${username};Password=${password};`;
+    const preview = document.getElementById('master-connection-preview');
+    if (preview) {
+        preview.textContent = connectionString;
+    }
+}
+
+// Multi-database management
+let tenantDatabases = [];
+let tenantDbCounter = 0;
+
+function handleTenancyStrategyChange() {
+    const strategy = document.getElementById('tenancy-strategy').value;
+    const masterDbSection = document.getElementById('master-db-section');
+    const tenantDbSection = document.getElementById('tenant-databases-section');
+    const tenantMappingSection = document.getElementById('tenant-mapping-section');
+    
+    if (strategy === 'multiple-db') {
+        // Show multi-database sections
+        masterDbSection.style.display = 'block';
+        tenantDbSection.style.display = 'block';
+        tenantMappingSection.style.display = 'block';
+        
+        // Add at least one tenant database if none exist
+        if (tenantDatabases.length === 0) {
+            addTenantDatabase();
+        }
+        
+        // Update master connection string
+        updateMasterConnectionString();
+    } else {
+        // Hide multi-database sections
+        masterDbSection.style.display = 'none';
+        tenantDbSection.style.display = 'none';
+        tenantMappingSection.style.display = 'none';
+    }
+}
+
+function addTenantDatabase() {
+    tenantDbCounter++;
+    const dbId = `tenant-db-${tenantDbCounter}`;
+    
+    const tenantDb = {
+        id: dbId,
+        tenantIds: '',
+        tenantNames: '',
+        dbType: 'PostgreSQL',
+        host: 'localhost',
+        port: '5432',
+        dbName: `tenant_${tenantDbCounter}_db`,
+        username: 'postgres',
+        password: '',
+        params: '',
+        isDefault: tenantDatabases.length === 0
+    };
+    
+    tenantDatabases.push(tenantDb);
+    
+    const container = document.getElementById('tenant-databases-container');
+    const dbCard = document.createElement('div');
+    dbCard.className = 'tenant-db-card';
+    dbCard.id = dbId;
+    
+    dbCard.innerHTML = `
+        <div class="tenant-db-header">
+            <div class="tenant-db-title">Tenant Database ${tenantDbCounter}</div>
+            <div class="tenant-db-actions">
+                <button class="btn-collapse-db" onclick="toggleTenantDb('${dbId}')">▼</button>
+                <button class="btn-remove-db" onclick="removeTenantDatabase('${dbId}')">Remove</button>
+            </div>
+        </div>
+        <div class="tenant-db-content" id="${dbId}-content">
+            <div class="tenant-info-group">
+                <div class="db-field-group">
+                    <label>Tenant IDs (comma-separated)</label>
+                    <input type="text" id="${dbId}-tenant-ids" placeholder="e.g., 1,2,3 or tenant1,tenant2" 
+                           onchange="updateTenantDbField('${dbId}', 'tenantIds', this.value)">
+                </div>
+                <div class="db-field-group">
+                    <label>Tenant Names (comma-separated)</label>
+                    <input type="text" id="${dbId}-tenant-names" placeholder="e.g., Customer A, Customer B" 
+                           onchange="updateTenantDbField('${dbId}', 'tenantNames', this.value)">
+                </div>
+                <div class="db-field-group">
+                    <label>Database Type</label>
+                    <input type="text" id="${dbId}-type" value="PostgreSQL" placeholder="e.g., PostgreSQL, MySQL" 
+                           onchange="updateTenantDbField('${dbId}', 'dbType', this.value); updateTenantConnectionString('${dbId}')">
+                </div>
+                <div class="db-field-group">
+                    <label>
+                        <input type="checkbox" id="${dbId}-is-default" ${tenantDb.isDefault ? 'checked' : ''} 
+                               onchange="setDefaultTenantDb('${dbId}')">
+                        Default for new tenants
+                    </label>
+                </div>
+            </div>
+            <div class="db-field-group">
+                <label>Host/Server</label>
+                <input type="text" id="${dbId}-host" value="localhost" 
+                       onchange="updateTenantDbField('${dbId}', 'host', this.value); updateTenantConnectionString('${dbId}')">
+            </div>
+            <div class="db-field-group">
+                <label>Port</label>
+                <input type="text" id="${dbId}-port" value="5432" 
+                       onchange="updateTenantDbField('${dbId}', 'port', this.value); updateTenantConnectionString('${dbId}')">
+            </div>
+            <div class="db-field-group">
+                <label>Database Name</label>
+                <input type="text" id="${dbId}-dbname" value="${tenantDb.dbName}" 
+                       onchange="updateTenantDbField('${dbId}', 'dbName', this.value); updateTenantConnectionString('${dbId}')">
+            </div>
+            <div class="db-field-group">
+                <label>Username</label>
+                <input type="text" id="${dbId}-username" value="postgres" 
+                       onchange="updateTenantDbField('${dbId}', 'username', this.value); updateTenantConnectionString('${dbId}')">
+            </div>
+            <div class="db-field-group">
+                <label>Password</label>
+                <input type="password" id="${dbId}-password" 
+                       onchange="updateTenantDbField('${dbId}', 'password', this.value); updateTenantConnectionString('${dbId}')">
+            </div>
+            <div class="db-field-group">
+                <label>Additional Parameters</label>
+                <input type="text" id="${dbId}-params" placeholder="e.g., sslmode=require" 
+                       onchange="updateTenantDbField('${dbId}', 'params', this.value); updateTenantConnectionString('${dbId}')">
+            </div>
+            <div class="connection-preview-group">
+                <label>Connection String Preview</label>
+                <div class="tenant-db-connection-preview" id="${dbId}-connection-preview">
+                    Connection string will appear here...
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(dbCard);
+    updateTenantConnectionString(dbId);
+}
+
+function removeTenantDatabase(dbId) {
+    const index = tenantDatabases.findIndex(db => db.id === dbId);
+    if (index > -1) {
+        tenantDatabases.splice(index, 1);
+        document.getElementById(dbId).remove();
+        
+        // If removed database was default, set first one as default
+        if (tenantDatabases.length > 0 && !tenantDatabases.some(db => db.isDefault)) {
+            tenantDatabases[0].isDefault = true;
+            const checkbox = document.getElementById(`${tenantDatabases[0].id}-is-default`);
+            if (checkbox) checkbox.checked = true;
+        }
+    }
+}
+
+function toggleTenantDb(dbId) {
+    const content = document.getElementById(`${dbId}-content`);
+    content.classList.toggle('collapsed');
+    const button = document.querySelector(`#${dbId} .btn-collapse-db`);
+    button.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
+}
+
+function updateTenantDbField(dbId, field, value) {
+    const db = tenantDatabases.find(d => d.id === dbId);
+    if (db) {
+        db[field] = value;
+    }
+}
+
+function setDefaultTenantDb(dbId) {
+    tenantDatabases.forEach(db => {
+        db.isDefault = db.id === dbId;
+        const checkbox = document.getElementById(`${db.id}-is-default`);
+        if (checkbox) checkbox.checked = db.isDefault;
+    });
+}
+
+function updateTenantConnectionString(dbId) {
+    const db = tenantDatabases.find(d => d.id === dbId);
+    if (!db) return;
+    
+    const connectionString = `Server=${db.host};Port=${db.port};Database=${db.dbName};User Id=${db.username};Password=${db.password || '{password}'};${db.params}`;
+    const preview = document.getElementById(`${dbId}-connection-preview`);
+    if (preview) {
+        preview.textContent = connectionString;
+    }
+}
+
 function toggleSection(element) {
     element.classList.toggle('collapsed');
     const section = element.nextElementSibling;
@@ -208,8 +410,15 @@ function collectConfiguration() {
     
     // Collect all input values
     document.querySelectorAll('input[type="text"], input[type="password"], input[type="number"], textarea').forEach(input => {
-        if (input.id) {
+        if (input.id && !input.id.startsWith('tenant-db-')) {
             config[input.id] = input.value || '';
+        }
+    });
+    
+    // Collect select values
+    document.querySelectorAll('select').forEach(select => {
+        if (select.id) {
+            config[select.id] = select.value || '';
         }
     });
     
@@ -220,6 +429,36 @@ function collectConfiguration() {
     // Generate secret key if not provided
     if (!config['secret-key']) {
         config['secret-key'] = generateSecretKey();
+    }
+    
+    // Add multi-database configuration if applicable
+    if (config['tenancy-strategy'] === 'multiple-db') {
+        config.masterDatabase = {
+            type: document.getElementById('master-database-type')?.value || 'PostgreSQL',
+            host: document.getElementById('master-db-host')?.value || 'localhost',
+            port: document.getElementById('master-db-port')?.value || '5432',
+            dbName: document.getElementById('master-db-name')?.value || 'master_catalog',
+            username: document.getElementById('master-db-username')?.value || 'postgres',
+            password: document.getElementById('master-db-password')?.value || ''
+        };
+        
+        config.tenantDatabases = tenantDatabases.map(db => ({
+            tenantIds: db.tenantIds,
+            tenantNames: db.tenantNames,
+            dbType: db.dbType,
+            host: db.host,
+            port: db.port,
+            dbName: db.dbName,
+            username: db.username,
+            password: db.password,
+            params: db.params,
+            isDefault: db.isDefault
+        }));
+        
+        config.tenantIdentification = document.getElementById('tenant-identification')?.value || 'subdomain';
+        config.dbSelectionStrategy = document.getElementById('db-selection-strategy')?.value || 'lookup';
+        config.poolStrategy = document.getElementById('pool-strategy')?.value || 'per-tenant';
+        config.maxConnectionsPerTenant = document.getElementById('max-connections-per-tenant')?.value || '10';
     }
     
     return config;
@@ -317,10 +556,31 @@ dotnet add package Swashbuckle.AspNetCore --version 7.3.1
 ✅ Git
 
 ## 🗄️ DATABASE CONFIGURATION
+${config['tenancy-strategy'] === 'multiple-db' ? `
+### Multi-Tenant Database Architecture
+**Strategy**: ${config.dbSelectionStrategy === 'lookup' ? 'Master DB Lookup Table' : 
+                config.dbSelectionStrategy === 'convention' ? 'Naming Convention' :
+                config.dbSelectionStrategy === 'sharding' ? 'Hash-based Sharding' : 'Region-based'}
+**Tenant Identification**: ${config.tenantIdentification}
+**Connection Pool Strategy**: ${config.poolStrategy}
+
+#### Master/Catalog Database
+\`\`\`
+Server=${config.masterDatabase?.host};Port=${config.masterDatabase?.port};Database=${config.masterDatabase?.dbName};User Id=${config.masterDatabase?.username};Password=****
+\`\`\`
+
+#### Tenant Databases (${config.tenantDatabases?.length || 0} configured)
+${config.tenantDatabases?.map((db, i) => `
+Database ${i + 1}:
+- Tenants: ${db.tenantNames || 'Not specified'}
+- Connection: Server=${db.host};Port=${db.port};Database=${db.dbName}
+- Default: ${db.isDefault ? 'Yes' : 'No'}`).join('')}
+` : `
 Connection String (Development):
 \`\`\`
 ${document.getElementById('connection-preview').textContent}
 \`\`\`
+`}
 
 ...continued in full file`;
 }
@@ -461,10 +721,27 @@ ${config['frontend-framework'].includes('React') ? `│   ├── 📂 UIPages
     }
   },
   "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "DefaultConnection": "${document.getElementById('connection-preview').textContent}"${config['cache-provider'] === 'Redis' ? `,
+  "ConnectionStrings": {${config['tenancy-strategy'] === 'multiple-db' ? `
+    "MasterConnection": "Server=${config.masterDatabase?.host};Port=${config.masterDatabase?.port};Database=${config.masterDatabase?.dbName};User Id=${config.masterDatabase?.username};Password=${config.masterDatabase?.password};",
+    ${config.tenantDatabases?.map((db, i) => `"TenantConnection_${i + 1}": "Server=${db.host};Port=${db.port};Database=${db.dbName};User Id=${db.username};Password=${db.password};${db.params}"`).join(',\n    ')}` : `
+    "DefaultConnection": "${document.getElementById('connection-preview').textContent}"`}${config['cache-provider'] === 'Redis' ? `,
     "RedisCache": "${config['cache-connection'] || 'localhost:6379'}"` : ''}
-  },
+  },${config['tenancy-strategy'] === 'multiple-db' ? `
+  "MultiTenancy": {
+    "Strategy": "multiple-db",
+    "TenantIdentification": "${config.tenantIdentification}",
+    "DatabaseSelectionStrategy": "${config.dbSelectionStrategy}",
+    "ConnectionPoolStrategy": "${config.poolStrategy}",
+    "MaxConnectionsPerTenant": ${config.maxConnectionsPerTenant},
+    "TenantMappings": [
+      ${config.tenantDatabases?.map((db, i) => `{
+        "TenantIds": [${db.tenantIds ? db.tenantIds.split(',').map(id => `"${id.trim()}"`).join(', ') : ''}],
+        "TenantNames": [${db.tenantNames ? db.tenantNames.split(',').map(name => `"${name.trim()}"`).join(', ') : ''}],
+        "ConnectionStringName": "TenantConnection_${i + 1}",
+        "IsDefault": ${db.isDefault}
+      }`).join(',\n      ')}
+    ]
+  },` : ''}
   "JwtSettings": {
     "SecretKey": "${config['secret-key']}",
     "Issuer": "http://localhost:5000",
@@ -527,6 +804,12 @@ builder.Host.UseSerilog((context, configuration) =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+${config['tenancy-strategy'] === 'multiple-db' ? `
+// Configure Multi-Tenancy
+builder.Services.Configure<MultiTenancySettings>(builder.Configuration.GetSection("MultiTenancy"));
+builder.Services.AddScoped<ITenantService, TenantService>();
+builder.Services.AddScoped<ITenantDbContextFactory, TenantDbContextFactory>();
+builder.Services.AddHttpContextAccessor();` : ''}
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -720,7 +1003,33 @@ Server={PROD_HOST};Port=${config['db-port']};Database={PROD_DB};User Id={PROD_US
 \`\`\`
 
 ${config['tenancy-strategy'] ? `### Multi-Tenancy Configuration
-- **Strategy**: ${config['tenancy-strategy'] === 'single-db' ? 'Multi-Tenant with Single DB (Row-level isolation using site_id)' : config['tenancy-strategy'] === 'multiple-db' ? 'Multi-Tenant with Multiple DBs (Database per tenant)' : 'Single-tenant'}` : ''}
+- **Strategy**: ${config['tenancy-strategy'] === 'single-db' ? 'Multi-Tenant with Single DB (Row-level isolation using site_id)' : config['tenancy-strategy'] === 'multiple-db' ? 'Multi-Tenant with Multiple DBs (Database per tenant)' : 'Single-tenant'}
+${config['tenancy-strategy'] === 'multiple-db' ? `
+- **Tenant Identification Method**: ${config.tenantIdentification}
+- **Database Selection Strategy**: ${config.dbSelectionStrategy}
+- **Connection Pool Strategy**: ${config.poolStrategy}
+- **Max Connections per Tenant**: ${config.maxConnectionsPerTenant}
+
+#### Master Database Configuration
+- **Type**: ${config.masterDatabase?.type}
+- **Host**: ${config.masterDatabase?.host}
+- **Port**: ${config.masterDatabase?.port}
+- **Database**: ${config.masterDatabase?.dbName}
+- **Username**: ${config.masterDatabase?.username}
+
+#### Tenant Databases (${config.tenantDatabases?.length || 0} configured)
+${config.tenantDatabases?.map((db, i) => `
+**Tenant Database ${i + 1}**:
+- **Tenant IDs**: ${db.tenantIds || 'Not specified'}
+- **Tenant Names**: ${db.tenantNames || 'Not specified'}
+- **Database Type**: ${db.dbType}
+- **Host**: ${db.host}
+- **Port**: ${db.port}
+- **Database Name**: ${db.dbName}
+- **Username**: ${db.username}
+- **Default for New Tenants**: ${db.isDefault ? 'Yes' : 'No'}
+- **Connection String**: \`Server=${db.host};Port=${db.port};Database=${db.dbName};User Id=${db.username};Password=****;${db.params}\`
+`).join('')}` : ''}` : ''}
 
 ## 🔐 SECURITY CONFIGURATION
 =====================================
@@ -828,6 +1137,170 @@ ${config['message-system'] ? '☑ Message Queue (' + config['message-system'] + 
 
 When you're ready, start with STEP 1 and work through each step in order.
 Remember to use @claude_docs for XOS framework patterns and best practices.
+
+${config['tenancy-strategy'] === 'multiple-db' ? `
+## 🏢 MULTI-TENANT SERVICE IMPLEMENTATION
+
+### CREATE FILE: ${config['project-name']}.WebApi/Services/ITenantService.cs
+\`\`\`csharp
+namespace ${config['project-name']}.WebApi.Services
+{
+    public interface ITenantService
+    {
+        string GetCurrentTenantId();
+        string GetConnectionString();
+        TenantInfo GetCurrentTenant();
+    }
+    
+    public class TenantInfo
+    {
+        public string TenantId { get; set; }
+        public string TenantName { get; set; }
+        public string ConnectionString { get; set; }
+        public bool IsActive { get; set; }
+    }
+}
+\`\`\`
+
+### CREATE FILE: ${config['project-name']}.WebApi/Services/TenantService.cs
+\`\`\`csharp
+using Microsoft.Extensions.Options;
+
+namespace ${config['project-name']}.WebApi.Services
+{
+    public class TenantService : ITenantService
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly MultiTenancySettings _settings;
+        private readonly IConfiguration _configuration;
+        
+        public TenantService(
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<MultiTenancySettings> settings,
+            IConfiguration configuration)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            _settings = settings.Value;
+            _configuration = configuration;
+        }
+        
+        public string GetCurrentTenantId()
+        {
+            var context = _httpContextAccessor.HttpContext;
+            if (context == null) return null;
+            
+            // Extract tenant ID based on identification method
+            return _settings.TenantIdentification switch
+            {
+                "subdomain" => ExtractFromSubdomain(context),
+                "header" => context.Request.Headers["X-Tenant-ID"].FirstOrDefault(),
+                "jwt-claim" => context.User?.FindFirst("tenant_id")?.Value,
+                "url-segment" => context.Request.RouteValues["tenantId"]?.ToString(),
+                _ => null
+            };
+        }
+        
+        private string ExtractFromSubdomain(HttpContext context)
+        {
+            var host = context.Request.Host.Host;
+            var subdomain = host.Split('.').FirstOrDefault();
+            return subdomain != "www" ? subdomain : null;
+        }
+        
+        public string GetConnectionString()
+        {
+            var tenantId = GetCurrentTenantId();
+            if (string.IsNullOrEmpty(tenantId))
+                return _configuration.GetConnectionString("MasterConnection");
+            
+            // Find tenant mapping
+            var mapping = _settings.TenantMappings.FirstOrDefault(m => 
+                m.TenantIds.Contains(tenantId) || 
+                m.TenantNames.Any(n => n.Equals(tenantId, StringComparison.OrdinalIgnoreCase)));
+            
+            if (mapping != null)
+                return _configuration.GetConnectionString(mapping.ConnectionStringName);
+            
+            // Return default tenant connection if configured
+            var defaultMapping = _settings.TenantMappings.FirstOrDefault(m => m.IsDefault);
+            return defaultMapping != null 
+                ? _configuration.GetConnectionString(defaultMapping.ConnectionStringName)
+                : _configuration.GetConnectionString("MasterConnection");
+        }
+        
+        public TenantInfo GetCurrentTenant()
+        {
+            var tenantId = GetCurrentTenantId();
+            return new TenantInfo
+            {
+                TenantId = tenantId,
+                ConnectionString = GetConnectionString(),
+                IsActive = true
+            };
+        }
+    }
+}
+\`\`\`
+
+### CREATE FILE: ${config['project-name']}.WebApi/Domain/MultiTenancySettings.cs
+\`\`\`csharp
+namespace ${config['project-name']}.WebApi.Domain
+{
+    public class MultiTenancySettings
+    {
+        public string Strategy { get; set; }
+        public string TenantIdentification { get; set; }
+        public string DatabaseSelectionStrategy { get; set; }
+        public string ConnectionPoolStrategy { get; set; }
+        public int MaxConnectionsPerTenant { get; set; }
+        public List<TenantMapping> TenantMappings { get; set; } = new();
+    }
+    
+    public class TenantMapping
+    {
+        public List<string> TenantIds { get; set; } = new();
+        public List<string> TenantNames { get; set; } = new();
+        public string ConnectionStringName { get; set; }
+        public bool IsDefault { get; set; }
+    }
+}
+\`\`\`
+
+### CREATE FILE: ${config['project-name']}.WebApi/Middleware/TenantMiddleware.cs
+\`\`\`csharp
+namespace ${config['project-name']}.WebApi.Middleware
+{
+    public class TenantMiddleware
+    {
+        private readonly RequestDelegate _next;
+        
+        public TenantMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+        
+        public async Task InvokeAsync(HttpContext context, ITenantService tenantService)
+        {
+            var tenantId = tenantService.GetCurrentTenantId();
+            
+            if (!string.IsNullOrEmpty(tenantId))
+            {
+                context.Items["TenantId"] = tenantId;
+                context.Items["ConnectionString"] = tenantService.GetConnectionString();
+            }
+            
+            await _next(context);
+        }
+    }
+}
+\`\`\`
+
+### UPDATE FILE: ${config['project-name']}.WebApi/Program.cs
+Add this line after app.UseAuthentication():
+\`\`\`csharp
+app.UseMiddleware<TenantMiddleware>();
+\`\`\`
+` : ''}
 
 ---
 **Generated**: ${timestamp}

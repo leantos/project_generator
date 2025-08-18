@@ -230,12 +230,96 @@
                     <div class="form-section-title">Multi-Tenancy Configuration</div>
                     <div class="form-group">
                         <label>Multi-Tenancy Strategy</label>
-                        <select id="tenancy-strategy">
+                        <select id="tenancy-strategy" onchange="handleTenancyStrategyChange()">
                             <option value="">None (Single-tenant)</option>
                             <option value="single-db" selected>Multi-Tenant with Single DB</option>
                             <option value="multiple-db">Multi-Tenant with Multiple DBs</option>
                         </select>
                         <div class="hint">Single DB: All tenants share one database with row-level isolation. Multiple DBs: Each tenant gets their own database.</div>
+                    </div>
+                </div>
+
+                <!-- Master Database for Multi-Tenant Multiple DBs -->
+                <div class="form-section" id="master-db-section" style="display: none;">
+                    <div class="form-section-title">Master/Catalog Database</div>
+                    <div class="hint" style="margin-bottom: 15px;">The master database stores tenant registry, routing information, and shared configuration.</div>
+                    <div class="form-group">
+                        <label>Master Database Type</label>
+                        <input type="text" id="master-database-type" value="PostgreSQL" placeholder="e.g., PostgreSQL, MySQL, MongoDB">
+                    </div>
+                    <div class="form-group">
+                        <label>Master Host/Server</label>
+                        <input type="text" id="master-db-host" value="localhost" placeholder="localhost or IP address">
+                    </div>
+                    <div class="form-group">
+                        <label>Master Port</label>
+                        <input type="text" id="master-db-port" value="5432" placeholder="Database port">
+                    </div>
+                    <div class="form-group">
+                        <label>Master Database Name</label>
+                        <input type="text" id="master-db-name" value="master_catalog" placeholder="Master database name">
+                    </div>
+                    <div class="form-group">
+                        <label>Master Username</label>
+                        <input type="text" id="master-db-username" value="postgres" placeholder="Database username">
+                    </div>
+                    <div class="form-group">
+                        <label>Master Password</label>
+                        <input type="password" id="master-db-password" placeholder="Database password">
+                    </div>
+                    <div class="form-group">
+                        <label>Master Connection String Preview</label>
+                        <div class="connection-string-preview" id="master-connection-preview">
+                            Master connection string will appear here...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tenant Databases Configuration -->
+                <div class="form-section" id="tenant-databases-section" style="display: none;">
+                    <div class="form-section-title">
+                        Tenant Databases
+                        <button class="btn-add-db" onclick="addTenantDatabase()">+ Add Tenant Database</button>
+                    </div>
+                    <div class="hint" style="margin-bottom: 15px;">Configure individual databases for each tenant or tenant group.</div>
+                    <div id="tenant-databases-container">
+                        <!-- Tenant databases will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- Tenant Mapping Strategy -->
+                <div class="form-section" id="tenant-mapping-section" style="display: none;">
+                    <div class="form-section-title">Tenant Routing Configuration</div>
+                    <div class="form-group">
+                        <label>Tenant Identification Method</label>
+                        <select id="tenant-identification">
+                            <option value="subdomain">Subdomain (tenant1.app.com)</option>
+                            <option value="header">HTTP Header (X-Tenant-ID)</option>
+                            <option value="jwt-claim">JWT Claim</option>
+                            <option value="url-segment">URL Segment (/tenant/{id}/...)</option>
+                            <option value="custom">Custom Logic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Database Selection Strategy</label>
+                        <select id="db-selection-strategy">
+                            <option value="lookup">Master DB Lookup Table</option>
+                            <option value="convention">Naming Convention (tenant_{id}_db)</option>
+                            <option value="sharding">Sharding (Hash-based)</option>
+                            <option value="region">Region-based</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Connection Pool Strategy</label>
+                        <select id="pool-strategy">
+                            <option value="per-tenant">Pool per Tenant</option>
+                            <option value="shared">Shared Pool with Dynamic Switching</option>
+                            <option value="hybrid">Hybrid (Hot tenants get dedicated pools)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Connections per Tenant</label>
+                        <input type="number" id="max-connections-per-tenant" value="10" placeholder="10">
                     </div>
                 </div>
 

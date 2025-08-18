@@ -529,3 +529,148 @@ button {
     background: rgba(138, 180, 248, 0.08);
     border-color: #8ab4f8;
 }
+
+/* Multi-database support styles */
+.btn-add-db {
+    background: #8ab4f8;
+    color: #0f0f0f;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.2s ease;
+}
+
+.btn-add-db:hover {
+    background: #adc7ff;
+    transform: translateY(-1px);
+}
+
+.tenant-db-card {
+    background: #171717;
+    border: 1px solid #313131;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.tenant-db-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #313131;
+}
+
+.tenant-db-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #8ab4f8;
+}
+
+.tenant-db-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-collapse-db, .btn-remove-db {
+    background: transparent;
+    border: 1px solid #313131;
+    color: #9aa0a6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-collapse-db:hover {
+    background: #313131;
+    color: #e8eaed;
+}
+
+.btn-remove-db {
+    color: #f28b82;
+    border-color: #5f3636;
+}
+
+.btn-remove-db:hover {
+    background: #5f3636;
+    color: #f28b82;
+}
+
+.tenant-db-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.tenant-db-content.collapsed {
+    display: none;
+}
+
+.tenant-info-group {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #313131;
+    margin-bottom: 16px;
+}
+
+.db-field-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.db-field-group label {
+    font-size: 12px;
+    color: #9aa0a6;
+    margin-bottom: 6px;
+}
+
+.db-field-group input,
+.db-field-group select {
+    background: #0f0f0f;
+    border: 1px solid #313131;
+    color: #e8eaed;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.db-field-group input:focus,
+.db-field-group select:focus {
+    outline: none;
+    border-color: #8ab4f8;
+    background: #1a1a1a;
+}
+
+.connection-preview-group {
+    grid-column: span 2;
+    margin-top: 8px;
+}
+
+.connection-preview-group label {
+    font-size: 12px;
+    color: #9aa0a6;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.tenant-db-connection-preview {
+    background: #0f0f0f;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    color: #81c995;
+    word-break: break-all;
+    border: 1px solid #313131;
+}
