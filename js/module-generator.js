@@ -381,8 +381,15 @@
                 return;
             }
             
+            // Get the table name from the input field to use as default
+            const defaultTableName = document.getElementById('table-name')?.value.trim() || '';
+            
             mappingsDiv.innerHTML = fieldsNeedMapping.map((field, index) => {
                 const fieldIndex = configuration.fields.indexOf(field);
+                
+                // Use the entered table name as default if field doesn't have a dataSource yet
+                const tableValue = field.dataSource?.table || defaultTableName;
+                
                 return `
                     <div class="field-mapping-item">
                         <div class="field-mapping-header">
@@ -395,7 +402,7 @@
                             <div class="mapping-label">Source Table:</div>
                             <input type="text" class="mapping-select" id="source-table-${fieldIndex}" 
                                 placeholder="e.g., customer, product, user" 
-                                value="${field.dataSource?.table || ''}"
+                                value="${tableValue}"
                                 onchange="updateFieldDataSource(${fieldIndex}, 'table', this.value)">
                         </div>
                         <div class="mapping-row">
