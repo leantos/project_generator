@@ -1,5 +1,27 @@
 # Project Generator - Enterprise Application Wizard
 
+## Project Structure
+```
+project_generator/
+├── index.html              # Main landing page
+├── project-generator.html  # Project creation wizard
+├── module-generator.html   # Module creation wizard
+├── css/
+│   ├── styles.css         # Landing page styles
+│   ├── project-generator.css
+│   └── module-generator.css
+├── js/
+│   ├── script.js          # Landing page scripts
+│   ├── project-generator.js
+│   └── module-generator.js
+├── images/
+│   └── favicon.svg        # Project logo
+├── docs/
+│   └── (documentation files)
+├── README.md              # This file
+└── CLAUDE.md             # Claude-specific instructions
+```
+
 ## What is this?
 A standalone HTML-based project generator that creates comprehensive project seed files for Claude Code to automatically build enterprise applications. Think of it as a "Create New Project" wizard similar to Visual Studio, but designed specifically for Claude Code automation.
 
