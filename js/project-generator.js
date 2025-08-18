@@ -1318,13 +1318,28 @@ function generateProject() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `PROJECT_SEED_${config['project-name']}_${Date.now()}.md`;
+    
+    // Generate clean filename with timestamp for uniqueness
+    const cleanProjectName = config['project-name'].replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    
+    // Create timestamp: YYYYMMDD_HHMMSS
+    const now = new Date();
+    const dateStr = now.getFullYear().toString() + 
+                   (now.getMonth() + 1).toString().padStart(2, '0') + 
+                   now.getDate().toString().padStart(2, '0');
+    const timeStr = now.getHours().toString().padStart(2, '0') + 
+                   now.getMinutes().toString().padStart(2, '0') +
+                   now.getSeconds().toString().padStart(2, '0');
+    
+    a.download = `${cleanProjectName}_${dateStr}_${timeStr}.md`;
+    
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    alert('Project seed file generated successfully! Give this file to Claude Code to create your project.');
+    // Show success message with the actual filename
+    alert(`Project seed file "${a.download}" generated successfully!\n\nGive this file to Claude Code to create your project.`);
 }
 
 function saveTemplate() {

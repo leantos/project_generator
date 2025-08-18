@@ -565,7 +565,7 @@
                 moduleName: moduleName,
                 moduleCode: document.getElementById('module-code').value.trim(),
                 description: document.getElementById('module-description').value.trim(),
-                namespacePrefix: '{PROJECT_NAMESPACE}', // Will be replaced with actual namespace from PROJECT_SEED.md
+                namespacePrefix: '{PROJECT_NAMESPACE}', // Will be replaced with actual namespace from project seed file
                 apiBaseRoute: apiBaseRoute || `/api/${moduleName.toLowerCase()}`,
                 entityName: document.getElementById('entity-name').value.trim(),
                 fields: configuration.fields,
@@ -606,7 +606,7 @@
                     <div><strong>Module Name:</strong></div>
                     <div>${config.moduleName}</div>
                     <div><strong>Namespace:</strong></div>
-                    <div>[Inherited from PROJECT_SEED.md]</div>
+                    <div>[Inherited from project seed file]</div>
                     ${(config.moduleType === 'frontend' || config.moduleType === 'fullstack') ? `
                     <div><strong>UI Approach:</strong></div>
                     <div>${config.uiApproach === 'template' ? `Template: ${config.uiTemplate}` : 'Custom Wireframe'}</div>` : ''}
@@ -641,433 +641,204 @@
             
             return `# MODULE GENERATOR: ${config.moduleName}
 
-## CLAUDE CODE - BUILD THIS MODULE
-
-**IMPORTANT: You MUST check @claude_docs for XOS framework patterns before implementing!**
-
-This file contains instructions to create a ${config.moduleType} module for ${config.moduleName}.
-
-### 🔴 MANDATORY: Check @claude_docs First!
-**CLAUDE: Before writing ANY code, you MUST:**
-1. Check @claude_docs/xos-framework/patterns for the correct implementation patterns
-2. Review @claude_docs/xos-framework/components for component usage
-3. Follow @claude_docs/best-practices for code standards
-4. Use @claude_docs/frontend/ui-templates for UI template references
-
-**DO NOT PROCEED without checking @claude_docs for the proper XOS patterns!**
-
-### 📦 IMPORTANT: Namespace Configuration
-**The namespace for this module should be inherited from the PROJECT_SEED.md file in the root directory.**
-- Look for the namespace configuration in PROJECT_SEED.md
-- Use that namespace throughout this module (e.g., if PROJECT_SEED.md specifies "CVS", use "CVS.Transaction.Domain", etc.)
-
-### Module Configuration
-- **Name**: ${config.moduleName}
+## Module Configuration
 - **Type**: ${config.moduleType}
-- **Entity**: ${config.entityName}
-- **Namespace**: [Use namespace from PROJECT_SEED.md]
-- **Code**: ${config.moduleCode || 'Generated'}
-${(config.moduleType === 'frontend' || config.moduleType === 'fullstack') ? `- **UI Template**: ${config.uiTemplate}` : ''}
-${(config.moduleType === 'backend' || config.moduleType === 'fullstack') ? `- **API Route**: ${config.apiBaseRoute}` : ''}
+- **Entity**: ${config.entityName}  
+- **Module Code**: ${config.moduleCode || 'AUTO'}
+- **Namespace**: Check project seed file (projectname_*.md) for namespace
+${(config.moduleType !== 'frontend') ? `- **API Base Route**: ${config.apiBaseRoute}` : ''}
+${(config.moduleType !== 'backend') ? `- **UI Template**: ${config.uiTemplate || 'MasterDetailCRUDTemplate'}
+- **UI Approach**: ${config.uiApproach || 'template'}` : ''}
 
-### Data Source Mappings
-${config.fields.filter(f => f.dataSource).length > 0 ? config.fields.filter(f => f.dataSource).map(f => `
-#### Field: ${f.name}
-- **Source Table**: ${f.dataSource.table}
-- **Display Field**: ${f.dataSource.displayField}
-- **Value Field**: ${f.dataSource.valueField}
-- **Filter**: ${f.dataSource.filter || 'None'}
-`).join('') : 'No data source mappings configured.'}
+## Entity Definition
+\`\`\`
+Entity: ${config.entityName}
+Fields:
+${config.fields.map(f => `  - ${f.name}: ${f.type}${f.dataSource ? ` (lookup from ${f.dataSource.table})` : ''}`).join('\n')}
+\`\`\`
 
-### Table Relationships
-${config.relationships.length > 0 ? config.relationships.map(r => `
-- **${r.fromTable}.${r.fromField}** → **${r.toTable}.${r.toField || r.fromField}**
-`).join('') : 'No relationships defined.'}
+${config.relationships.length > 0 ? `## Table Relationships
+${config.relationships.map(r => `- ${r.fromTable}.${r.fromField} → ${r.toTable}.${r.toField || r.fromField}`).join('\n')}
+` : ''}
+${config.fields.filter(f => f.dataSource).length > 0 ? `## Data Source Mappings
+${config.fields.filter(f => f.dataSource).map(f => `
+**${f.name}:**
+- Table: ${f.dataSource.table}
+- Display: ${f.dataSource.displayField}
+- Value: ${f.dataSource.valueField}
+${f.dataSource.filter ? `- Filter: ${f.dataSource.filter}` : ''}`).join('\n')}
+` : ''}
+${config.apiNotes ? `## Special Requirements
+${config.apiNotes}
+` : ''}
 
-## STEP 1: Create Domain Model ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+## Implementation Instructions
 
-${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
-**CLAUDE: Create the domain model class:**
+${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `### Backend Implementation
 
-### CREATE FILE: [PROJECT_NAMESPACE].Transaction/Domain/${config.entityName}.cs
+#### 1. Domain Model
+**File:** \`[NAMESPACE].Transaction/Domain/${config.entityName}.cs\`
 \`\`\`csharp
-using System.ComponentModel.DataAnnotations;
-
-namespace [PROJECT_NAMESPACE].Transaction.Domain
+public class ${config.entityName}
 {
-    public class ${config.entityName}
+    ${config.fields.map(f => `public ${f.type} ${f.name} { get; set; }`).join('\n    ')}
+    
+    // Nested classes for Search
+    public class SearchInput
     {
-        ${generateDomainProperties(config.fields)}
-        
-        ${generateNestedClasses(config)}
+        public short ClientID { get; set; }
+        public short SiteID { get; set; }
+        public string SearchTerm { get; set; }
+    }
+    
+    public class SearchOutput
+    {
+        public List<${config.entityName}> Items { get; set; }
+        public int TotalCount { get; set; }
     }
 }
 \`\`\`
-` : ''}
 
-## STEP 2: Create Service Interface ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+#### 2. Service Interface
+**File:** \`[NAMESPACE].Transaction/Interfaces/I${config.entityName}Service.cs\`
+- Methods: Create, GetAll, Update, Delete, Search, GetById, Export, Import
 
-${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
-**CLAUDE: Create the service interface:**
+#### 3. Service Implementation
+**File:** \`[NAMESPACE].Transaction/Services/${config.entityName}Service.cs\`
+- Inherit: XOSServiceBase
+- Constructor: Accept IServiceProvider and ILogger
+- Implement all CRUD operations using repository pattern
 
-### CREATE FILE: [PROJECT_NAMESPACE].Transaction/Interfaces/I${config.entityName}Service.cs
+#### 4. API Controller
+**File:** \`[NAMESPACE].WebApi/Controllers/${config.entityName}Controller.cs\`
+- Route: \`${config.apiBaseRoute}\`
+- Endpoints:
+  - POST ${config.apiBaseRoute}/create
+  - GET ${config.apiBaseRoute}/getall
+  - PUT ${config.apiBaseRoute}/update
+  - DELETE ${config.apiBaseRoute}/delete/{id}
+  - POST ${config.apiBaseRoute}/search
+  - GET ${config.apiBaseRoute}/getbyid/{id}
+
+#### 5. Dependency Injection
+**File:** \`[NAMESPACE].Transaction/Extensions/ServiceExtensions.cs\`
 \`\`\`csharp
-using [PROJECT_NAMESPACE].Transaction.Domain;
+services.AddScoped<I${config.entityName}Service, ${config.entityName}Service>();
+\`\`\`
 
-namespace [PROJECT_NAMESPACE].Transaction.Interfaces
-{
-    public interface I${config.entityName}Service
-    {
-        ${generateServiceMethods(config)}
-    }
-}
+#### 6. Database Table
+\`\`\`sql
+CREATE TABLE [namespace]_${config.entityName.toLowerCase()}_mast (
+    clnt_id SMALLINT NOT NULL,
+    ${config.fields.map(f => `${f.name.toLowerCase()} ${getSqlType(f.type)}`).join(',\n    ')},
+    rcrd_stat SMALLINT DEFAULT 1,
+    cre_by_usr_cd SMALLINT,
+    cre_dttm TIMESTAMP,
+    PRIMARY KEY (clnt_id, ${config.fields.find(f => f.name.toLowerCase().includes('id'))?.name.toLowerCase() || 'id'})
+);
 \`\`\`
 ` : ''}
 
-## STEP 3: Create Service Implementation ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `### Frontend Implementation
 
-${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
-**CLAUDE: Create the service implementation following @claude_docs patterns:**
-
-⚠️ **IMPORTANT**: Check @claude_docs/xos-framework/services/service-base for XOSServiceBase patterns
-⚠️ **IMPORTANT**: Review @claude_docs/xos-framework/data-access for repository patterns
-⚠️ **IMPORTANT**: Follow @claude_docs/error-handling for proper error handling
-
-### CREATE FILE: [PROJECT_NAMESPACE].Transaction/Services/${config.entityName}Service.cs
-\`\`\`csharp
-using [PROJECT_NAMESPACE].Transaction.Core;
-using [PROJECT_NAMESPACE].Transaction.Domain;
-using [PROJECT_NAMESPACE].Transaction.Interfaces;
-using Microsoft.Extensions.Logging;
-using XOS.Data;
-
-namespace [PROJECT_NAMESPACE].Transaction.Services
-{
-    public class ${config.entityName}Service : XOSServiceBase, I${config.entityName}Service
-    {
-        #region Constructor
-        
-        public ${config.entityName}Service(IServiceProvider serviceProvider, ILogger<${config.entityName}Service> logger)
-          : base(serviceProvider, logger)
-        {
-        }
-        
-        #endregion
-        
-        #region Public Methods
-        
-        ${generateServiceImplementation(config)}
-        
-        #endregion
-        
-        #region Private Methods
-        
-        // Add private helper methods here
-        
-        #endregion
-    }
-}
-\`\`\`
-` : ''}
-
-## STEP 4: Create API Controller ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
-
-${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
-**CLAUDE: Create the API controller:**
-
-### CREATE FILE: ${config.namespacePrefix}.WebApi/Controllers/${config.entityName}Controller.cs
-\`\`\`csharp
-using ${config.namespacePrefix}.Transaction.Domain;
-using ${config.namespacePrefix}.Transaction.Interfaces;
-using ${config.namespacePrefix}.WebApi.Domain;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ${config.namespacePrefix}.WebApi.Controllers
-{
-    [Route("${config.apiBaseRoute}")]
-    [ApiController]
-    public class ${config.entityName}Controller : XOSBaseController
-    {
-        private readonly I${config.entityName}Service _${config.entityName.toLowerCase()}Service;
-        
-        public ${config.entityName}Controller(I${config.entityName}Service ${config.entityName.toLowerCase()}Service)
-        {
-            _${config.entityName.toLowerCase()}Service = ${config.entityName.toLowerCase()}Service;
-        }
-        
-        ${generateControllerMethods(config)}
-    }
-}
-\`\`\`
-` : ''}
-
-## STEP 5: Create Frontend Components ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? '' : '(Skip for backend-only)'}
-
-${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `
-**CLAUDE: Create the React components${config.uiApproach === 'template' ? ` using ${config.uiTemplate}` : ' based on the wireframe'}:**
-
-### 📌 CRITICAL: You MUST check @claude_docs before proceeding!
-1. **@claude_docs/xos-framework/components** - For XOSComponent base class patterns
-2. **@claude_docs/xos-framework/mvvm** - For ViewModel (VM) implementation patterns  
-3. **@claude_docs/xos-framework/observable** - For observable state management
-4. **@claude_docs/frontend/ui-templates** - For UI template implementations
-5. **@claude_docs/frontend/xos-components** - For XOS UI component usage (XOSTextbox, XOSGrid, etc.)
-
-${config.uiApproach === 'wireframe' && config.hasWireframe ? `
-### 🎨 WIREFRAME ANALYSIS REQUIRED
-
-**CLAUDE**: The user has uploaded a wireframe/UI design. You need to:
-1. **Analyze the wireframe image** provided in the generated file
-2. **Understand the layout, components, and user interactions**
-3. **Create components that match the design intent**
-
-**Wireframe Description**: ${config.wireframeDescription || 'No description provided'}
-
-**Key Requirements**:
-- Match the visual layout shown in the wireframe
-- Implement all interactive elements visible in the design
-- Use XOS components where possible to maintain consistency
-- Follow the entity fields: ${config.fields.map(f => `${f.name} (${f.type})`).join(', ')}
-
-` : ''}
-
-### CREATE FILE: ${config.namespacePrefix}.WebApi/UIPages/src/components/${config.moduleName}/${config.entityName}VM.jsx
+#### 1. ViewModel
+**File:** \`UIPages/src/components/${config.moduleName}/${config.entityName}VM.jsx\`
 \`\`\`javascript
 import { VMBase } from '../../xos-components/VMBase.js';
-import { ApiManager } from '../../xos-components/Core/ApiManager.js';
 
 export class ${config.entityName}VM extends VMBase {
     constructor() {
         super();
+        // Observable properties
+        ${config.fields.map(f => `this.${f.name.toLowerCase()} = this.observable('');`).join('\n        ')}
         
-        // State properties
-        ${generateViewModelProperties(config.fields)}
-        
-        // Lists and collections
+        // Collections
         this.${config.entityName.toLowerCase()}List = this.observable([]);
-        this.selectedItem = this.observable(null);
         this.isLoading = this.observable(false);
-        
-        // Form validation
-        this.validationErrors = this.observable({});
     }
     
-    ${generateViewModelMethods(config)}
-}
-\`\`\`
-
-### CREATE FILE: ${config.namespacePrefix}.WebApi/UIPages/src/components/${config.moduleName}/index.jsx
-
-${config.uiApproach === 'template' ? `
-### ⚠️ TEMPLATE IMPLEMENTATION REQUIRED
-**CLAUDE: You MUST do the following IN THIS EXACT ORDER:**
-1. **FIRST**: Open and read @claude_docs/frontend/ui-templates/${config.uiTemplate}/index.jsx
-2. **COPY**: Copy the ENTIRE template structure from @claude_docs
-3. **CUSTOMIZE**: Replace placeholder values with ${config.entityName} entity fields
-4. **VERIFY**: Check that you're using XOS components correctly per @claude_docs/frontend/xos-components
-
-**DO NOT write generic React code! You MUST use the exact template from @claude_docs!**
-` : `**IMPORTANT**: Create components based on the uploaded wireframe design following @claude_docs patterns.`}
-
-\`\`\`javascript
-import React from 'react';
-import { XOSComponent } from '../../xos-components/XOSComponent.js';
-import { ${config.entityName}VM } from './${config.entityName}VM.jsx';
-
-${config.uiApproach === 'template' ? `// CLAUDE: Copy from @claude_docs/frontend/ui-templates/${config.uiTemplate}/index.jsx
-// Then customize for ${config.entityName} entity with these fields:` : `// CLAUDE: Implement the wireframe design for ${config.entityName} entity with these fields:`}
-${config.fields.map(field => `//   - ${field.name} (${field.type})`).join('\n')}
-
-export class ${config.moduleName} extends XOSComponent {
-    constructor(props) {
-        super(props);
-        this.vm = new ${config.entityName}VM();
+    async loadData() {
+        const response = await ApiManager.get('${config.apiBaseRoute}/getall');
+        this.${config.entityName.toLowerCase()}List.value = response;
     }
     
-    async componentDidMount() {
-        await this.vm.loadData();
-    }
-    
-    render() {
-        // CLAUDE: Replace with ${config.uiTemplate} template render method
-        return (
-            ${generateComponentRender(config)}
-        );
+    async save${config.entityName}() {
+        const data = {
+            ${config.fields.map(f => `${f.name}: this.${f.name.toLowerCase()}.value`).join(',\n            ')}
+        };
+        await ApiManager.post('${config.apiBaseRoute}/create', data);
+        await this.loadData();
     }
 }
-
-export default ${config.moduleName};
 \`\`\`
 
-### ${config.uiApproach === 'template' ? 'Template-Specific Instructions:' : 'Wireframe Implementation Instructions:'}
-${config.uiApproach === 'template' ? getTemplateInstructions(config.uiTemplate, config) : getWireframeInstructions(config)}
-` : ''}
+#### 2. React Component
+**File:** \`UIPages/src/components/${config.moduleName}/index.jsx\`
+- Template: **${config.uiTemplate || 'MasterDetailCRUDTemplate'}**
+- Check: \`@claude_docs/frontend/ui-templates/${config.uiTemplate || 'MasterDetailCRUDTemplate'}\`
+- Use XOS components (XOSTextbox, XOSGrid, XOSButton)
+- Bind to ViewModel properties
 
-## STEP 6: Register Services ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+${config.uiApproach === 'wireframe' && config.hasWireframe ? `#### 3. Wireframe Notes
+- Follow the uploaded wireframe design
+- ${config.wireframeDescription || 'Match layout and components shown in the image'}
+` : ''}` : ''}
 
-${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
-**CLAUDE: Register the service in dependency injection:**
-
-### MODIFY FILE: ${config.namespacePrefix}.Transaction/Extensions/ServiceExtensions.cs
-
-Add this line in the service registration method:
-\`\`\`csharp
-services.AddScoped<I${config.entityName}Service, ${config.entityName}Service>();
-\`\`\`
-` : ''}
-
-## STEP 7: Database Setup ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
-
-${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
-**CLAUDE: Create the database table:**
-
-### SQL Script for ${config.entityName} table:
-\`\`\`sql
-CREATE TABLE ${`${config.namespacePrefix.toLowerCase()}_${config.entityName.toLowerCase()}_mast`} (
-    clnt_id SMALLINT NOT NULL,
-    ${generateTableColumns(config.fields)}
-    rcrd_stat SMALLINT DEFAULT 1,
-    cre_by_usr_cd SMALLINT,
-    cre_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    mod_by_usr_cd SMALLINT,
-    mod_dttm TIMESTAMP,
-    
-    PRIMARY KEY (clnt_id, ${config.fields.find(f => f.name.toLowerCase().includes('id') || f.name.toLowerCase().includes('cd'))?.name.toLowerCase() || 'id'})
-);
-\`\`\`
-` : ''}
-
-## STEP 8: Data Source Implementation ${(config.fields.filter(f => f.dataSource).length > 0 || config.relationships.length > 0) ? '' : '(Skip - no data sources configured)'}
-
-${(config.fields.filter(f => f.dataSource).length > 0 || config.relationships.length > 0) ? `
-**CLAUDE: Implement data sources for dropdowns and lookups:**
-
+${config.fields.filter(f => f.dataSource).length > 0 ? `## Lookup/Dropdown Configuration
 ${config.fields.filter(f => f.dataSource).map(f => `
-### Dropdown for ${f.name}:
-\`\`\`csharp
-// In service method for loading ${f.name} dropdown options:
-var ${f.dataSource.table}List = await _repository.GetAsync<${f.dataSource.table}>(
-    "${f.dataSource.table}",
-    new { ${f.dataSource.filter ? `/* Apply filter: ${f.dataSource.filter} */` : ''} }
-);
-
-// Return as dropdown options:
-var options = ${f.dataSource.table}List.Select(x => new {
-    Value = x.${f.dataSource.valueField},
-    Display = x.${f.dataSource.displayField}
-});
-\`\`\`
-
-// Frontend component:
-\`\`\`javascript
-// Load ${f.name} dropdown options
-const load${f.name.charAt(0).toUpperCase() + f.name.slice(1)}Options = async () => {
-    const response = await ApiManager.get('/api/${f.dataSource.table}/dropdown');
-    setOptions(response.data);
-};
-\`\`\`
-`).join('')}
-
-${config.relationships.length > 0 ? `
-### Join Queries for Related Data:
-${config.relationships.map(r => `
-\`\`\`sql
--- Join ${r.fromTable} with ${r.toTable}
-SELECT t1.*, t2.* 
-FROM ${r.fromTable} t1
-LEFT JOIN ${r.toTable} t2 ON t1.${r.fromField} = t2.${r.toField || r.fromField}
-WHERE t1.clnt_id = @clnt_id
-\`\`\`
-`).join('')}
-` : ''}
+### ${f.name}
+- Source Table: \`${f.dataSource.table}\`
+- Display Field: \`${f.dataSource.displayField}\`
+- Value Field: \`${f.dataSource.valueField}\`
+${f.dataSource.filter ? `- Filter: \`${f.dataSource.filter}\`` : ''}
+- Implementation: Create dropdown endpoint to load options`).join('\n')}
 ` : ''}
 
-## STEP 9: API Endpoints Documentation ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? '' : '(Skip for frontend-only)'}
+## Summary
 
-${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
-**CLAUDE: Your module will expose these API endpoints:**
-
-| Method | Route | Purpose | Request Body |
-|--------|-------|---------|--------------|
-${generateEndpointDocumentation(config)}
-
-**Example API Calls:**
-\`\`\`javascript
-// Search ${config.entityName}s
-const searchResult = await ApiManager.post('${config.apiBaseRoute}/search', {
-    ClientID: 1,
-    SiteID: 1,
-    SearchTerm: 'example'
-});
-
-// Save ${config.entityName}
-const saveResult = await ApiManager.post('${config.apiBaseRoute}/save', {
-    ClientID: 1,
-    SiteID: 1,
-    ${config.fields.map(f => `${f.name}: 'value'`).join(',\n    ')}
-});
-\`\`\`
+### Files to Create
+${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `**Backend:**
+- \`Domain/${config.entityName}.cs\`
+- \`Interfaces/I${config.entityName}Service.cs\`
+- \`Services/${config.entityName}Service.cs\`
+- \`Controllers/${config.entityName}Controller.cs\`
+` : ''}
+${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `**Frontend:**
+- \`components/${config.moduleName}/${config.entityName}VM.jsx\`
+- \`components/${config.moduleName}/index.jsx\`
 ` : ''}
 
-## STEP 9: Testing
+### API Endpoints
+All standard CRUD operations:
+- Create, Read, Update, Delete
+- Search, GetById
+- Export, Import
 
-**CLAUDE: Test the module:**
-
-1. Build the solution: \`dotnet build\`
-2. Run the application: \`dotnet run --project ${config.namespacePrefix}.WebApi\`
-3. Test API endpoints at: https://localhost:5001/swagger
-${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `4. Test frontend component using ${config.uiTemplate} patterns` : ''}
-
-## API Endpoints Included:
-
-✅ Create - Add new records
-✅ Read - Get all records  
-✅ Update - Modify existing records
-✅ Delete - Remove records
-✅ Search - Filter and find records
-✅ GetById - Retrieve single record
-✅ Export - Download data
-✅ Import - Upload data
-
-${config.apiNotes ? `## Special Requirements:
-${config.apiNotes}
-` : ''}
-
-## Module Structure Created:
-
-\`\`\`
-${config.namespacePrefix}/
-${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `├── ${config.namespacePrefix}.Transaction/
-│   ├── Domain/${config.entityName}.cs
-│   ├── Interfaces/I${config.entityName}Service.cs
-│   └── Services/${config.entityName}Service.cs
-├── ${config.namespacePrefix}.WebApi/
-│   └── Controllers/${config.entityName}Controller.cs` : ''}
-${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `├── UIPages/src/components/${config.moduleName}/
-│   ├── ${config.entityName}VM.jsx
-│   └── index.jsx` : ''}
-\`\`\`
+### Important Notes
+- ✅ Use namespace from project seed file (look for projectname_*.md)
+- ✅ Follow XOS framework patterns (@claude_docs)
+- ✅ Database table: \`[namespace]_${config.entityName.toLowerCase()}_mast\`
+- ✅ All services use dependency injection
+- ✅ Frontend uses MVVM pattern with observables
 
 ---
-
-## 📚 FINAL REMINDER: Use @claude_docs!
-
-**CLAUDE: Before you finish, verify you have:**
-✅ Checked @claude_docs for ALL XOS framework patterns
-✅ Used the EXACT template structure from @claude_docs (not generic code)
-✅ Followed @claude_docs naming conventions and patterns
-✅ Implemented proper error handling per @claude_docs
-✅ Used XOS components correctly per @claude_docs documentation
-
-**If you haven't checked @claude_docs, GO BACK and check it NOW!**
-
-**Generated**: ${timestamp}
-**Module Type**: ${config.moduleType}
-**Generator Version**: 1.0.0
+Generated: ${timestamp}
+Module Generator v2.0
 `;
         }
 
         // Helper functions for code generation
+        function getSqlType(fieldType) {
+            switch (fieldType) {
+                case 'int': return 'INTEGER';
+                case 'short': return 'SMALLINT';
+                case 'decimal': return 'DECIMAL(18,2)';
+                case 'DateTime': return 'TIMESTAMP';
+                case 'bool': return 'BOOLEAN';
+                default: return 'VARCHAR(255)';
+            }
+        }
+        
         function generateDomainProperties(fields) {
             if (!fields.length) return '// Add properties here';
             
@@ -1414,120 +1185,13 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
         }
 
         function getTemplateInstructions(template, config) {
-            const instructions = {
-                'MasterDetailCRUDTemplate': `
-### 🔴 CRITICAL: Master-Detail CRUD Template Implementation
-
-**CLAUDE: You are REQUIRED to use @claude_docs for this template!**
-
-**STEP-BY-STEP INSTRUCTIONS:**
-1. **OPEN**: @claude_docs/frontend/ui-templates/MasterDetailCRUDTemplate/index.jsx
-2. **READ**: The complete template implementation from @claude_docs
-3. **COPY**: The exact structure including:
-   - Two-column form layout (col-md-6) 
-   - Save/Close buttons with classes (.btn-save1, .btn-close1)
-   - Mandatory field indicators
-   - Validation with focus management
-   - Loading states during save operations
-   - Toast notifications for success/error
-4. **CUSTOMIZE**: Only replace entity-specific values
-5. **VERIFY**: Compare your implementation with @claude_docs template
-
-**Path in @claude_docs**: frontend/ui-templates/MasterDetailCRUDTemplate/`,
-
-                'SearchListGridTemplate': `
-### 🔴 CRITICAL: Search/List Grid Template Implementation
-
-**CLAUDE: MANDATORY @claude_docs usage required!**
-
-**IMPLEMENTATION STEPS:**
-1. **CHECK**: @claude_docs/frontend/ui-templates/SearchListGridTemplate/index.jsx
-2. **IMPLEMENT** from @claude_docs:
-   - Search bar with filters (exact structure from template)
-   - XOSGrid with pagination (use @claude_docs/frontend/xos-components/XOSGrid)
-   - Export functionality pattern
-   - Audit trail integration
-   - Advanced filters with collapsible sections
-   - Row actions (edit/delete/view)
-3. **VERIFY**: Your code matches the @claude_docs template structure
-
-**Path in @claude_docs**: frontend/ui-templates/SearchListGridTemplate/`,
-
-                'WorkflowFormTemplate': `
-### 🔴 CRITICAL: Workflow Form Template Implementation
-
-**CLAUDE: You MUST reference @claude_docs for this workflow template!**
-
-**REQUIRED STEPS:**
-1. **LOCATE**: @claude_docs/frontend/ui-templates/WorkflowFormTemplate/index.jsx
-2. **COPY** the exact implementation including:
-   - Multi-section accordion layout from @claude_docs
-   - File attachment component (check @claude_docs/frontend/xos-components/FileUpload)
-   - Approval/rejection workflow buttons
-   - History timeline component
-   - Comments section pattern
-   - Workflow state management
-3. **FOLLOW**: @claude_docs patterns for workflow state handling
-
-**Path in @claude_docs**: frontend/ui-templates/WorkflowFormTemplate/`,
-
-                'ReportParameterTemplate': `
-### 🔴 CRITICAL: Report Parameter Template Implementation  
-
-**CLAUDE: @claude_docs reference is MANDATORY!**
-
-**EXACT IMPLEMENTATION REQUIRED:**
-1. **READ**: @claude_docs/frontend/ui-templates/ReportParameterTemplate/index.jsx
-2. **USE** components from @claude_docs:
-   - Date range picker (from @claude_docs/frontend/xos-components/DateRangePicker)
-   - Multi-select filters (from @claude_docs/frontend/xos-components/MultiSelect)
-   - Download format options
-   - Email scheduling component
-   - Parameter persistence pattern
-3. **MATCH**: The exact structure from @claude_docs template
-
-**Path in @claude_docs**: frontend/ui-templates/ReportParameterTemplate/`
-            };
-            
-            return instructions[template] || '';
+            // Simplified - Claude Code already knows to check @claude_docs
+            return '';
         }
 
         function getWireframeInstructions(config) {
-            return `
-**Wireframe Implementation Guidelines:**
-
-**CLAUDE: YOU HAVE ACCESS TO THE WIREFRAME IMAGE. ANALYZE IT CAREFULLY.**
-
-1. **Visual Analysis:**
-   - Examine the layout, spacing, and component arrangement
-   - Identify all UI elements (buttons, inputs, grids, etc.)
-   - Note the visual hierarchy and information flow
-   - Understand the responsive behavior if indicated
-
-2. **Component Mapping:**
-   - Map wireframe elements to XOS components
-   - Use standard XOS component patterns where possible
-   - Maintain consistency with existing CVS application design
-
-3. **Implementation Strategy:**
-   - Start with the main layout structure
-   - Implement each section progressively
-   - Add interactive functionality based on entity fields
-   - Follow XOS framework patterns from @claude_docs
-
-4. **Design Requirements:**
-   - Match the wireframe layout as closely as possible
-   - Use appropriate XOS components (XOSTextbox, XOSGrid, etc.)
-   - Implement proper validation and error handling
-   - Add loading states and user feedback
-
-5. **Entity Integration:**
-   - Map wireframe form fields to entity properties: ${config.fields.map(f => `${f.name} (${f.type})`).join(', ')}
-   - Implement CRUD operations as shown in the design
-   - Add appropriate API calls to backend endpoints
-
-**Remember**: The wireframe is your blueprint. Analyze it thoroughly and ask clarifying questions if the design intent is unclear.
-`;
+            // Simplified - wireframe instructions are already in main content
+            return '';
         }
 
         function generateComponentRender(config) {
@@ -1656,9 +1320,21 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            const wireframeTag = config.hasWireframe ? '_WIREFRAME' : '';
-            const templateTag = config.uiTemplate ? `_${config.uiTemplate.toUpperCase()}` : '';
-            a.download = `MODULE_${config.moduleName}_${config.moduleType.toUpperCase()}${wireframeTag}${templateTag}_${Date.now()}.md`;
+            
+            // Generate clean filename with timestamp for uniqueness
+            const cleanModuleName = config.moduleName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+            
+            // Create timestamp: YYYYMMDD_HHMMSS
+            const now = new Date();
+            const dateStr = now.getFullYear().toString() + 
+                           (now.getMonth() + 1).toString().padStart(2, '0') + 
+                           now.getDate().toString().padStart(2, '0');
+            const timeStr = now.getHours().toString().padStart(2, '0') + 
+                           now.getMinutes().toString().padStart(2, '0') +
+                           now.getSeconds().toString().padStart(2, '0');
+            
+            a.download = `${cleanModuleName}_${dateStr}_${timeStr}.md`;
+            
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
