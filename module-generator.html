@@ -271,12 +271,7 @@
                     <div class="form-group">
                         <label>Entity Name <span class="required">*</span></label>
                         <input type="text" id="entity-name" placeholder="e.g., User, Product, Order">
-                        <div class="hint">Singular name for your main entity</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Table Name</label>
-                        <input type="text" id="table-name" placeholder="e.g., usr_mast, prd_mast">
-                        <div class="hint">Database table name (leave empty to auto-generate)</div>
+                        <div class="hint">Singular name for your main entity. The backend will automatically generate the appropriate database table name.</div>
                     </div>
                 </div>
 
@@ -407,6 +402,18 @@
                         # Generated instructions will appear here...
                     </div>
                 </div>
+                
+                <div class="form-section">
+                    <div class="form-section-title">Download Instructions</div>
+                    <div style="text-align: center; padding: 20px;">
+                        <p style="color: #e8eaed; margin-bottom: 20px;">Click the button below to download the module generation instructions as a Markdown file.</p>
+                        <button class="btn-success" onclick="generateModule()" style="padding: 12px 32px; font-size: 16px;">
+                            <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">download</span>
+                            Download Module Instructions
+                        </button>
+                        <p style="color: #9aa0a6; margin-top: 16px; font-size: 14px;">Give this file to Claude Code to create your module automatically.</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Navigation buttons -->
@@ -416,7 +423,7 @@
                 </div>
                 <div>
                     <button class="btn-primary" onclick="nextStep()" id="next-btn">Next</button>
-                    <button class="btn-success" onclick="generateModule()" id="generate-btn" style="display: none;">Generate Module</button>
+                    <button class="btn-primary" onclick="previousStep()" id="generate-btn" style="display: none;">Back to Summary</button>
                 </div>
             </div>
         </div>

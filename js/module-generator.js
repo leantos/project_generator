@@ -381,15 +381,12 @@
                 return;
             }
             
-            // Get the table name from the input field to use as default
-            const defaultTableName = document.getElementById('table-name')?.value.trim() || '';
-            
             mappingsDiv.innerHTML = fieldsNeedMapping.map((field, index) => {
                 const fieldIndex = configuration.fields.indexOf(field);
                 const isEditing = currentEditingFieldIndex === fieldIndex;
                 
-                // Use the entered table name as default if field doesn't have a dataSource yet
-                const tableValue = field.dataSource?.table || defaultTableName;
+                // Use empty string as default if field doesn't have a dataSource yet
+                const tableValue = field.dataSource?.table || '';
                 
                 return `
                     <div class="field-mapping-item ${isEditing ? 'editing' : ''}" style="${isEditing ? 'border: 2px solid #8ab4f8; background: #1a1a1a;' : ''}">
@@ -744,7 +741,6 @@
                 namespacePrefix: '{PROJECT_NAMESPACE}', // Will be replaced with actual namespace from PROJECT_SEED.md
                 apiBaseRoute: apiBaseRoute || `/api/${moduleName.toLowerCase()}`,
                 entityName: document.getElementById('entity-name').value.trim(),
-                tableName: document.getElementById('table-name').value.trim(),
                 fields: configuration.fields,
                 methods: configuration.methods,
                 relationships: configuration.relationships
@@ -1097,7 +1093,7 @@ ${config.moduleType.includes('backend') || config.moduleType === 'fullstack' ? `
 
 ### SQL Script for ${config.entityName} table:
 \`\`\`sql
-CREATE TABLE ${config.tableName || `${config.namespacePrefix.toLowerCase()}_${config.entityName.toLowerCase()}_mast`} (
+CREATE TABLE ${`${config.namespacePrefix.toLowerCase()}_${config.entityName.toLowerCase()}_mast`} (
     clnt_id SMALLINT NOT NULL,
     ${generateTableColumns(config.fields)}
     rcrd_stat SMALLINT DEFAULT 1,
@@ -1821,8 +1817,15 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            const approach = config.uiApproach === 'wireframe' ? 'custom wireframe' : 'template';
-            alert(`Module instructions generated successfully!\nApproach: ${approach}\nGive this file to Claude Code to create your ${config.moduleType} module.`);
+            // Show a success message in the preview area
+            const preview = document.getElementById('instructions-preview');
+            preview.innerHTML = `<div style="color: #34a853; text-align: center; padding: 20px;">
+                <span class="material-icons" style="font-size: 48px;">check_circle</span>
+                <h3>Download Started!</h3>
+                <p>Your module instructions have been downloaded as:</p>
+                <p style="font-family: monospace; color: #8ab4f8;">${a.download}</p>
+                <p style="margin-top: 20px;">Give this file to Claude Code to automatically generate your ${config.moduleType} module.</p>
+            </div>`;
         }
         
         // Initialize on page load
