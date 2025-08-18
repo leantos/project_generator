@@ -3,10 +3,11 @@
         let configuration = {
             moduleType: 'fullstack',
             fields: [],
-            methods: [],
-            relationships: []
+            methods: [], // Will use default CRUD methods
+            relationships: [],
+            apiNotes: '' // Optional custom requirements
         };
-        let editingMethodIndex = -1;
+        // Methods are now standardized - no need for custom editing
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -552,181 +553,7 @@
             `).join('');
         }
 
-        function addMethod() {
-            const operation = document.getElementById('method-operation').value;
-            const methodName = document.getElementById('method-name').value.trim();
-            const description = document.getElementById('method-description').value.trim();
-            
-            // Set default method names based on operation if not provided
-            const defaultNames = {
-                'CREATE': 'Create',
-                'READ': 'GetAll',
-                'UPDATE': 'Update',
-                'DELETE': 'Delete',
-                'SEARCH': 'Search',
-                'GET_ONE': 'GetById',
-                'GET_MANY': 'GetByFilter',
-                'EXPORT': 'Export',
-                'IMPORT': 'Import',
-                'CUSTOM': 'CustomMethod'
-            };
-            
-            const name = methodName || defaultNames[operation];
-            const desc = description || `${operation} operation`;
-            
-            // Check if method already exists
-            if (configuration.methods.some(m => m.name.toLowerCase() === name.toLowerCase())) {
-                alert('Method with this name already exists');
-                return;
-            }
-            
-            configuration.methods.push({
-                operation: operation,
-                name: name,
-                description: desc
-            });
-            
-            updateMethodList();
-            
-            // Clear inputs
-            document.getElementById('method-name').value = '';
-            document.getElementById('method-description').value = '';
-            document.getElementById('method-operation').value = 'CREATE';
-        }
-
-        function addQuickMethod(operation, name, description) {
-            // Check if method already exists
-            if (configuration.methods.some(m => m.name.toLowerCase() === name.toLowerCase())) {
-                alert(`Method "${name}" already exists`);
-                return;
-            }
-            
-            configuration.methods.push({
-                operation: operation,
-                name: name,
-                description: description
-            });
-            
-            updateMethodList();
-        }
-
-        function removeMethod(index) {
-            configuration.methods.splice(index, 1);
-            updateMethodList();
-        }
-
-        function updateMethodList() {
-            const methodList = document.getElementById('method-list');
-            
-            if (configuration.methods.length === 0) {
-                methodList.innerHTML = '<div style="color: #9aa0a6; text-align: center; padding: 20px;">No methods added yet. Use the quick add buttons or add custom methods above.</div>';
-                return;
-            }
-            
-            methodList.innerHTML = configuration.methods.map((method, index) => {
-                if (editingMethodIndex === index) {
-                    // Show edit form
-                    return `
-                        <div class="method-item editing" style="display: flex; gap: 16px;">
-                            <div class="method-edit-form">
-                                <div class="edit-row">
-                                    <span class="method-tag ${method.operation.toLowerCase().replace('_', '')}">${method.operation}</span>
-                                    <input type="text" class="edit-input" id="edit-name-${index}" value="${method.name}" placeholder="Method name (e.g., FindStudentById, CreateNewRecord)">
-                                </div>
-                                <div class="edit-row">
-                                    <input type="text" class="edit-input" id="edit-desc-${index}" value="${method.description}" placeholder="Method description - what does this method do?">
-                                </div>
-                            </div>
-                            <div class="method-actions" style="display: flex; flex-direction: column; gap: 6px;">
-                                <button class="btn-save" onclick="saveMethodEdit(${index})">Save</button>
-                                <button class="btn-cancel" onclick="cancelMethodEdit()">Cancel</button>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    // Show normal view
-                    return `
-                        <div class="method-item">
-                            <div class="method-info">
-                                <div class="method-header">
-                                    <span class="method-tag ${method.operation.toLowerCase().replace('_', '')}">${method.operation}</span>
-                                    <span class="method-name">${method.name}</span>
-                                </div>
-                                <div class="method-description">${method.description}</div>
-                            </div>
-                            <div class="method-actions">
-                                <button class="btn-edit" onclick="editMethod(${index})">Edit</button>
-                                <button class="btn-remove" onclick="removeMethod(${index})">Remove</button>
-                            </div>
-                        </div>
-                    `;
-                }
-            }).join('');
-        }
-
-        function editMethod(index) {
-            editingMethodIndex = index;
-            updateMethodList();
-            // Focus on the name input
-            setTimeout(() => {
-                const nameInput = document.getElementById(`edit-name-${index}`);
-                const descInput = document.getElementById(`edit-desc-${index}`);
-                
-                if (nameInput) {
-                    nameInput.focus();
-                    nameInput.select();
-                    
-                    // Add keyboard event listeners
-                    nameInput.addEventListener('keydown', (e) => handleEditKeydown(e, index));
-                    descInput.addEventListener('keydown', (e) => handleEditKeydown(e, index));
-                }
-            }, 0);
-        }
-        
-        function handleEditKeydown(event, index) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                saveMethodEdit(index);
-            } else if (event.key === 'Escape') {
-                event.preventDefault();
-                cancelMethodEdit();
-            }
-        }
-
-        function saveMethodEdit(index) {
-            const nameInput = document.getElementById(`edit-name-${index}`);
-            const descInput = document.getElementById(`edit-desc-${index}`);
-            
-            const newName = nameInput.value.trim();
-            const newDesc = descInput.value.trim();
-            
-            if (!newName) {
-                alert('Method name is required');
-                return;
-            }
-            
-            // Check if another method has the same name (excluding current method)
-            const duplicate = configuration.methods.some((m, i) => 
-                i !== index && m.name.toLowerCase() === newName.toLowerCase()
-            );
-            
-            if (duplicate) {
-                alert('Another method with this name already exists');
-                return;
-            }
-            
-            // Update the method
-            configuration.methods[index].name = newName;
-            configuration.methods[index].description = newDesc || `${configuration.methods[index].operation} operation`;
-            
-            editingMethodIndex = -1;
-            updateMethodList();
-        }
-
-        function cancelMethodEdit() {
-            editingMethodIndex = -1;
-            updateMethodList();
-        }
+        // Methods are now standardized - no need for custom method management functions
 
         function collectConfiguration() {
             const apiBaseRoute = document.getElementById('api-base-route').value.trim();
@@ -742,7 +569,8 @@
                 apiBaseRoute: apiBaseRoute || `/api/${moduleName.toLowerCase()}`,
                 entityName: document.getElementById('entity-name').value.trim(),
                 fields: configuration.fields,
-                methods: configuration.methods,
+                methods: [], // Always use default CRUD methods
+                apiNotes: document.getElementById('api-notes')?.value.trim() || '',
                 relationships: configuration.relationships
             };
             
@@ -793,8 +621,10 @@
                     <div>${config.fields.filter(f => f.dataSource).map(f => `${f.name} → ${f.dataSource.table}`).join(', ') || 'None configured'}</div>
                     <div><strong>Relationships:</strong></div>
                     <div>${config.relationships.map(r => `${r.fromTable} → ${r.toTable}`).join(', ') || 'None'}</div>
-                    <div><strong>Methods:</strong></div>
-                    <div>${config.methods.map(m => `${m.name} (${m.operation})`).join(', ') || 'None'}</div>
+                    <div><strong>API Endpoints:</strong></div>
+                    <div>Standard CRUD operations (Create, Read, Update, Delete, Search, GetById, Export, Import)</div>
+                    ${config.apiNotes ? `<div><strong>Special Requirements:</strong></div>
+                    <div>${config.apiNotes}</div>` : ''}
                 </div>
             `;
         }
@@ -1188,9 +1018,20 @@ const saveResult = await ApiManager.post('${config.apiBaseRoute}/save', {
 3. Test API endpoints at: https://localhost:5001/swagger
 ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? `4. Test frontend component using ${config.uiTemplate} patterns` : ''}
 
-## Methods Included:
+## API Endpoints Included:
 
-${config.methods.length > 0 ? config.methods.map(method => `✅ ${method.name} (${method.operation}) - ${method.description}`).join('\n') : '✅ Default CRUD operations'}
+✅ Create - Add new records
+✅ Read - Get all records  
+✅ Update - Modify existing records
+✅ Delete - Remove records
+✅ Search - Filter and find records
+✅ GetById - Retrieve single record
+✅ Export - Download data
+✅ Import - Upload data
+
+${config.apiNotes ? `## Special Requirements:
+${config.apiNotes}
+` : ''}
 
 ## Module Structure Created:
 
@@ -1256,12 +1097,16 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             const methods = [];
             const entityName = config.entityName;
             
-            // If no methods defined, add default CRUD methods
-            const methodsToGenerate = config.methods.length > 0 ? config.methods : [
+            // Always use default CRUD methods
+            const methodsToGenerate = [
                 { operation: 'CREATE', name: 'Create', description: 'Create new record' },
                 { operation: 'READ', name: 'GetAll', description: 'Get all records' },
                 { operation: 'UPDATE', name: 'Update', description: 'Update existing record' },
-                { operation: 'DELETE', name: 'Delete', description: 'Delete record' }
+                { operation: 'DELETE', name: 'Delete', description: 'Delete record' },
+                { operation: 'SEARCH', name: 'Search', description: 'Search records with filters' },
+                { operation: 'GET_ONE', name: 'GetById', description: 'Get single record by ID' },
+                { operation: 'EXPORT', name: 'Export', description: 'Export records to file' },
+                { operation: 'IMPORT', name: 'Import', description: 'Import records from file' }
             ];
             
             methodsToGenerate.forEach(method => {
@@ -1304,10 +1149,16 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             const methods = [];
             const entityName = config.entityName;
             
-            // If no methods defined, add default CRUD methods
-            const methodsToGenerate = config.methods.length > 0 ? config.methods : [
+            // Always use default CRUD methods
+            const methodsToGenerate = [
                 { operation: 'CREATE', name: 'Create', description: 'Create new record' },
-                { operation: 'READ', name: 'GetAll', description: 'Get all records' }
+                { operation: 'READ', name: 'GetAll', description: 'Get all records' },
+                { operation: 'UPDATE', name: 'Update', description: 'Update existing record' },
+                { operation: 'DELETE', name: 'Delete', description: 'Delete record' },
+                { operation: 'SEARCH', name: 'Search', description: 'Search records with filters' },
+                { operation: 'GET_ONE', name: 'GetById', description: 'Get single record by ID' },
+                { operation: 'EXPORT', name: 'Export', description: 'Export records to file' },
+                { operation: 'IMPORT', name: 'Import', description: 'Import records from file' }
             ];
             
             methodsToGenerate.forEach(method => {
@@ -1399,10 +1250,16 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             const methods = [];
             const entityName = config.entityName;
             
-            // If no methods defined, add default CRUD methods
-            const methodsToGenerate = config.methods.length > 0 ? config.methods : [
+            // Always use default CRUD methods
+            const methodsToGenerate = [
                 { operation: 'CREATE', name: 'Create', description: 'Create new record' },
-                { operation: 'READ', name: 'GetAll', description: 'Get all records' }
+                { operation: 'READ', name: 'GetAll', description: 'Get all records' },
+                { operation: 'UPDATE', name: 'Update', description: 'Update existing record' },
+                { operation: 'DELETE', name: 'Delete', description: 'Delete record' },
+                { operation: 'SEARCH', name: 'Search', description: 'Search records with filters' },
+                { operation: 'GET_ONE', name: 'GetById', description: 'Get single record by ID' },
+                { operation: 'EXPORT', name: 'Export', description: 'Export records to file' },
+                { operation: 'IMPORT', name: 'Import', description: 'Import records from file' }
             ];
             
             methodsToGenerate.forEach(method => {
@@ -1506,18 +1363,8 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             methods.push(`async loadData() {
         try {
             this.isLoading.value = true;
-            // Find a suitable read method or use default
-            const readMethod = config.methods.find(m => ['READ', 'GET_MANY', 'SEARCH'].includes(m.operation));
-            const endpoint = readMethod ? 
-                '${config.apiBaseRoute}/' + readMethod.name.toLowerCase() : 
-                '${config.apiBaseRoute}/getall';
-            
-            const response = await ApiManager.${readMethod && readMethod.operation === 'SEARCH' ? 'post' : 'get'}(endpoint, 
-                ${readMethod && readMethod.operation === 'SEARCH' ? `{
-                ClientID: this.sessionInfo.ClientID,
-                SiteID: this.sessionInfo.SiteID
-            }` : ''});
-            
+            // Use standard getall endpoint
+            const response = await ApiManager.get('${config.apiBaseRoute}/getall');
             this.${entityName.toLowerCase()}List.value = response.Items || response || [];
         } catch (error) {
             console.error('Load data failed:', error);
@@ -1526,10 +1373,8 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
         }
     }`);
 
-            // Add save method if CREATE or UPDATE operations exist
-            const saveMethod = config.methods.find(m => ['CREATE', 'UPDATE'].includes(m.operation));
-            if (saveMethod) {
-                methods.push(`async save${entityName}() {
+            // Add save method (standard CRUD always includes this)
+            methods.push(`async save${entityName}() {
         try {
             const data = {
                 ClientID: this.sessionInfo.ClientID,
@@ -1537,7 +1382,7 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
                 ${config.fields.map(f => `${f.name}: this.${f.name.toLowerCase()}.value`).join(',\n                ')}
             };
             
-            const response = await ApiManager.post('${config.apiBaseRoute}/${saveMethod.name.toLowerCase()}', data);
+            const response = await ApiManager.post('${config.apiBaseRoute}/create', data);
             if (response.Status === 'S') {
                 await this.loadData();
                 this.clearForm();
@@ -1546,14 +1391,11 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             console.error('Save failed:', error);
         }
     }`);
-            }
             
-            // Add delete method if DELETE operation exists
-            const deleteMethod = config.methods.find(m => m.operation === 'DELETE');
-            if (deleteMethod) {
-                methods.push(`async delete${entityName}(id) {
+            // Add delete method (standard CRUD always includes this)
+            methods.push(`async delete${entityName}(id) {
         try {
-            const response = await ApiManager.delete('${config.apiBaseRoute}/${deleteMethod.name.toLowerCase()}/' + id);
+            const response = await ApiManager.delete('${config.apiBaseRoute}/delete/' + id);
             if (response.Success) {
                 await this.loadData();
             }
@@ -1561,7 +1403,6 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             console.error('Delete failed:', error);
         }
     }`);
-            }
             
             // Add clearForm method
             methods.push(`clearForm() {
@@ -1709,10 +1550,16 @@ ${config.moduleType.includes('frontend') || config.moduleType === 'fullstack' ? 
             const entityName = config.entityName;
             const apiRoute = config.apiBaseRoute;
             
-            // If no methods defined, add default CRUD methods
-            const methodsToGenerate = config.methods.length > 0 ? config.methods : [
+            // Always use default CRUD methods
+            const methodsToGenerate = [
                 { operation: 'CREATE', name: 'Create', description: 'Create new record' },
-                { operation: 'READ', name: 'GetAll', description: 'Get all records' }
+                { operation: 'READ', name: 'GetAll', description: 'Get all records' },
+                { operation: 'UPDATE', name: 'Update', description: 'Update existing record' },
+                { operation: 'DELETE', name: 'Delete', description: 'Delete record' },
+                { operation: 'SEARCH', name: 'Search', description: 'Search records with filters' },
+                { operation: 'GET_ONE', name: 'GetById', description: 'Get single record by ID' },
+                { operation: 'EXPORT', name: 'Export', description: 'Export records to file' },
+                { operation: 'IMPORT', name: 'Import', description: 'Import records from file' }
             ];
             
             const endpoints = [];

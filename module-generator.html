@@ -31,7 +31,7 @@
                 </li>
                 <li class="step-item" data-step="4">
                     <div class="step-number">4</div>
-                    <div class="step-text">Methods</div>
+                    <div class="step-text">API Configuration</div>
                 </li>
                 <li class="step-item" data-step="5">
                     <div class="step-number">5</div>
@@ -327,55 +327,41 @@
                 </div>
             </div>
 
-            <!-- Step 4: Methods -->
+            <!-- Step 4: API Configuration -->
             <div class="step-content" id="step-4">
-                <h1>Module Methods</h1>
-                <p class="step-description">Define the methods and operations for your module. Each method represents an API endpoint and corresponding functionality.</p>
+                <h1>API Configuration</h1>
+                <p class="step-description">The backend will automatically generate standard CRUD operations for your module.</p>
                 
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 80%"></div>
                 </div>
 
                 <div class="form-section">
-                    <div class="form-section-title">Methods Configuration</div>
-                    <div class="form-group">
-                        <label>Add Method</label>
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                            <select id="method-operation" style="width: 150px;">
-                                <option value="CREATE">CREATE</option>
-                                <option value="READ">READ</option>
-                                <option value="UPDATE">UPDATE</option>
-                                <option value="DELETE">DELETE</option>
-                                <option value="SEARCH">SEARCH</option>
-                                <option value="GET_ONE">GET_ONE</option>
-                                <option value="GET_MANY">GET_MANY</option>
-                                <option value="EXPORT">EXPORT</option>
-                                <option value="IMPORT">IMPORT</option>
-                                <option value="CUSTOM">CUSTOM</option>
-                            </select>
-                            <input type="text" id="method-name" placeholder="Method name" style="flex: 1; min-width: 200px;">
-                            <input type="text" id="method-description" placeholder="Method description" style="flex: 2; min-width: 300px;">
-                            <button type="button" onclick="addMethod()" class="btn-primary">Add Method</button>
+                    <div class="form-section-title">Standard API Endpoints</div>
+                    <div style="background: #303134; padding: 20px; border-radius: 8px; border-left: 4px solid #8ab4f8;">
+                        <p style="color: #8ab4f8; font-weight: 500; margin-bottom: 16px;">✨ The following endpoints will be automatically generated:</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; color: #e8eaed;">
+                            <div>✅ <strong>Create</strong> - Add new records</div>
+                            <div>✅ <strong>Read</strong> - Get all records</div>
+                            <div>✅ <strong>Update</strong> - Modify existing records</div>
+                            <div>✅ <strong>Delete</strong> - Remove records</div>
+                            <div>✅ <strong>Search</strong> - Filter and find records</div>
+                            <div>✅ <strong>GetById</strong> - Retrieve single record</div>
+                            <div>✅ <strong>Export</strong> - Download data</div>
+                            <div>✅ <strong>Import</strong> - Upload data</div>
                         </div>
-                        <div class="hint">Operation type determines the HTTP method and default implementation. Method name will be the actual function/endpoint name.</div>
-                    </div>
-                    
-                    <div class="method-list" id="method-list">
-                        <div style="color: #9aa0a6; text-align: center; padding: 20px;">No methods added yet. Default CRUD methods will be added based on selections above.</div>
+                        <p style="color: #9aa0a6; margin-top: 16px; font-size: 14px;">
+                            These standard operations cover 95% of typical use cases. The backend service will handle all the implementation details.
+                        </p>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <div class="form-section-title">Quick Add Common Methods</div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-                        <button type="button" class="btn-secondary" onclick="addQuickMethod('CREATE', 'Create', 'Create new record')">+ Create</button>
-                        <button type="button" class="btn-secondary" onclick="addQuickMethod('READ', 'GetAll', 'Get all records')">+ Get All</button>
-                        <button type="button" class="btn-secondary" onclick="addQuickMethod('GET_ONE', 'GetById', 'Get single record by ID')">+ Get By ID</button>
-                        <button type="button" class="btn-secondary" onclick="addQuickMethod('UPDATE', 'Update', 'Update existing record')">+ Update</button>
-                        <button type="button" class="btn-secondary" onclick="addQuickMethod('DELETE', 'Delete', 'Delete record')">+ Delete</button>
-                        <button type="button" class="btn-secondary" onclick="addQuickMethod('SEARCH', 'Search', 'Search records with filters')">+ Search</button>
-                        <button type="button" class="btn-secondary" onclick="addQuickMethod('GET_MANY', 'GetByFilter', 'Get multiple records by filter')">+ Get By Filter</button>
-                        <button type="button" class="btn-secondary" onclick="addQuickMethod('EXPORT', 'Export', 'Export records to file')">+ Export</button>
+                    <div class="form-section-title">Additional Notes</div>
+                    <div class="form-group">
+                        <label>Special Requirements (Optional)</label>
+                        <textarea id="api-notes" placeholder="Any special API requirements or custom endpoints needed? (Most modules won't need this)" style="height: 100px;"></textarea>
+                        <div class="hint">Leave empty for standard CRUD operations. Only fill if you need custom business logic.</div>
                     </div>
                 </div>
             </div>
