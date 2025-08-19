@@ -643,7 +643,8 @@
 
 ## Module Configuration
 - **Type**: ${config.moduleType}
-- **Entity**: ${config.entityName}  
+- **Entity**: ${config.entityName}
+- **Description**: ${config.description}
 - **Module Code**: ${config.moduleCode || 'AUTO'}
 - **Namespace**: Check project seed file (projectname_*.md) for namespace
 ${(config.moduleType !== 'frontend') ? `- **API Base Route**: ${config.apiBaseRoute}` : ''}

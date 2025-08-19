@@ -597,6 +597,7 @@ Use @claude_docs for XOS framework patterns and best practices.
 
 ### Project Configuration
 - **Name**: ${config['project-name']}
+- **Description**: ${config['project-description']}
 - **Type**: ${config.template} template
 - **Stack**: ${config['backend-framework']} + ${config['frontend-framework']}
 - **Database**: ${config['database-type']}
