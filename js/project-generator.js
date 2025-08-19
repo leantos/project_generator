@@ -479,6 +479,7 @@ function showReview() {
     
     const reviewItems = [
         { label: 'Project Name', value: config['project-name'] },
+        { label: 'Description', value: config['project-description'] },
         { label: 'Version', value: config['project-version'] },
         { label: 'Backend', value: config['backend-framework'] },
         { label: 'Frontend', value: config['frontend-framework'] },
