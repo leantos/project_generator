@@ -13,6 +13,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateModuleSummary();
             updateFormVisibility();
+            updateEndpointPreview();
         });
 
         // Step navigation
@@ -40,8 +41,10 @@
             // Get elements
             const uiTemplateGroup = document.getElementById('ui-template-group');
             const apiRouteGroup = document.getElementById('api-base-route-group');
+            const apiRouteSection = document.getElementById('api-route-section');
             const step2Text = document.querySelector('.step-item[data-step="2"] .step-text');
             const step3Text = document.querySelector('.step-item[data-step="3"] .step-text');
+            const step4Text = document.querySelector('.step-item[data-step="4"] .step-text');
             
             // Get the entire UI Template section (the whole form-section)
             const uiTemplateSection = document.querySelector('#step-2 .form-section:has(#ui-template-group)');
@@ -63,9 +66,18 @@
                     apiRouteGroup.style.display = 'block';
                 }
                 
+                // Show API route section in Step 4
+                if (apiRouteSection) {
+                    apiRouteSection.style.display = 'block';
+                }
+                
                 // Update step text to remove UI references
                 if (step2Text) {
                     step2Text.textContent = 'API Configuration';
+                }
+                
+                if (step4Text) {
+                    step4Text.textContent = 'API Configuration';
                 }
                 
                 // Entity fields are relevant for backend
@@ -90,9 +102,18 @@
                     apiRouteGroup.style.display = 'none';
                 }
                 
+                // Hide API route section in Step 4
+                if (apiRouteSection) {
+                    apiRouteSection.style.display = 'none';
+                }
+                
                 // Update step texts for frontend focus
                 if (step2Text) {
                     step2Text.textContent = 'UI Configuration';
+                }
+                
+                if (step4Text) {
+                    step4Text.textContent = 'UI Configuration';
                 }
                 
                 // For frontend, entity fields might be for display models
@@ -117,9 +138,18 @@
                     apiRouteGroup.style.display = 'block';
                 }
                 
+                // Show API route section in Step 4
+                if (apiRouteSection) {
+                    apiRouteSection.style.display = 'block';
+                }
+                
                 // Update step text
                 if (step2Text) {
                     step2Text.textContent = 'UI & API Configuration';
+                }
+                
+                if (step4Text) {
+                    step4Text.textContent = 'API Configuration';
                 }
                 
                 // Entity fields for both frontend and backend
@@ -553,7 +583,154 @@
             `).join('');
         }
 
-        // Methods are now standardized - no need for custom method management functions
+        // Method management functions
+        function addMethod() {
+            const operation = document.getElementById('method-operation').value;
+            const methodName = document.getElementById('method-name').value.trim();
+            const description = document.getElementById('method-description').value.trim();
+            
+            if (!methodName) {
+                alert('Please enter a method name');
+                return;
+            }
+            
+            if (!description) {
+                alert('Please enter a method description');
+                return;
+            }
+            
+            // Check if method already exists
+            if (configuration.methods.some(m => m.name.toLowerCase() === methodName.toLowerCase())) {
+                alert('Method with this name already exists');
+                return;
+            }
+            
+            configuration.methods.push({
+                operation: operation,
+                name: methodName,
+                description: description
+            });
+            
+            updateMethodList();
+            updateEndpointPreview();
+            
+            // Clear inputs
+            document.getElementById('method-name').value = '';
+            document.getElementById('method-description').value = '';
+            document.getElementById('method-operation').value = 'CREATE';
+        }
+
+        function removeMethod(index) {
+            configuration.methods.splice(index, 1);
+            updateMethodList();
+            updateEndpointPreview();
+        }
+
+        function updateMethodList() {
+            const methodList = document.getElementById('method-list');
+            
+            if (configuration.methods.length === 0) {
+                methodList.innerHTML = '<div style="color: #9aa0a6; text-align: center; padding: 20px;">No custom methods added yet. Default CRUD methods will be included automatically.</div>';
+                return;
+            }
+            
+            methodList.innerHTML = configuration.methods.map((method, index) => `
+                <div class="method-item">
+                    <div class="method-info">
+                        <div class="method-header">
+                            <span class="method-tag ${method.operation.toLowerCase().replace('_', '')}">${method.operation}</span>
+                            <span class="method-name">${method.name}</span>
+                        </div>
+                        <div class="method-description">${method.description}</div>
+                    </div>
+                    <div class="method-actions">
+                        <button class="btn-delete" onclick="removeMethod(${index})">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateEndpointPreview() {
+            const previewDiv = document.getElementById('endpoint-preview');
+            const moduleName = document.getElementById('module-name')?.value?.trim() || 'YourModule';
+            const entityName = document.getElementById('entity-name')?.value?.trim() || 'YourEntity';
+            const apiBaseRoute = document.getElementById('api-base-route')?.value?.trim() || `/api/${moduleName.toLowerCase()}`;
+            
+            // Default CRUD endpoints
+            let endpoints = [
+                `POST   ${apiBaseRoute}/create     - Create new ${entityName}`,
+                `GET    ${apiBaseRoute}/getall     - Get all ${entityName} records`,
+                `PUT    ${apiBaseRoute}/update     - Update existing ${entityName}`,
+                `DELETE ${apiBaseRoute}/delete/{id} - Delete ${entityName} by ID`,
+                `POST   ${apiBaseRoute}/search     - Search ${entityName} records`,
+                `GET    ${apiBaseRoute}/getbyid/{id} - Get ${entityName} by ID`,
+                `POST   ${apiBaseRoute}/export     - Export ${entityName} data`,
+                `POST   ${apiBaseRoute}/import     - Import ${entityName} data`
+            ];
+            
+            // Add custom methods
+            configuration.methods.forEach(method => {
+                const httpMethod = getHttpMethod(method.operation);
+                const endpoint = `${apiBaseRoute}/${method.name.toLowerCase()}`;
+                const pathSuffix = ['DELETE', 'GET_ONE'].includes(method.operation) ? '/{id}' : '';
+                endpoints.push(`${httpMethod.padEnd(6)} ${endpoint}${pathSuffix} - ${method.description}`);
+            });
+            
+            previewDiv.innerHTML = endpoints.join('\n');
+        }
+
+        function getHttpMethod(operation) {
+            switch(operation) {
+                case 'CREATE': return 'POST';
+                case 'READ':
+                case 'GET_MANY':
+                case 'GET_ONE': return 'GET';
+                case 'UPDATE': return 'PUT';
+                case 'DELETE': return 'DELETE';
+                case 'SEARCH':
+                case 'EXPORT':
+                case 'IMPORT':
+                case 'CUSTOM':
+                default: return 'POST';
+            }
+        }
+
+        // Update API route display when module name changes
+        function updateApiRouteDisplay() {
+            const moduleName = document.getElementById('module-name')?.value?.trim() || '';
+            const apiRouteDisplay = document.getElementById('api-route-display');
+            const apiBaseRoute = document.getElementById('api-base-route');
+            
+            if (apiRouteDisplay) {
+                if (moduleName) {
+                    const autoRoute = `/api/${moduleName.toLowerCase()}`;
+                    apiRouteDisplay.value = apiBaseRoute?.value?.trim() || autoRoute;
+                } else {
+                    apiRouteDisplay.value = '';
+                }
+                apiRouteDisplay.placeholder = moduleName ? `/api/${moduleName.toLowerCase()}` : 'Will be auto-generated based on module name';
+            }
+            
+            updateEndpointPreview();
+        }
+
+        // Initialize endpoint preview when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update preview when module name or entity name changes
+            const moduleNameInput = document.getElementById('module-name');
+            const entityNameInput = document.getElementById('entity-name');
+            const apiBaseRouteInput = document.getElementById('api-base-route');
+            
+            if (moduleNameInput) {
+                moduleNameInput.addEventListener('input', updateApiRouteDisplay);
+            }
+            if (entityNameInput) {
+                entityNameInput.addEventListener('input', updateEndpointPreview);
+            }
+            if (apiBaseRouteInput) {
+                apiBaseRouteInput.addEventListener('input', updateEndpointPreview);
+            }
+        });
 
         function collectConfiguration() {
             const apiBaseRoute = document.getElementById('api-base-route').value.trim();
@@ -569,7 +746,7 @@
                 apiBaseRoute: apiBaseRoute || `/api/${moduleName.toLowerCase()}`,
                 entityName: document.getElementById('entity-name').value.trim(),
                 fields: configuration.fields,
-                methods: [], // Always use default CRUD methods
+                methods: configuration.methods, // Use configured methods plus defaults
                 apiNotes: document.getElementById('api-notes')?.value.trim() || '',
                 relationships: configuration.relationships
             };
@@ -1215,8 +1392,8 @@ Module Generator v2.0
             const entityName = config.entityName;
             const apiRoute = config.apiBaseRoute;
             
-            // Always use default CRUD methods
-            const methodsToGenerate = [
+            // Default CRUD methods
+            const defaultMethods = [
                 { operation: 'CREATE', name: 'Create', description: 'Create new record' },
                 { operation: 'READ', name: 'GetAll', description: 'Get all records' },
                 { operation: 'UPDATE', name: 'Update', description: 'Update existing record' },
@@ -1227,42 +1404,57 @@ Module Generator v2.0
                 { operation: 'IMPORT', name: 'Import', description: 'Import records from file' }
             ];
             
+            // Combine default methods with custom methods
+            const allMethods = [...defaultMethods];
+            
+            if (config.methods && config.methods.length > 0) {
+                allMethods.push(...config.methods);
+            }
+            
             const endpoints = [];
             
-            methodsToGenerate.forEach(method => {
-                switch(method.operation) {
-                    case 'CREATE':
-                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ${entityName} object |`);
-                        break;
-                    case 'UPDATE':
-                        endpoints.push(`| PUT | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ${entityName} object |`);
-                        break;
-                    case 'READ':
-                    case 'GET_MANY':
-                        endpoints.push(`| GET | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | None |`);
-                        break;
-                    case 'DELETE':
-                        endpoints.push(`| DELETE | ${apiRoute}/${method.name.toLowerCase()}/{id} | ${method.description} | id parameter |`);
-                        break;
-                    case 'SEARCH':
-                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | SearchInput object |`);
-                        break;
-                    case 'GET_ONE':
-                        endpoints.push(`| GET | ${apiRoute}/${method.name.toLowerCase()}/{id} | ${method.description} | id parameter |`);
-                        break;
-                    case 'EXPORT':
-                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ExportInput object |`);
-                        break;
-                    case 'IMPORT':
-                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | ImportInput object |`);
-                        break;
-                    case 'CUSTOM':
-                        endpoints.push(`| POST | ${apiRoute}/${method.name.toLowerCase()} | ${method.description} | Custom object |`);
-                        break;
-                }
+            allMethods.forEach(method => {
+                const httpMethod = getHttpMethodForEndpoint(method.operation);
+                const endpoint = `${apiRoute}/${method.name.toLowerCase()}`;
+                const pathSuffix = ['DELETE', 'GET_ONE'].includes(method.operation) ? '/{id}' : '';
+                const requestBody = getRequestBody(method.operation, entityName);
+                
+                endpoints.push(`| ${httpMethod} | ${endpoint}${pathSuffix} | ${method.description} | ${requestBody} |`);
             });
             
             return endpoints.join('\n');
+        }
+        
+        function getHttpMethodForEndpoint(operation) {
+            switch(operation) {
+                case 'CREATE': return 'POST';
+                case 'READ':
+                case 'GET_MANY':
+                case 'GET_ONE': return 'GET';
+                case 'UPDATE': return 'PUT';
+                case 'DELETE': return 'DELETE';
+                case 'SEARCH':
+                case 'EXPORT':
+                case 'IMPORT':
+                case 'CUSTOM':
+                default: return 'POST';
+            }
+        }
+        
+        function getRequestBody(operation, entityName) {
+            switch(operation) {
+                case 'CREATE':
+                case 'UPDATE': return `${entityName} object`;
+                case 'DELETE':
+                case 'GET_ONE': return 'id parameter';
+                case 'READ':
+                case 'GET_MANY': return 'None';
+                case 'SEARCH': return 'SearchInput object';
+                case 'EXPORT': return 'ExportInput object';
+                case 'IMPORT': return 'ImportInput object';
+                case 'CUSTOM':
+                default: return 'Custom object';
+            }
         }
 
         function generateTableColumns(fields) {

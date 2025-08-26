@@ -330,38 +330,69 @@
             <!-- Step 4: API Configuration -->
             <div class="step-content" id="step-4">
                 <h1>API Configuration</h1>
-                <p class="step-description">The backend will automatically generate standard CRUD operations for your module.</p>
+                <p class="step-description">Configure the API endpoints and methods for your module. Each method represents an API endpoint and corresponding functionality.</p>
                 
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 80%"></div>
                 </div>
 
+                <div class="form-section" id="api-route-section">
+                    <div class="form-section-title">API Route Configuration</div>
+                    <div class="form-group">
+                        <label>API Base Route</label>
+                        <input type="text" id="api-route-display" placeholder="Will be auto-generated based on module name">
+                        <div class="hint">This will be automatically set based on your module name. You can customize it in Step 2.</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">API Methods</div>
+                    <div class="form-group">
+                        <label>Add Method</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                            <select id="method-operation" style="width: 150px;">
+                                <option value="CREATE">CREATE</option>
+                                <option value="READ">READ</option>
+                                <option value="UPDATE">UPDATE</option>
+                                <option value="DELETE">DELETE</option>
+                                <option value="SEARCH">SEARCH</option>
+                                <option value="GET_ONE">GET_ONE</option>
+                                <option value="GET_MANY">GET_MANY</option>
+                                <option value="EXPORT">EXPORT</option>
+                                <option value="IMPORT">IMPORT</option>
+                                <option value="CUSTOM">CUSTOM</option>
+                            </select>
+                            <input type="text" id="method-name" placeholder="Method name" style="flex: 1; min-width: 200px;">
+                            <input type="text" id="method-description" placeholder="Method description" style="flex: 2; min-width: 300px;">
+                            <button type="button" onclick="addMethod()" class="btn-primary">Add Method</button>
+                        </div>
+                        <div class="hint">Operation type determines the HTTP method and default implementation. Method name will be the actual function/endpoint name.</div>
+                    </div>
+                    
+                    <div class="method-list" id="method-list">
+                        <div style="color: #9aa0a6; text-align: center; padding: 20px;">No custom methods added yet. Default CRUD methods will be included automatically.</div>
+                    </div>
+                </div>
+
                 <div class="form-section">
                     <div class="form-section-title">Standard API Endpoints</div>
                     <div style="background: #303134; padding: 20px; border-radius: 8px; border-left: 4px solid #8ab4f8;">
-                        <p style="color: #8ab4f8; font-weight: 500; margin-bottom: 16px;">✨ The following endpoints will be automatically generated:</p>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; color: #e8eaed;">
-                            <div>✅ <strong>Create</strong> - Add new records</div>
-                            <div>✅ <strong>Read</strong> - Get all records</div>
-                            <div>✅ <strong>Update</strong> - Modify existing records</div>
-                            <div>✅ <strong>Delete</strong> - Remove records</div>
-                            <div>✅ <strong>Search</strong> - Filter and find records</div>
-                            <div>✅ <strong>GetById</strong> - Retrieve single record</div>
-                            <div>✅ <strong>Export</strong> - Download data</div>
-                            <div>✅ <strong>Import</strong> - Upload data</div>
+                        <p style="color: #8ab4f8; font-weight: 500; margin-bottom: 16px;">✨ The following standard endpoints will be automatically generated:</p>
+                        <div id="endpoint-preview" style="font-family: 'Courier New', monospace; font-size: 13px; color: #e8eaed; line-height: 1.6;">
+                            <!-- Dynamically populated API endpoints will go here -->
                         </div>
                         <p style="color: #9aa0a6; margin-top: 16px; font-size: 14px;">
-                            These standard operations cover 95% of typical use cases. The backend service will handle all the implementation details.
+                            These standard operations cover 95% of typical use cases. You can add custom methods above if needed.
                         </p>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <div class="form-section-title">Additional Notes</div>
+                    <div class="form-section-title">Additional Requirements</div>
                     <div class="form-group">
                         <label>Special Requirements (Optional)</label>
-                        <textarea id="api-notes" placeholder="Any special API requirements or custom endpoints needed? (Most modules won't need this)" style="height: 100px;"></textarea>
-                        <div class="hint">Leave empty for standard CRUD operations. Only fill if you need custom business logic.</div>
+                        <textarea id="api-notes" placeholder="Any special API requirements or custom business logic needed? (Most modules won't need this)" style="height: 100px;"></textarea>
+                        <div class="hint">Leave empty for standard CRUD operations. Only fill if you need custom business logic or special authentication.</div>
                     </div>
                 </div>
             </div>
